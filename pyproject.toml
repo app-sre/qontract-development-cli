@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "qontract-development"
+version = "0.1.0"
+description = "Helper tool for qontract-reconcile development"
+authors = ["Christian Assing <cassing@redhat.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+Jinja2 = "^3.1.2"
+GitPython = "^3.1.27"
+typer = "^0.6.1"
+rich = "^12.5.1"
+pydantic = "^1.10.2"
+appdirs = "^1.4.4"
+PyYAML = "^6.0"
+
+[tool.poetry.dev-dependencies]
+types-PyYAML = "^6.0.12"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+qd = "qontract_development.__main__:app"

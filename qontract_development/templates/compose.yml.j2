@@ -1,0 +1,82 @@
+---
+name: qd-{{ env.name_path_safe }}-{{ profile.name_path_safe }}
+services:
+
+{% if env.settings.run_qontract_reconcile %}
+  qontract-reconcile:
+    container_name: qontract-reconcile-{{ profile.settings.integration_name }}
+    stdin_open: true
+    stop_grace_period: 1s
+    tty: true
+    {% if profile.settings.qontract_reconcile_build_image %}
+    build:
+      context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
+      dockerfile: ./dockerfiles/Dockerfile
+      target: dev-image
+      args:
+        CONTAINER_UID: {{ config.container_uid }}
+    {% else %}
+    image: {{ profile.settings.qontract_reconcile_image }}
+    {% endif %}
+    environment:
+    - INTEGRATION_NAME={{ profile.settings.integration_name }}
+    - INTEGRATION_EXTRA_ARGS={{ profile.settings.integration_extra_args }}
+    - DRY_RUN={% if profile.settings.dry_run %}--dry-run{% else %}--no-dry-run{%endif%}
+    - SLEEP_DURATION_SECS={{ profile.settings.sleep_duration_secs }}
+    - DEBUGGER={{ profile.settings.debugger }}
+    - CONFIG=/config/{{ env.settings.config.name }}
+    - APP_INTERFACE_STATE_BUCKET={{ env.settings.app_interface_state_bucket }}
+    - APP_INTERFACE_STATE_BUCKET_ACCOUNT={{ env.settings.app_interface_state_bucket_account }}
+    - RUN_ONCE={{ env.settings.run_once }}
+    - gitlab_pr_submitter_queue_url={{ profile.settings.gitlab_pr_submitter_queue_url }}
+    - LOG_LEVEL={{ profile.settings.log_level }}
+    volumes:
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work
+    - {{ env.settings.config.expanduser().absolute().parent }}:/config
+    - tmp-volume:/tmp
+    links:
+{% if env.settings.run_qontract_server %}
+    - qontract-server
+{% endif %}
+{% if env.settings.run_vault %}
+    - vault
+{% endif %}
+    ports:
+    - 9090:9090 # Metrics Exporter
+    - 5678:5678 # Debugger Port
+{% endif %}
+
+{% if env.settings.run_qontract_server %}
+  qontract-server:
+    {% if profile.settings.qontract_server_build_image %}
+    build:
+      context: {{ profile.settings.qontract_server_path.expanduser().absolute() }}
+    {% else %}
+    image: {{ profile.settings.qontract_server_image }}
+    {% endif %}
+    container_name: qontract-server
+    volumes:
+    - {{ profile.settings.qontract_server_path.expanduser().absolute() }}/bundle:/bundle:ro
+    environment:
+    - LOAD_METHOD=fs
+    - DATAFILES_FILE=/bundle/bundle.json
+    ports:
+    - 4000:4000
+    - 6789:6789 # Debugger Port
+{% endif %}
+
+{% if env.settings.run_vault %}
+  vault:
+    container_name: vault
+    image: "vault:1.5.4"
+    environment:
+    - VAULT_ADDR=http://127.0.0.1:8200
+    - VAULT_TOKEN=root
+    - VAULT_DEV_ROOT_TOKEN_ID=root
+    - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    ports:
+    - 8200:8200
+{% endif %}
+
+volumes:
+  tmp-volume:
