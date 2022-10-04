@@ -33,7 +33,7 @@ def compose_stop_projects(ignore: str = ""):
             subprocess.run(["docker-compose", "-f", p["ConfigFiles"], "down"])
 
 
-def make_bundle(app_interface_path: str, qontract_server_path: Path):
+def make_bundle(app_interface_path: Path, qontract_server_path: Path):
     shell_env = copy.deepcopy(os.environ)
-    shell_env.update({"APP_INTERFACE_PATH": app_interface_path})
+    shell_env.update({"APP_INTERFACE_PATH": str(app_interface_path)})
     subprocess.run(["make", "-C", str(qontract_server_path), "bundle"], env=shell_env)

@@ -1,11 +1,9 @@
 import logging
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
 import typer
-from rich import print
 from rich.prompt import Confirm, Prompt
 
 from ..completions import complete_env, complete_profile
@@ -13,6 +11,7 @@ from ..config import config
 from ..models import Env, Profile
 from ..shell import compose_stop_projects, compose_up, make_bundle
 from ..templates import template
+from ..utils import console
 
 app = typer.Typer()
 log = logging.getLogger(__name__)
@@ -22,14 +21,14 @@ log = logging.getLogger(__name__)
 def create(profile_name: str = typer.Argument(..., help="Profile to create.")):
     """Create a new profile."""
     if profile_name in [p.name for p in Profile.list_all()]:
-        print(
+        console.print(
             f"[b red]Profile {profile_name} already exists![/] Choose another profile name."
         )
-        sys.exit(1)
+        raise typer.Exit(1)
     profile = Profile(name=profile_name)
-    profile.settings.integration_name = Prompt.ask("Integration name")
+    profile.settings.integration_name = Prompt.ask("Integration name", console=console)
     profile.settings.integration_extra_args = Prompt.ask(
-        "Integration extra arguments", default=""
+        "Integration extra arguments", default="", console=console
     )
     profile.dump()
 
@@ -42,16 +41,17 @@ def edit(
 ):
     """Edit a profile in your editor."""
     profile = Profile(name=profile_name, default=True)
+    console.print(f"Opening [b]{profile.name}[/] in your editor ...")
     subprocess.run([config.editor, profile.file])
 
 
 @app.command()
 def ls():
     """List all available profiles."""
-    print(f"Profiles directory: [b]{config.profiles_dir}[/]")
-    print("[b]Profiles:[/]")
+    console.print(f"Profiles directory: [b]{config.profiles_dir}[/]")
+    console.print("[b]Profiles:[/]")
     for p in Profile.list_all():
-        print(f"* {p.name}")
+        console.print(f"* {p.name}")
 
 
 @app.command()
@@ -77,7 +77,7 @@ def show(
 ):
     """Display profile."""
     profile = Profile(name=profile_name, default=True)
-    print(profile.file.read_text())
+    console.print(profile.file.read_text())
 
 
 @app.command(no_args_is_help=True)
@@ -114,7 +114,7 @@ def run(
     compose_stop_projects(
         ignore=f"qd-{ env.name_path_safe }-{ profile.name_path_safe }"
     )
-    print(f"Running containers ({compose_file})")
+    console.print(f"Running containers ({compose_file})")
     compose_up(compose_file, force_recreate=force_recreate)
 
 
@@ -136,4 +136,4 @@ def render(
         profile=Profile(name=profile_name),
     )
     output_file.write_text(compose_file)
-    print(f"[b green]{output_file}[/] written")
+    console.print(f"[b green]{output_file}[/] written")

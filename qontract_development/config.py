@@ -3,7 +3,7 @@ import platform
 from pathlib import Path
 from typing import Any
 
-from appdirs import AppDirs
+from appdirs import AppDirs  # type: ignore
 from pydantic import BaseSettings
 
 from .utils import yaml

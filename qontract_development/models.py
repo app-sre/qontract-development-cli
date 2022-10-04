@@ -5,10 +5,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import BaseModel, root_validator, validator
-from rich import print
 
 from .config import config
-from .utils import yaml
+from .utils import console, yaml
 
 
 class EnvSettings(BaseModel):
@@ -93,7 +92,7 @@ class Base(BaseModel):
             # do not dump settings from defaults
             defaults = self.default_settings_as_dict
             for k in copy.deepcopy(values):
-                if k in defaults:
+                if k in defaults and defaults[k] == values[k]:
                     del values[k]
 
         self.file.write_text(
@@ -108,30 +107,35 @@ class Base(BaseModel):
 
 class Env(Base):
     _root: Path = config.environments_dir
-    settings: Optional[EnvSettings]
+    default: bool = True
+    settings: EnvSettings
 
     def __init__(self, *args, **kwargs) -> None:
+        if "settings" not in kwargs:
+            kwargs["settings"] = EnvSettings()
         super().__init__(*args, **kwargs)
-        self.load_settings()
+        self.settings = EnvSettings(**self.settings_as_dict)
 
     def load_settings(self):
-        values = {"integration_name": "changeme", "integration_extra_args": ""}
-        values.update(**self.settings_as_dict)
         self.settings = EnvSettings(**self.settings_as_dict)
 
 
 class Profile(Base):
     _root: Path = config.profiles_dir
-    settings: Optional[ProfileSettings]
+    settings: ProfileSettings
 
     def __init__(self, *args, **kwargs) -> None:
+        if "settings" not in kwargs:
+            kwargs["settings"] = ProfileSettings(
+                integration_name="changeme", integration_extra_args=""
+            )
         super().__init__(*args, **kwargs)
-        self.load_settings()
+        self.settings = ProfileSettings(**self.settings_as_dict)
 
     @root_validator(pre=True)
     def name_not_default(cls, values):
         if values.get("name") == config.defaults_profile and not values.get("default"):
-            print(
+            console.print(
                 "[b red]This profile holds just default variables and isn't supposed to run![/]"
             )
             sys.exit(1)
@@ -139,7 +143,7 @@ class Profile(Base):
 
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
-        if self.default:
+        if getattr(self, "default", True):
             return {}
 
         try:
@@ -150,11 +154,6 @@ class Profile(Base):
             )
         except FileNotFoundError:
             return super().default_settings_as_dict
-
-    def load_settings(self):
-        values = {"integration_name": "changeme", "integration_extra_args": ""}
-        values.update(**self.settings_as_dict)
-        self.settings = ProfileSettings(**values)
 
 
 DEFAULT_PROFILE = Profile(name=config.defaults_profile, default=True)

@@ -1,4 +1,7 @@
+import atexit
 import logging
+from pathlib import Path
+import sys
 
 import typer
 from rich.logging import RichHandler
@@ -6,6 +9,7 @@ from rich.logging import RichHandler
 from .commands import config as config_cmd
 from .commands import env, profile
 from .config import config
+from .utils import screenshot, console
 
 app = typer.Typer()
 app.add_typer(env.app, name="env", help="Environment related commands.")
@@ -16,10 +20,21 @@ app.add_typer(profile.app, name="profile", help="Profile related commands.")
 
 
 @app.callback(no_args_is_help=True)
-def main(debug: bool = typer.Option(False, help="Enable debug")):
+def main(
+    debug: bool = typer.Option(False, help="Enable debug"),
+    screen_capture_file: Path = typer.Option(None, writable=True),
+):
     logging.basicConfig(
         level="DEBUG" if config.debug or debug else "ERROR",
         format="%(name)-20s: %(message)s",
         datefmt="[%X]",
         handlers=[RichHandler()],
     )
+    if screen_capture_file:
+        print(f"Screen recording: {screen_capture_file}")
+        # strip $0 and screen_capture_file option
+        args = sys.argv[3:]
+        console.print(f"$ qd {' '.join(args)}")
+        # title = command sub_command
+        title = " ".join(args[0:2])
+        atexit.register(screenshot, output_file=screen_capture_file, title=title)
