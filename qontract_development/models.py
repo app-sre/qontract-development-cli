@@ -143,8 +143,8 @@ class Profile(Base):
 
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
-        if getattr(self, "default", True):
-            return {}
+        if self.default:
+            return {"integration_name": "changeme", "integration_extra_args": ""}
 
         try:
             return yaml.safe_load(
