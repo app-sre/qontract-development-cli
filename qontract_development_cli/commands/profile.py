@@ -40,7 +40,7 @@ def edit(
     )
 ):
     """Edit a profile in your editor."""
-    profile = Profile(name=profile_name, default=True)
+    profile = Profile(name=profile_name)
     console.print(f"Opening [b]{profile.name}[/] in your editor ...")
     subprocess.run([config.editor, profile.file])
 
@@ -62,7 +62,7 @@ def rm(
     force: bool = typer.Option(False, "--force", "-f", help="Do not ask any question."),
 ):
     """Remove profile."""
-    profile = Profile(name=profile_name, default=True)
+    profile = Profile(name=profile_name)
     if force or Confirm.ask(
         f"Do you really want to remove profile [b red]{profile.name}[/]?"
     ):
@@ -76,7 +76,7 @@ def show(
     )
 ):
     """Display profile."""
-    profile = Profile(name=profile_name, default=True)
+    profile = Profile(name=profile_name)
     console.print(profile.file.read_text())
 
 

@@ -25,8 +25,8 @@ class ProfileSettings(BaseModel):
     debugger: str = "debugpy"
     dry_run: bool = True
     gitlab_pr_submitter_queue_url: str = ""
-    integration_extra_args: str = ""
-    integration_name: str = "changeme"
+    integration_extra_args: str
+    integration_name: str
     log_level: str = "INFO"
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/app-sre/qontract-reconcile:latest"
@@ -87,14 +87,6 @@ class Base(BaseModel):
         values = self.settings.dict(
             exclude_defaults=not self.default, exclude_unset=not self.default
         )
-
-        if not self.default:
-            # do not dump settings from defaults
-            defaults = self.default_settings_as_dict
-            for k in copy.deepcopy(values):
-                if k in defaults and defaults[k] == values[k]:
-                    del values[k]
-
         self.file.write_text(
             yaml.dump(
                 values,
@@ -126,32 +118,44 @@ class Profile(Base):
 
     def __init__(self, *args, **kwargs) -> None:
         if "settings" not in kwargs:
-            kwargs["settings"] = ProfileSettings()
+            kwargs["settings"] = ProfileSettings(**self.default_settings_as_dict)
         super().__init__(*args, **kwargs)
         self.settings = ProfileSettings(**self.settings_as_dict)
 
-    @root_validator(pre=True)
-    def name_not_default(cls, values):
-        if values.get("name") == config.defaults_profile and not values.get("default"):
-            console.print(
-                "[b red]This profile holds just default variables and isn't supposed to run![/]"
-            )
-            sys.exit(1)
-        return values
-
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
-        if self.default:
-            return {}
-
+        defaults = {"integration_name": "changeme", "integration_extra_args": ""}
         try:
-            return yaml.safe_load(
-                DEFAULT_PROFILE.file.read_text(
-                    encoding=config.__config__.env_file_encoding
+            defaults.update(
+                yaml.safe_load(
+                    DEFAULT_PROFILE.file.read_text(
+                        encoding=config.__config__.env_file_encoding
+                    )
                 )
             )
-        except FileNotFoundError:
-            return super().default_settings_as_dict
+        except (FileNotFoundError, AttributeError, NameError):
+            pass
+        return defaults
+
+    def dump(self):
+        values = self.settings.dict(
+            exclude_defaults=not self.default, exclude_unset=not self.default
+        )
+
+        if not self.default:
+            # do not dump settings from defaults
+            for k in copy.deepcopy(values):
+                if getattr(DEFAULT_PROFILE.settings, k, None) == values[k]:
+                    del values[k]
+
+        self.file.write_text(
+            yaml.dump(
+                values,
+                explicit_start=True,
+                indent=4,
+                default_flow_style=False,
+            )
+        )
 
 
 DEFAULT_PROFILE = Profile(name=config.defaults_profile, default=True)
