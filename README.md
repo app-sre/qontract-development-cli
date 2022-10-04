@@ -1,7 +1,3 @@
-#
-
-![logo](images/logo-white-bg.png)
-
 # Qontract Development CLI
 
 [![PyPI](https://img.shields.io/pypi/v/qontract-development-cli)][pypi-link]
