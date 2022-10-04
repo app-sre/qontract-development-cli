@@ -25,8 +25,8 @@ class ProfileSettings(BaseModel):
     debugger: str = "debugpy"
     dry_run: bool = True
     gitlab_pr_submitter_queue_url: str = ""
-    integration_extra_args: str
-    integration_name: str
+    integration_extra_args: str = ""
+    integration_name: str = "changeme"
     log_level: str = "INFO"
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/app-sre/qontract-reconcile:latest"
@@ -126,9 +126,7 @@ class Profile(Base):
 
     def __init__(self, *args, **kwargs) -> None:
         if "settings" not in kwargs:
-            kwargs["settings"] = ProfileSettings(
-                integration_name="changeme", integration_extra_args=""
-            )
+            kwargs["settings"] = ProfileSettings()
         super().__init__(*args, **kwargs)
         self.settings = ProfileSettings(**self.settings_as_dict)
 
@@ -144,7 +142,7 @@ class Profile(Base):
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
         if self.default:
-            return {"integration_name": "changeme", "integration_extra_args": ""}
+            return {}
 
         try:
             return yaml.safe_load(
