@@ -27,7 +27,7 @@ services:
     - CONFIG=/config/{{ env.settings.config.name }}
     - APP_INTERFACE_STATE_BUCKET={{ env.settings.app_interface_state_bucket }}
     - APP_INTERFACE_STATE_BUCKET_ACCOUNT={{ env.settings.app_interface_state_bucket_account }}
-    - RUN_ONCE={{ env.settings.run_once }}
+    - RUN_ONCE={{ profile.settings.run_once }}
     - gitlab_pr_submitter_queue_url={{ profile.settings.gitlab_pr_submitter_queue_url }}
     - LOG_LEVEL={{ profile.settings.log_level }}
     volumes:
