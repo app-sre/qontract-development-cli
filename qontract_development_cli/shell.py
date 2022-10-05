@@ -37,9 +37,9 @@ def compose_list_projects() -> list[dict[str, Any]]:
     )
 
 
-def compose_stop_projects(ignore: str = ""):
+def compose_stop_project(project_name: str):
     for p in compose_list_projects():
-        if p["Name"] != ignore:
+        if p["Name"] == project_name:
             subprocess.run(["docker-compose", "-f", p["ConfigFiles"], "down"])
 
 

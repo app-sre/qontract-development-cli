@@ -1,5 +1,5 @@
 ---
-name: qd-{{ env.name_path_safe }}-{{ profile.name_path_safe }}
+name: {{ config.docker_compose_project_name }}
 services:
 
 {% if env.settings.run_qontract_reconcile %}

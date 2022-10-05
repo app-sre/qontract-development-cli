@@ -14,7 +14,7 @@ from ..models import Env, Profile
 from ..shell import (
     compose_down,
     compose_restart,
-    compose_stop_projects,
+    compose_stop_project,
     compose_up,
     make_bundle,
 )
@@ -118,10 +118,8 @@ def run(
             env.settings.app_interface_path, profile.settings.qontract_server_path
         )
 
-    # stop other qd projects first
-    compose_stop_projects(
-        ignore=f"qd-{ env.name_path_safe }-{ profile.name_path_safe }"
-    )
+    # stop other qontract-development project first
+    compose_stop_project(config.docker_compose_project_name)
     console.print(f"Running containers ({compose_file})")
     compose_up(compose_file, force_recreate=force_recreate)
     shortcuts_info = Table("Key", "Description", title="Shortcuts")

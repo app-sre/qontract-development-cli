@@ -29,11 +29,12 @@ def yaml_config_settings_source(settings: BaseSettings) -> dict[str, Any]:
 
 
 class Config(BaseSettings):
+    debug: bool = False
     defaults_profile: str = "defaults"
+    docker_compose_project_name: str = "qontract-development"
     editor: str = os.environ.get("EDITOR", "vim")
     environments_dir: Path = user_config_dir / "environments"
     profiles_dir: Path = user_config_dir / "profiles"
-    debug: bool = False
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
