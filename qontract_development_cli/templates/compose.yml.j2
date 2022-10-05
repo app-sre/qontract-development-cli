@@ -5,8 +5,8 @@ services:
 {% if env.settings.run_qontract_reconcile %}
   qontract-reconcile:
     container_name: qontract-reconcile-{{ profile.settings.integration_name }}
-    stdin_open: true
     stop_grace_period: 1s
+    stop_signal: SIGKILL
     tty: true
     {% if profile.settings.qontract_reconcile_build_image %}
     build:

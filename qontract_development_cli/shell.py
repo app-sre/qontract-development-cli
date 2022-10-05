@@ -9,11 +9,21 @@ from typing import Any
 def compose_up(
     compose_file: Path, force_recreate: bool = False, remove_orphan: bool = True
 ) -> None:
-    compose_cmd = ["docker-compose", "-f", str(compose_file), "up"]
+    compose_cmd = ["docker-compose", "-f", str(compose_file), "up", "-d"]
     if force_recreate:
         compose_cmd.append("--force-recreate")
     if remove_orphan:
         compose_cmd.append("--remove-orphans")
+    subprocess.run(compose_cmd)
+
+
+def compose_restart(compose_file: Path, container: str) -> None:
+    compose_cmd = ["docker-compose", "-f", str(compose_file), "restart", container]
+    subprocess.run(compose_cmd)
+
+
+def compose_down(compose_file: Path) -> None:
+    compose_cmd = ["docker-compose", "-f", str(compose_file), "down"]
     subprocess.run(compose_cmd)
 
 

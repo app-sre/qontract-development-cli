@@ -4,12 +4,20 @@ import tempfile
 from pathlib import Path
 
 import typer
+from getkey import getkey
 from rich.prompt import Confirm, Prompt
+from rich.table import Table
 
 from ..completions import complete_env, complete_profile
 from ..config import config
 from ..models import Env, Profile
-from ..shell import compose_stop_projects, compose_up, make_bundle
+from ..shell import (
+    compose_down,
+    compose_restart,
+    compose_stop_projects,
+    compose_up,
+    make_bundle,
+)
 from ..templates import template
 from ..utils import console
 
@@ -116,6 +124,35 @@ def run(
     )
     console.print(f"Running containers ({compose_file})")
     compose_up(compose_file, force_recreate=force_recreate)
+    shortcuts_info = Table("Key", "Description", title="Shortcuts")
+    shortcuts_info.add_row("r", "Restart qontract-reconcile container")
+    shortcuts_info.add_row("b", "Make bundle and restart qontract-server container")
+    shortcuts_info.add_row("q", "Quit")
+    console.print(shortcuts_info)
+    while True:
+        try:
+            key = getkey()
+        except KeyboardInterrupt:
+            key = ""
+            console.print(shortcuts_info)
+
+        if key.lower() == "r":
+            compose_restart(compose_file, "qontract-reconcile")
+        elif key.lower() == "b":
+            if (
+                profile.settings.qontract_schemas_path
+                and env.settings.run_qontract_server
+            ):
+                make_bundle(
+                    env.settings.app_interface_path,
+                    profile.settings.qontract_server_path,
+                )
+            compose_restart(compose_file, "qontract-server")
+        elif key.lower() == "q":
+            compose_down(compose_file)
+            raise typer.Exit(0)
+        else:
+            console.print(shortcuts_info)
 
 
 @app.command(no_args_is_help=True)

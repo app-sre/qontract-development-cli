@@ -1,13 +1,12 @@
 import copy
 import os
-import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, validator
 
 from .config import config
-from .utils import console, yaml
+from .utils import yaml
 
 
 class EnvSettings(BaseModel):
