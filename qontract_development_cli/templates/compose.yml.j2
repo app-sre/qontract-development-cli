@@ -8,6 +8,7 @@ services:
     stop_grace_period: 1s
     stop_signal: SIGKILL
     tty: true
+    restart: unless-stopped
     {% if profile.settings.qontract_reconcile_build_image %}
     build:
       context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}

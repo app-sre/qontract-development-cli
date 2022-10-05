@@ -1,5 +1,6 @@
 import copy
 import json
+from multiprocessing import Process
 import os
 import subprocess
 from pathlib import Path
@@ -25,6 +26,13 @@ def compose_restart(compose_file: Path, container: str) -> None:
 def compose_down(compose_file: Path) -> None:
     compose_cmd = ["docker-compose", "-f", str(compose_file), "down"]
     subprocess.run(compose_cmd)
+
+
+def compose_log_tail(compose_file: Path) -> Process:
+    compose_cmd = ["docker-compose", "-f", str(compose_file), "logs", "--follow"]
+    p = Process(target=subprocess.run, args=(compose_cmd,))
+    p.start()
+    return p
 
 
 def compose_list_projects() -> list[dict[str, Any]]:

@@ -13,6 +13,7 @@ from ..config import config
 from ..models import Env, Profile
 from ..shell import (
     compose_down,
+    compose_log_tail,
     compose_restart,
     compose_stop_project,
     compose_up,
@@ -122,6 +123,7 @@ def run(
     compose_stop_project(config.docker_compose_project_name)
     console.print(f"Running containers ({compose_file})")
     compose_up(compose_file, force_recreate=force_recreate)
+    log_tail_proc = compose_log_tail(compose_file)
     shortcuts_info = Table("Key", "Description", title="Shortcuts")
     shortcuts_info.add_row("r", "Restart qontract-reconcile container")
     shortcuts_info.add_row("b", "Make bundle and restart qontract-server container")
@@ -147,6 +149,7 @@ def run(
                 )
             compose_restart(compose_file, "qontract-server")
         elif key.lower() == "q":
+            log_tail_proc.kill()
             compose_down(compose_file)
             raise typer.Exit(0)
         else:
