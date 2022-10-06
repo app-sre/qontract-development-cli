@@ -1,20 +1,25 @@
 import copy
 import json
-from multiprocessing import Process
 import os
 import subprocess
+from multiprocessing import Process
 from pathlib import Path
 from typing import Any
 
 
 def compose_up(
-    compose_file: Path, force_recreate: bool = False, remove_orphan: bool = True
+    compose_file: Path,
+    force_recreate: bool = False,
+    remove_orphan: bool = True,
+    build: bool = False,
 ) -> None:
     compose_cmd = ["docker-compose", "-f", str(compose_file), "up", "-d"]
     if force_recreate:
         compose_cmd.append("--force-recreate")
     if remove_orphan:
         compose_cmd.append("--remove-orphans")
+    if build:
+        compose_cmd.append("--build")
     subprocess.run(compose_cmd)
 
 

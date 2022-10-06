@@ -98,6 +98,7 @@ def run(
         ..., help="Profile to run.", autocompletion=complete_profile
     ),
     force_recreate: bool = typer.Option(False, help="Recreate all containers."),
+    force_build: bool = typer.Option(False, help="Rebuild all containers."),
 ):
     """Run a profile."""
     env = Env(name=env_name)
@@ -122,7 +123,7 @@ def run(
     # stop other qontract-development project first
     compose_stop_project(config.docker_compose_project_name)
     console.print(f"Running containers ({compose_file})")
-    compose_up(compose_file, force_recreate=force_recreate)
+    compose_up(compose_file, force_recreate=force_recreate, build=force_build)
     log_tail_proc = compose_log_tail(compose_file)
     shortcuts_info = Table("Key", "Description", title="Shortcuts")
     shortcuts_info.add_row("r", "Restart qontract-reconcile container")
