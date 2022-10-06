@@ -134,8 +134,7 @@ def run(
         try:
             key = getkey()
         except KeyboardInterrupt:
-            key = ""
-            console.print(shortcuts_info)
+            key = "q"
 
         if key.lower() == "r":
             compose_restart(compose_file, "qontract-reconcile")
