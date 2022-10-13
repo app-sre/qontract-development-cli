@@ -58,5 +58,7 @@ def compose_stop_project(project_name: str):
 
 def make_bundle(app_interface_path: Path, qontract_server_path: Path):
     shell_env = copy.deepcopy(os.environ)
-    shell_env.update({"APP_INTERFACE_PATH": str(app_interface_path)})
+    shell_env.update(
+        {"APP_INTERFACE_PATH": str(app_interface_path.expanduser().absolute())}
+    )
     subprocess.run(["make", "-C", str(qontract_server_path), "bundle"], env=shell_env)

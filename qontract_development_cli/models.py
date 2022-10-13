@@ -1,7 +1,7 @@
 import copy
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, validator
 
@@ -27,6 +27,7 @@ class ProfileSettings(BaseModel):
     integration_extra_args: str
     integration_name: str
     log_level: str = "INFO"
+    app_interface_path: Optional[Path] = None
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/app-sre/qontract-reconcile:latest"
     qontract_reconcile_path: Path = Path("~/workspace/qontract-reconcile")

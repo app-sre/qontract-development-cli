@@ -2,6 +2,7 @@ import logging
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 import typer
 from getkey import getkey
@@ -27,7 +28,35 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def create(profile_name: str = typer.Argument(..., help="Profile to create.")):
+def create(
+    profile_name: str = typer.Argument(..., help="Profile to create."),
+    integration_name: str = typer.Option(None),
+    integration_extra_args: str = typer.Option(None),
+    app_interface_path: Optional[Path] = typer.Option(
+        None,
+        file_okay=False,
+        dir_okay=True,
+        readable=True,
+        resolve_path=True,
+        exists=True,
+    ),
+    qontract_schemas_path: Optional[Path] = typer.Option(
+        None,
+        file_okay=False,
+        dir_okay=True,
+        readable=True,
+        resolve_path=True,
+        exists=True,
+    ),
+    qontract_reconcile_path: Optional[Path] = typer.Option(
+        None,
+        file_okay=False,
+        dir_okay=True,
+        readable=True,
+        resolve_path=True,
+        exists=True,
+    ),
+):
     """Create a new profile."""
     if profile_name in [p.name for p in Profile.list_all()]:
         console.print(
@@ -35,10 +64,18 @@ def create(profile_name: str = typer.Argument(..., help="Profile to create.")):
         )
         raise typer.Exit(1)
     profile = Profile(name=profile_name)
-    profile.settings.integration_name = Prompt.ask("Integration name", console=console)
-    profile.settings.integration_extra_args = Prompt.ask(
+    profile.settings.integration_name = integration_name or Prompt.ask(
+        "Integration name", console=console
+    )
+    profile.settings.integration_extra_args = integration_extra_args or Prompt.ask(
         "Integration extra arguments", default="", console=console
     )
+    if app_interface_path:
+        profile.settings.app_interface_path = app_interface_path
+    if qontract_schemas_path:
+        profile.settings.qontract_schemas_path = qontract_schemas_path
+    if qontract_reconcile_path:
+        profile.settings.qontract_reconcile_path = qontract_reconcile_path
     profile.dump()
 
 
@@ -117,7 +154,8 @@ def run(
 
     if profile.settings.qontract_schemas_path and env.settings.run_qontract_server:
         make_bundle(
-            env.settings.app_interface_path, profile.settings.qontract_server_path
+            profile.settings.app_interface_path or env.settings.app_interface_path,
+            profile.settings.qontract_server_path,
         )
 
     # stop other qontract-development project first
