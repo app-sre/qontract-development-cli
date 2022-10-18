@@ -18,8 +18,8 @@ from ..shell import (
     compose_restart,
     compose_stop_project,
     compose_up,
-    make_bundle,
     fetch_pull_requests,
+    make_bundle,
 )
 from ..templates import template
 from ..utils import console

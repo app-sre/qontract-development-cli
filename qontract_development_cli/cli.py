@@ -1,7 +1,7 @@
 import atexit
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import typer
 from rich.logging import RichHandler
@@ -9,7 +9,7 @@ from rich.logging import RichHandler
 from .commands import config as config_cmd
 from .commands import env, profile
 from .config import config
-from .utils import screenshot, console
+from .utils import console, screenshot
 
 app = typer.Typer()
 app.add_typer(env.app, name="env", help="Environment related commands.")
