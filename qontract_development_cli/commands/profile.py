@@ -106,6 +106,7 @@ def create(
         profile.settings.qontract_reconcile_pr = qontract_reconcile_pr
     profile.settings.qontract_reconcile_upstream = qontract_reconcile_upstream
     profile.dump()
+    console.print(f"Profile [green]{profile.name}[/] created!")
 
 
 @app.command()
