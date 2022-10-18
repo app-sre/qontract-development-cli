@@ -133,7 +133,7 @@ def ls():
 @app.command()
 def rm(
     profile_name: str = typer.Argument(
-        ..., help="Profile to remove.", autocompletion=complete_env
+        ..., help="Profile to remove.", autocompletion=complete_profile
     ),
     force: bool = typer.Option(False, "--force", "-f", help="Do not ask any question."),
 ):
