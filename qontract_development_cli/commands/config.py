@@ -17,7 +17,7 @@ def init():
     """Dump default files (config, environment, profiles)"""
     # qontract-development config
     config.save()
-    console.print(f"Config file '[b]{user_config_file}[/]' saved.")
+    console.print(f"Config file '[b]{user_config_file}[/]' saved.\n")
 
     # dev env
     console.print("Creating 'dev' environment ...")
@@ -33,9 +33,10 @@ def init():
         console=console,
     )
     env.dump()
-    console.print(f"Environment file '[b]{env.name}[/]' saved.")
+    console.print(f"Environment file '[b]{env.name}[/]' saved.\n")
 
     # default profile
+    console.print("Creating defaults profile ...")
     DEFAULT_PROFILE.settings.qontract_reconcile_path = Prompt.ask(
         "local qontract-reconcile path",
         default=DEFAULT_PROFILE.settings.qontract_reconcile_path,
