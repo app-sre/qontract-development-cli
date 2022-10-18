@@ -27,12 +27,14 @@ def init():
         default=str(env.settings.app_interface_path),
         console=console,
     )
+    console.print()
     env.settings.config = Prompt.ask(
         "app-interface config",
         default=str(env.settings.config),
         console=console,
     )
     env.dump()
+    console.print()
     console.print(f"Environment file '[b]{env.name}[/]' saved.\n")
 
     # default profile
@@ -42,17 +44,20 @@ def init():
         default=str(DEFAULT_PROFILE.settings.qontract_reconcile_path),
         console=console,
     )
+    console.print()
     DEFAULT_PROFILE.settings.qontract_schemas_path = Prompt.ask(
         "local qontract-schemas path",
         default=str(DEFAULT_PROFILE.settings.qontract_schemas_path),
         console=console,
     )
+    console.print()
     DEFAULT_PROFILE.settings.qontract_server_path = Prompt.ask(
         "local qontract-server path",
         default=str(DEFAULT_PROFILE.settings.qontract_server_path),
         console=console,
     )
     DEFAULT_PROFILE.dump()
+    console.print()
     console.print(f"Defaults profile file '[b]{DEFAULT_PROFILE.name}[/]' saved.")
 
 
