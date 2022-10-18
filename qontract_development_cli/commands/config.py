@@ -37,17 +37,17 @@ def init():
 
     # default profile
     DEFAULT_PROFILE.settings.qontract_reconcile_path = Prompt.ask(
-        "local app-interface path",
+        "local qontract-reconcile path",
         default=DEFAULT_PROFILE.settings.qontract_reconcile_path,
         console=console,
     )
     DEFAULT_PROFILE.settings.qontract_schemas_path = Prompt.ask(
-        "local app-interface path",
+        "local qontract-schemas path",
         default=DEFAULT_PROFILE.settings.qontract_schemas_path,
         console=console,
     )
     DEFAULT_PROFILE.settings.qontract_server_path = Prompt.ask(
-        "local app-interface path",
+        "local qontract-server path",
         default=DEFAULT_PROFILE.settings.qontract_server_path,
         console=console,
     )
