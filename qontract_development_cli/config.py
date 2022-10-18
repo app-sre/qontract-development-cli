@@ -35,6 +35,7 @@ class Config(BaseSettings):
     editor: str = os.environ.get("EDITOR", "vim")
     environments_dir: Path = user_config_dir / "environments"
     profiles_dir: Path = user_config_dir / "profiles"
+    worktrees_dir: Path = user_cache_dir / "worktrees"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

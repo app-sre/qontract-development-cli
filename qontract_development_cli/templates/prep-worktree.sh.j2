@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+{% for r in repos %}
+cd {{ r.dir }}
+if grep -q github .git/config; then
+    git fetch {{ r.upstream }} "pull/{{ r.pr }}/head:remotes/{{ r.upstream }}/pr/{{ r.pr }}"
+    pr_branch="pr/{{ r.pr }}"
+else
+    git fetch {{ r.upstream }} "merge-requests/{{ r.pr }}/head:remotes/{{ r.upstream }}/mr/{{ r.pr }}"
+    pr_branch="mr/{{ r.pr }}"
+fi
+
+if [ ! -d "{{ r.workdir }}" ]; then
+    git worktree add "{{ r.workdir }}" "$pr_branch"
+else
+    cd "{{ r.workdir }}"
+    git merge
+fi
+{% endfor %}

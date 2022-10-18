@@ -19,6 +19,7 @@ from ..shell import (
     compose_stop_project,
     compose_up,
     make_bundle,
+    fetch_pull_requests,
 )
 from ..templates import template
 from ..utils import console
@@ -30,31 +31,44 @@ log = logging.getLogger(__name__)
 @app.command()
 def create(
     profile_name: str = typer.Argument(..., help="Profile to create."),
-    integration_name: str = typer.Option(None),
-    integration_extra_args: str = typer.Option(None),
-    app_interface_path: Optional[Path] = typer.Option(
+    integration_name: Optional[str] = typer.Option(None),
+    integration_extra_args: Optional[str] = typer.Option(None),
+    app_interface: Optional[Path] = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
         readable=True,
         resolve_path=True,
         exists=True,
+        help="Path to local app-interface instance git working copy.",
     ),
-    qontract_schemas_path: Optional[Path] = typer.Option(
+    app_interface_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    app_interface_upstream: str = typer.Option("upstream", help="Upstream remote name"),
+    qontract_schemas: Optional[Path] = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
         readable=True,
         resolve_path=True,
         exists=True,
+        help="Path to local qontract-schemas git working copy.",
     ),
-    qontract_reconcile_path: Optional[Path] = typer.Option(
+    qontract_schemas_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    qontract_schemas_upstream: str = typer.Option(
+        "upstream", help="Upstream remote name"
+    ),
+    qontract_reconcile: Optional[Path] = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
         readable=True,
         resolve_path=True,
         exists=True,
+        help="Path to local qontract-reconcile git working copy.",
+    ),
+    qontract_reconcile_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    qontract_reconcile_upstream: str = typer.Option(
+        "upstream", help="Upstream remote name"
     ),
 ):
     """Create a new profile."""
@@ -67,15 +81,30 @@ def create(
     profile.settings.integration_name = integration_name or Prompt.ask(
         "Integration name", console=console
     )
-    profile.settings.integration_extra_args = integration_extra_args or Prompt.ask(
-        "Integration extra arguments", default="", console=console
-    )
-    if app_interface_path:
-        profile.settings.app_interface_path = app_interface_path
-    if qontract_schemas_path:
-        profile.settings.qontract_schemas_path = qontract_schemas_path
-    if qontract_reconcile_path:
-        profile.settings.qontract_reconcile_path = qontract_reconcile_path
+    if integration_extra_args is None:
+        profile.settings.integration_extra_args = Prompt.ask(
+            "Integration extra arguments", default="", console=console
+        )
+    else:
+        profile.settings.integration_extra_args = integration_extra_args
+
+    if app_interface:
+        profile.settings.app_interface_path = app_interface
+    if app_interface_pr:
+        profile.settings.app_interface_pr = app_interface_pr
+    profile.settings.app_interface_upstream = app_interface_upstream
+
+    if qontract_schemas:
+        profile.settings.qontract_schemas_path = qontract_schemas
+    if qontract_schemas_pr:
+        profile.settings.qontract_schemas_pr = qontract_schemas_pr
+    profile.settings.qontract_schemas_upstream = qontract_schemas_upstream
+
+    if qontract_reconcile:
+        profile.settings.qontract_reconcile_path = qontract_reconcile
+    if qontract_reconcile_pr:
+        profile.settings.qontract_reconcile_pr = qontract_reconcile_pr
+    profile.settings.qontract_reconcile_upstream = qontract_reconcile_upstream
     profile.dump()
 
 
@@ -141,6 +170,22 @@ def run(
     env = Env(name=env_name)
     profile = Profile(name=profile_name)
 
+    # prepare worktrees
+    fetch_pull_requests(profile, config.worktrees_dir)
+
+    app_interface_path = (
+        profile.settings.app_interface_path or env.settings.app_interface_path
+    )
+
+    # settings
+    settings = Table("Item", "Path", title="Settings")
+    settings.add_row("APP Interface", f"[green] {app_interface_path} [/]")
+    settings.add_row("Schemas", f"[green] {profile.settings.qontract_schemas_path} [/]")
+    settings.add_row(
+        "Reconcile", f"[green] {profile.settings.qontract_reconcile_path} [/]"
+    )
+    console.print(settings)
+
     tmp_dir = Path(tempfile.mkdtemp(prefix="qd-"))
     compose_file = tmp_dir / "compose.yml"
     compose_file.write_text(
@@ -152,11 +197,8 @@ def run(
         )
     )
 
-    if profile.settings.qontract_schemas_path and env.settings.run_qontract_server:
-        make_bundle(
-            profile.settings.app_interface_path or env.settings.app_interface_path,
-            profile.settings.qontract_server_path,
-        )
+    if env.settings.run_qontract_server:
+        make_bundle(app_interface_path, profile.settings.qontract_server_path)
 
     # stop other qontract-development project first
     compose_stop_project(config.docker_compose_project_name)
@@ -177,14 +219,12 @@ def run(
         if key.lower() == "r":
             compose_restart(compose_file, "qontract-reconcile")
         elif key.lower() == "b":
-            if (
-                profile.settings.qontract_schemas_path
-                and env.settings.run_qontract_server
-            ):
-                make_bundle(
-                    env.settings.app_interface_path,
-                    profile.settings.qontract_server_path,
+            if not env.settings.run_qontract_server:
+                console.print(
+                    "[b red]Enable 'run_qontract_server' in your environment settings first![/]"
                 )
+                continue
+            make_bundle(app_interface_path, profile.settings.qontract_server_path)
             compose_restart(compose_file, "qontract-server")
         elif key.lower() == "q":
             log_tail_proc.kill()
