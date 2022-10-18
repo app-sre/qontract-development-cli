@@ -41,7 +41,7 @@ class ProfileSettings(BaseModel):
     qontract_schemas_path: Path = Path("~/workspace/qontract-schemas")
     qontract_schemas_pr: Optional[int] = None
     qontract_schemas_upstream: str = "upstream"
-    run_once: int = 1
+    run_once: bool = True
     sleep_duration_secs: int = 10
 
 
