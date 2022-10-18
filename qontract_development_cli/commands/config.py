@@ -2,6 +2,7 @@ import logging
 import subprocess
 
 import typer
+from rich.prompt import Prompt
 
 from ..config import config, user_config_file
 from ..models import DEFAULT_PROFILE, Env
@@ -14,11 +15,42 @@ log = logging.getLogger(__name__)
 @app.command()
 def init():
     """Dump default files (config, environment, profiles)"""
+    # qontract-development config
     config.save()
     console.print(f"Config file '[b]{user_config_file}[/]' saved.")
+
+    # dev env
+    console.print("Creating 'dev' environment ...")
     env = Env(name="dev")
+    env.settings.app_interface_path = Prompt.ask(
+        "local app-interface path",
+        default=env.settings.app_interface_path,
+        console=console,
+    )
+    env.settings.config = Prompt.ask(
+        "app-interface config",
+        default=env.settings.config,
+        console=console,
+    )
     env.dump()
     console.print(f"Environment file '[b]{env.name}[/]' saved.")
+
+    # default profile
+    DEFAULT_PROFILE.settings.qontract_reconcile_path = Prompt.ask(
+        "local app-interface path",
+        default=DEFAULT_PROFILE.settings.qontract_reconcile_path,
+        console=console,
+    )
+    DEFAULT_PROFILE.settings.qontract_schemas_path = Prompt.ask(
+        "local app-interface path",
+        default=DEFAULT_PROFILE.settings.qontract_schemas_path,
+        console=console,
+    )
+    DEFAULT_PROFILE.settings.qontract_server_path = Prompt.ask(
+        "local app-interface path",
+        default=DEFAULT_PROFILE.settings.qontract_server_path,
+        console=console,
+    )
     DEFAULT_PROFILE.dump()
     console.print(f"Defaults profile file '[b]{DEFAULT_PROFILE.name}[/]' saved.")
 
