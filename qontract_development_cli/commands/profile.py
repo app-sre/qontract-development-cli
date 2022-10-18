@@ -232,24 +232,3 @@ def run(
             raise typer.Exit(0)
         else:
             console.print(shortcuts_info)
-
-
-@app.command(no_args_is_help=True)
-def render(
-    env_name: str = typer.Argument(
-        ..., help="Environment to use.", autocompletion=complete_env
-    ),
-    profile_name: str = typer.Argument(
-        ..., help="Profile to render.", autocompletion=complete_profile
-    ),
-    output_file: Path = typer.Argument(..., help="Output file name", writable=True),
-):
-    """Render a profile to file."""
-    compose_file = template(
-        "compose.yml.j2",
-        config=config,
-        env=Env(name=env_name),
-        profile=Profile(name=profile_name),
-    )
-    output_file.write_text(compose_file)
-    console.print(f"[b green]{output_file}[/] written")
