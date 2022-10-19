@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/chassing/qontract-development-cli/compare/v0.1.1...v0.2.0) (2022-10-19)
+
+
+### Features
+
+* **release:** fix pypi page ([5064854](https://github.com/chassing/qontract-development-cli/commit/5064854eff9eec33b520f03d060a217d2947d113))
+
 ## [0.1.1](https://github.com/chassing/qontract-development-cli/compare/v0.1.0...v0.1.1) (2022-10-19)
 
 
