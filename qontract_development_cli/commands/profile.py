@@ -71,7 +71,7 @@ def create(
         "upstream", help="Upstream remote name"
     ),
 ):
-    """Create a new profile."""
+    """Create a new profile to run an integration."""
     if profile_name in [p.name for p in Profile.list_all()]:
         console.print(
             f"[b red]Profile {profile_name} already exists![/] Choose another profile name."
