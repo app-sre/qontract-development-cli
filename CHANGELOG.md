@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/chassing/qontract-development-cli/compare/v0.1.0...v0.1.1) (2022-10-19)
+
+
+### Bug Fixes
+
+* **release:** add secret.PYPI_TOKEN ([f97ab42](https://github.com/chassing/qontract-development-cli/commit/f97ab42d1d433e216fb17eb38d9b4f6c83cd7671))
+
 ## 0.1.0 (2022-10-19)
 
 
