@@ -25,7 +25,7 @@ def main(
     screen_capture_file: Path = typer.Option(None, writable=True),
 ):
     logging.basicConfig(
-        level="DEBUG" if config.debug or debug else "ERROR",
+        level="DEBUG" if config.debug or debug else "INFO",
         format="%(name)-20s: %(message)s",
         datefmt="[%X]",
         handlers=[RichHandler()],
