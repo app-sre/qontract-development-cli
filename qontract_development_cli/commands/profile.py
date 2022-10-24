@@ -1,11 +1,13 @@
 import logging
 import subprocess
 import tempfile
+from multiprocessing import Process
 from pathlib import Path
 from typing import Optional
 
 import typer
 from getkey import getkey
+from qontract_development_cli.watchdog import watch_files
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
@@ -20,6 +22,7 @@ from ..shell import (
     compose_up,
     fetch_pull_requests,
     make_bundle,
+    make_bundle_and_restart_server,
 )
 from ..templates import template
 from ..utils import console
@@ -166,21 +169,37 @@ def run(
     ),
     force_recreate: bool = typer.Option(False, help="Recreate all containers."),
     force_build: bool = typer.Option(False, help="Rebuild all containers."),
+    qontract_reconcile_monitor_file_changes: bool = typer.Option(
+        True,
+        help="Restart integration when files changed in qontract-reconcile path",
+    ),
+    qontract_reconcile_monitor_file_extensions: str = typer.Option(
+        ".py .pyx .pyd",
+        help="Monitor these file extensions",
+    ),
+    qontract_schemas_monitor_file_changes: bool = typer.Option(
+        True,
+        help="Rebuild bundle and restart qontract-server when files changed in qontract-schemas path",
+    ),
+    qontract_schemas_monitor_file_extensions: str = typer.Option(
+        ".json .yml .yaml",
+        help="Monitor these file extensions",
+    ),
 ):
     """Run a profile."""
     env = Env(name=env_name)
     profile = Profile(name=profile_name)
-
+    profile.settings.app_interface_path = (
+        profile.settings.app_interface_path or env.settings.app_interface_path
+    )
     # prepare worktrees
     fetch_pull_requests(profile, config.worktrees_dir)
 
-    app_interface_path = (
-        profile.settings.app_interface_path or env.settings.app_interface_path
-    )
-
     # settings
     settings = Table("Item", "Path", title="Settings")
-    settings.add_row("APP Interface", f"[green] {app_interface_path} [/]")
+    settings.add_row(
+        "APP Interface", f"[green] {profile.settings.app_interface_path} [/]"
+    )
     settings.add_row("Schemas", f"[green] {profile.settings.qontract_schemas_path} [/]")
     settings.add_row(
         "Reconcile", f"[green] {profile.settings.qontract_reconcile_path} [/]"
@@ -199,7 +218,9 @@ def run(
     )
 
     if env.settings.run_qontract_server:
-        make_bundle(app_interface_path, profile.settings.qontract_server_path)
+        make_bundle(
+            profile.settings.app_interface_path, profile.settings.qontract_server_path
+        )
 
     # stop other qontract-development project first
     compose_stop_project(config.docker_compose_project_name)
@@ -211,6 +232,31 @@ def run(
     shortcuts_info.add_row("b", "Make bundle and restart qontract-server container")
     shortcuts_info.add_row("q", "Quit")
     console.print(shortcuts_info)
+
+    file_watchers: list[Process] = []
+    if qontract_reconcile_monitor_file_changes:
+        file_watchers.append(
+            watch_files(
+                path=profile.settings.qontract_reconcile_path.expanduser().absolute(),
+                extensions=qontract_reconcile_monitor_file_extensions.split(" "),
+                action=compose_restart,
+                action_args=(compose_file, "qontract-reconcile"),
+            ),
+        )
+    if qontract_schemas_monitor_file_changes:
+        file_watchers.append(
+            watch_files(
+                path=profile.settings.qontract_schemas_path.expanduser().absolute(),
+                extensions=qontract_schemas_monitor_file_extensions.split(" "),
+                action=make_bundle_and_restart_server,
+                action_args=(
+                    profile.settings.app_interface_path,
+                    profile.settings.qontract_server_path,
+                    compose_file,
+                ),
+            ),
+        )
+
     while True:
         try:
             key = getkey()
@@ -225,9 +271,14 @@ def run(
                     "[b red]Enable 'run_qontract_server' in your environment settings first![/]"
                 )
                 continue
-            make_bundle(app_interface_path, profile.settings.qontract_server_path)
-            compose_restart(compose_file, "qontract-server")
+            make_bundle_and_restart_server(
+                profile.settings.app_interface_path,
+                profile.settings.qontract_server_path,
+                compose_file,
+            )
         elif key.lower() == "q":
+            for p in file_watchers:
+                p.kill()
             log_tail_proc.kill()
             compose_down(compose_file)
             raise typer.Exit(0)

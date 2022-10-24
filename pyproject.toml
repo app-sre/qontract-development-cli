@@ -18,6 +18,7 @@ pydantic = "^1.10.2"
 appdirs = "^1.4.4"
 PyYAML = "^6.0"
 getkey = "^0.6.5"
+watchfiles = "^0.18.0"
 
 [tool.poetry.dev-dependencies]
 types-PyYAML = "^6.0.12"

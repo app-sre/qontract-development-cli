@@ -78,6 +78,13 @@ def make_bundle(app_interface_path: Path, qontract_server_path: Path):
     subprocess.run(["make", "-C", str(qontract_server_path), "bundle"], env=shell_env)
 
 
+def make_bundle_and_restart_server(
+    app_interface_path: Path, qontract_server_path: Path, compose_file: Path
+):
+    make_bundle(app_interface_path, qontract_server_path)
+    compose_restart(compose_file, "qontract-server")
+
+
 def fetch_pull_requests(profile: Profile, worktrees_dir: Path):
     log.info("Preparing worktrees")
     repos: list[dict[str, str]] = []

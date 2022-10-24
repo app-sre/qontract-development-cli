@@ -1,4 +1,21 @@
 [[package]]
+name = "anyio"
+version = "3.6.2"
+description = "High level compatibility layer for multiple asynchronous event loop implementations"
+category = "main"
+optional = false
+python-versions = ">=3.6.2"
+
+[package.dependencies]
+idna = ">=2.8"
+sniffio = ">=1.1"
+
+[package.extras]
+doc = ["packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
+test = ["contextlib2", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=4)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (<0.15)", "uvloop (>=0.15)"]
+trio = ["trio (>=0.16,<0.22)"]
+
+[[package]]
 name = "appdirs"
 version = "1.4.4"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -65,6 +82,14 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
+
+[[package]]
+name = "idna"
+version = "3.4"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "jinja2"
@@ -146,6 +171,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "sniffio"
+version = "1.3.0"
+description = "Sniff out which async library your code is running under"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "typer"
 version = "0.6.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
@@ -178,12 +211,27 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 
+[[package]]
+name = "watchfiles"
+version = "0.18.0"
+description = "Simple, modern and high performance file watching and code reload in python."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+anyio = ">=3.0.0,<4"
+
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9"
-content-hash = "93e420047f815d83c68edc662acaf1f0d0f0d80ab3be97017a74a70eedae964f"
+content-hash = "3d41af2a5df91216e3ade241557a475f2d9c066802bfe32988e2e30cbead1a68"
 
 [metadata.files]
+anyio = [
+    {file = "anyio-3.6.2-py3-none-any.whl", hash = "sha256:fbbe32bd270d2a2ef3ed1c5d45041250284e31fc0a4df4a5a6071842051a51e3"},
+    {file = "anyio-3.6.2.tar.gz", hash = "sha256:25ea0d673ae30af41a0c442f81cf3b38c7e79fdc7b60335a4c14e05eb0947421"},
+]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
@@ -207,6 +255,10 @@ gitdb = [
 gitpython = [
     {file = "GitPython-3.1.27-py3-none-any.whl", hash = "sha256:5b68b000463593e05ff2b261acff0ff0972df8ab1b70d3cdbd41b546c8b8fc3d"},
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
+]
+idna = [
+    {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
+    {file = "idna-3.4.tar.gz", hash = "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4"},
 ]
 jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
@@ -336,9 +388,33 @@ smmap = [
     {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
     {file = "smmap-5.0.0.tar.gz", hash = "sha256:c840e62059cd3be204b0c9c9f74be2c09d5648eddd4580d9314c3ecde0b30936"},
 ]
+sniffio = [
+    {file = "sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
+    {file = "sniffio-1.3.0.tar.gz", hash = "sha256:e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101"},
+]
 typer = []
 types-pyyaml = [
     {file = "types-PyYAML-6.0.12.tar.gz", hash = "sha256:f6f350418125872f3f0409d96a62a5a5ceb45231af5cc07ee0034ec48a3c82fa"},
     {file = "types_PyYAML-6.0.12-py3-none-any.whl", hash = "sha256:29228db9f82df4f1b7febee06bbfb601677882e98a3da98132e31c6874163e15"},
 ]
 typing-extensions = []
+watchfiles = [
+    {file = "watchfiles-0.18.0-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:76a4c4a8e25a2c9a4f7fa3d373bbaf5558c17b97b4cf8411d33de368fe6b68a9"},
+    {file = "watchfiles-0.18.0-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:d5d799614d4c56d29c5ba56f4f619f967210dc10a0d6965b62d326b9e2f72c9e"},
+    {file = "watchfiles-0.18.0-cp37-abi3-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:39b932b044fef6c43e813e0bef908e0edf185bf7b5d8d53246651cb7ac9efe79"},
+    {file = "watchfiles-0.18.0-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1686bc4ac40ffde7256b6543b0f9a2cc8b531ae45243786f1d3f1dda2fe39e24"},
+    {file = "watchfiles-0.18.0-cp37-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:320bcde0adaa972403ed3b70f784409437325a1a4df2de54ba0672203d8847e5"},
+    {file = "watchfiles-0.18.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ba6d8c2f957cae3e888bc250bc60ed09fe869b3f55f09d020ed3fecbefb6a4c"},
+    {file = "watchfiles-0.18.0-cp37-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:fd4215badad1e3d1ad5fb79f21432dd5157e2e7b0765d27a19dc2a28580c6979"},
+    {file = "watchfiles-0.18.0-cp37-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:cfdbfc4b6797c28dd1a8524581fed00ca333971b4111af8cd42fb7a92dcdc227"},
+    {file = "watchfiles-0.18.0-cp37-abi3-win32.whl", hash = "sha256:8eddc2d19bf6f49aee224072ec0f4f3258125a49f11b5dcff1448e68718a745e"},
+    {file = "watchfiles-0.18.0-cp37-abi3-win_amd64.whl", hash = "sha256:be87c9b1fe2b02105a9ac6d9df7500a110652bbd97cf46b13964eeaef9a6c89c"},
+    {file = "watchfiles-0.18.0-cp37-abi3-win_arm64.whl", hash = "sha256:184799818c4fa7dbc6a1e4ca20bcbc6b85e4e0db07ce4554ea2f29b75ccd0cdc"},
+    {file = "watchfiles-0.18.0-pp38-pypy38_pp73-macosx_10_7_x86_64.whl", hash = "sha256:7f39fcdac5d5b9815a0c2ab9005d39854296b11fa15386a9a69c09cbbc5dde2c"},
+    {file = "watchfiles-0.18.0-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:78b1e7c29b92dfc8fc32f15949019232b493767d236c2bff31848df13fdb9e8a"},
+    {file = "watchfiles-0.18.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:27d64a6ed5e0aebef97c70fa3899a6958d4f7f049effc659e7dc3e81f3170a7b"},
+    {file = "watchfiles-0.18.0-pp39-pypy39_pp73-macosx_10_7_x86_64.whl", hash = "sha256:4bbc8bfa0f3871b1867af42837a5635a9c1cbb2b68d039754b4750642c34aaee"},
+    {file = "watchfiles-0.18.0-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9d3a12e4de5446fb6e286b720d0cb3a080811caf0ef43e556c2db5fe10ef0342"},
+    {file = "watchfiles-0.18.0-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9e611a90482ac14ef3ec234c1604ed921d1b0c68970eba82f1cf0d59a3e4eb76"},
+    {file = "watchfiles-0.18.0.tar.gz", hash = "sha256:bbe10d134eef1666451382015e48f092c941a6d4562a98ffa1a288f79a897c46"},
+]
