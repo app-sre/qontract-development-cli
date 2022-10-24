@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/chassing/qontract-development-cli/compare/v0.2.0...v0.3.0) (2022-10-24)
+
+
+### Features
+
+* **profile run:** monitor file changes and restart containers ([2aac913](https://github.com/chassing/qontract-development-cli/commit/2aac913fecd51ddd7e1fea5c92d03dbefbfe9c1f))
+
+
+### Bug Fixes
+
+* consitent logging ([115d5c6](https://github.com/chassing/qontract-development-cli/commit/115d5c67aa4ae2c774518e1820ad8c743e3c2284))
+
 ## [0.2.0](https://github.com/chassing/qontract-development-cli/compare/v0.1.1...v0.2.0) (2022-10-19)
 
 
