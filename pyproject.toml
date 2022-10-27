@@ -9,7 +9,7 @@ repository = "http://github.com/chassing/qontract-development-cli"
 homepage = "http://github.com/chassing/qontract-development-cli"
 
 [tool.poetry.dependencies]
-python = ">=3.10"
+python = ">=3.10,<4.0"
 Jinja2 = "^3.1.2"
 GitPython = "^3.1.27"
 typer = "^0.6.1"
@@ -19,6 +19,7 @@ appdirs = "^1.4.4"
 PyYAML = "^6.0"
 getkey = "^0.6.5"
 watchfiles = "^0.18.0"
+textual = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 types-PyYAML = "^6.0.12"
