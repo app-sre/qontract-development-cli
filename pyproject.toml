@@ -9,7 +9,7 @@ repository = "http://github.com/chassing/qontract-development-cli"
 homepage = "http://github.com/chassing/qontract-development-cli"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.10"
 Jinja2 = "^3.1.2"
 GitPython = "^3.1.27"
 typer = "^0.6.1"
