@@ -1,0 +1,32 @@
+DIRS := qontract_development_cli
+BUILD_ARGS := POETRY_VERSION=1.2.2 TWINE_USERNAME TWINE_PASSWORD
+# TWINE_USERNAME & TWINE_PASSWORD are available in jenkins job
+POETRY_HTTP_BASIC_PYPI_USERNAME := $(TWINE_USERNAME)
+POETRY_HTTP_BASIC_PYPI_PASSWORD := $(TWINE_PASSWORD)
+export POETRY_HTTP_BASIC_PYPI_USERNAME
+export POETRY_HTTP_BASIC_PYPI_PASSWORD
+
+format:
+	poetry run black $(DIRS)
+.PHONY: format
+
+pr-check:
+	docker build -t qontract-development-test --target test --progress plain $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+.PHONY: pr-check
+
+test:
+	poetry run pytest -vv
+	poetry run flake8 $(DIRS)
+	poetry run mypy $(DIRS)
+	poetry run black --check $(DIRS)
+.PHONY: test
+
+build-deploy:
+	docker build -t qontract-development-test --target pypi --progress plain $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+.PHONY: build-deploy
+
+release:
+	git config --global --get user.email || git config --global user.email 'sd-app-sre+ci-ext@redhat.com'
+	git config --global --get user.name || git config --global user.name 'AppSRE ci.ext'
+	cz bump --changelog --yes && poetry publish --build
+.PHONY: release

@@ -30,7 +30,7 @@ def main(
         datefmt="[%X]",
         handlers=[RichHandler()],
     )
-    if screen_capture_file:
+    if screen_capture_file is not None:
         print(f"Screen recording: {screen_capture_file}")
         # strip $0 and screen_capture_file option
         args = sys.argv[3:]

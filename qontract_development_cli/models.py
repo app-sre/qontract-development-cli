@@ -90,7 +90,7 @@ class Base(BaseModel):
         return values
 
     def dump(self):
-        values = self.settings.dict(
+        values = self.settings.dict(  # type: ignore
             exclude_defaults=not self.default, exclude_unset=not self.default
         )
         self.file.write_text(

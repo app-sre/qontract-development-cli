@@ -1,7 +1,7 @@
 import logging
 from multiprocessing import Process
 from pathlib import Path
-from typing import Callable, Optional, Sequence, Tuple
+from typing import Callable, Optional, Sequence, Tuple, Union
 
 from rich.logging import RichHandler
 from watchfiles import Change, DefaultFilter, watch
@@ -15,7 +15,7 @@ class ExtensionFilter(DefaultFilter):
         self,
         *,
         extensions: Sequence[str],
-        ignore_paths: Optional[Sequence[str | Path]] = None,
+        ignore_paths: Optional[Sequence[Union[str, Path]]] = None,
     ) -> None:
         self.extensions = tuple(extensions)
         super().__init__(ignore_paths=ignore_paths)

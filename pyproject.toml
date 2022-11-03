@@ -9,9 +9,8 @@ repository = "http://github.com/chassing/qontract-development-cli"
 homepage = "http://github.com/chassing/qontract-development-cli"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
+python = ">=3.9,<4.0"
 Jinja2 = "^3.1.2"
-GitPython = "^3.1.27"
 typer = "^0.6.1"
 rich = "^12.5.1"
 pydantic = "^1.10.2"
@@ -24,9 +23,38 @@ textual = "^0.2.1"
 [tool.poetry.dev-dependencies]
 types-PyYAML = "^6.0.12"
 
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+flake8 = "^5.0.4"
+mypy = "^0.982"
+pytest = "^7.2.0"
+commitizen = "^2.37.0"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 qd = "qontract_development_cli.__main__:app"
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+enable_error_code = "truthy-bool, redundant-expr"
+no_implicit_optional = true
+check_untyped_defs = true
+warn_unused_ignores = true
+show_error_codes = true
+
+
+[[tool.mypy.overrides]]
+module = ["getkey.*"]
+ignore_missing_imports = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.3.0"
+version_files = ["pyproject.toml:version"]
+update_changelog_on_bump = true
+major_version_zero = true
+change_type_map = { "feat" = "Features", "fix" = "Bug Fixes" }
+tag_format = "v$version"

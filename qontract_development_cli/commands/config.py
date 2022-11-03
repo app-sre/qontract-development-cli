@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import subprocess
 
 import typer
@@ -22,16 +23,20 @@ def init():
     # dev env
     console.print("Creating 'dev' environment ...")
     env = Env(name="dev")
-    env.settings.app_interface_path = Prompt.ask(
-        "local app-interface path",
-        default=str(env.settings.app_interface_path),
-        console=console,
+    env.settings.app_interface_path = Path(
+        Prompt.ask(
+            "local app-interface path",
+            default=str(env.settings.app_interface_path),
+            console=console,
+        )
     )
     console.print()
-    env.settings.config = Prompt.ask(
-        "app-interface config",
-        default=str(env.settings.config),
-        console=console,
+    env.settings.config = Path(
+        Prompt.ask(
+            "app-interface config",
+            default=str(env.settings.config),
+            console=console,
+        )
     )
     env.dump()
     console.print()
@@ -39,22 +44,28 @@ def init():
 
     # default profile
     console.print("Creating defaults profile ...")
-    DEFAULT_PROFILE.settings.qontract_reconcile_path = Prompt.ask(
-        "local qontract-reconcile path",
-        default=str(DEFAULT_PROFILE.settings.qontract_reconcile_path),
-        console=console,
+    DEFAULT_PROFILE.settings.qontract_reconcile_path = Path(
+        Prompt.ask(
+            "local qontract-reconcile path",
+            default=str(DEFAULT_PROFILE.settings.qontract_reconcile_path),
+            console=console,
+        )
     )
     console.print()
-    DEFAULT_PROFILE.settings.qontract_schemas_path = Prompt.ask(
-        "local qontract-schemas path",
-        default=str(DEFAULT_PROFILE.settings.qontract_schemas_path),
-        console=console,
+    DEFAULT_PROFILE.settings.qontract_schemas_path = Path(
+        Prompt.ask(
+            "local qontract-schemas path",
+            default=str(DEFAULT_PROFILE.settings.qontract_schemas_path),
+            console=console,
+        )
     )
     console.print()
-    DEFAULT_PROFILE.settings.qontract_server_path = Prompt.ask(
-        "local qontract-server path",
-        default=str(DEFAULT_PROFILE.settings.qontract_server_path),
-        console=console,
+    DEFAULT_PROFILE.settings.qontract_server_path = Path(
+        Prompt.ask(
+            "local qontract-server path",
+            default=str(DEFAULT_PROFILE.settings.qontract_server_path),
+            console=console,
+        )
     )
     DEFAULT_PROFILE.dump()
     console.print()
