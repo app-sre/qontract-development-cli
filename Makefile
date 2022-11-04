@@ -19,7 +19,7 @@ format:
 .PHONY: format
 
 pr-check:
-	docker build -t qontract-development-test --target test --progress plain $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	docker build -t qontract-development-test --progress plain --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: pr-check
 
 test:
@@ -30,7 +30,7 @@ test:
 .PHONY: test
 
 build-deploy:
-	docker build -t qontract-development-test --target pypi --progress plain $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	docker build -t qontract-development-test  --progress plain --build-arg MAKE_TARGET=release $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: build-deploy
 
 release:
