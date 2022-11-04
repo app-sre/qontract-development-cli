@@ -30,7 +30,6 @@ def init():
             console=console,
         )
     )
-    console.print()
     env.settings.config = Path(
         Prompt.ask(
             "app-interface config",
@@ -39,7 +38,6 @@ def init():
         )
     )
     env.dump()
-    console.print()
     console.print(f"Environment file '[b]{env.name}[/]' saved.\n")
 
     # default profile
@@ -51,7 +49,6 @@ def init():
             console=console,
         )
     )
-    console.print()
     DEFAULT_PROFILE.settings.qontract_schemas_path = Path(
         Prompt.ask(
             "local qontract-schemas path",
@@ -59,7 +56,6 @@ def init():
             console=console,
         )
     )
-    console.print()
     DEFAULT_PROFILE.settings.qontract_server_path = Path(
         Prompt.ask(
             "local qontract-server path",
@@ -68,7 +64,6 @@ def init():
         )
     )
     DEFAULT_PROFILE.dump()
-    console.print()
     console.print(f"Defaults profile file '[b]{DEFAULT_PROFILE.name}[/]' saved.")
 
 
