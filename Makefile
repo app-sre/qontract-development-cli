@@ -37,6 +37,7 @@ release:
 	git config --global --get user.email || git config --global user.email 'sd-app-sre+ci-ext@redhat.com'
 	git config --global --get user.name || git config --global user.name 'AppSRE ci.ext'
 	poetry run cz bump --changelog --yes && poetry publish --build
+	git push origin master
 .PHONY: release
 
 update-demos: $(gifs)
