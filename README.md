@@ -32,13 +32,13 @@ $ pipx run qontract-development-cli
   ```shell
   $ qd config init
   ```
-  <img src="images/config_init.svg" />
+  <img src="demo/qd_config_init.gif" />
 
 * Create a profile `sql-query` to run the `sql-query` integration
   ```shell
-  $ qd profile create --integration-name sql-query --integration-extra-args '--enable-deletion'
+  $ qd profile create sql-query
   ```
-  <img src="images/profile_create_sql_query.svg" />
+  <img src="demo/qd_profile_create.gif" />
 
 * Run `sql-query` profile
   ```shell

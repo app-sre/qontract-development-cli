@@ -6,6 +6,14 @@ POETRY_HTTP_BASIC_PYPI_PASSWORD := $(TWINE_PASSWORD)
 export POETRY_HTTP_BASIC_PYPI_USERNAME
 export POETRY_HTTP_BASIC_PYPI_PASSWORD
 
+tapes = $(wildcard demo/*.tape)
+gifs = $(tapes:%.tape=%.gif)
+
+all:
+	@echo $(tapes)
+	@echo $(tape_files)
+	@echo $(patsubst %.tape,%.c,$(tape_files))
+
 format:
 	poetry run black $(DIRS)
 .PHONY: format
@@ -30,3 +38,11 @@ release:
 	git config --global --get user.name || git config --global user.name 'AppSRE ci.ext'
 	cz bump --changelog --yes && poetry publish --build
 .PHONY: release
+
+update-demos: $(gifs)
+
+$(gifs): %.gif: %.tape
+	ifeq (, $(shell which vhs2))
+	$(error "No vhs command not found in $$PATH. Please install https://github.com/charmbracelet/vhs")
+	endif
+	cd demo && vhs < $(notdir $?)
