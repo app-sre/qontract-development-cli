@@ -6,6 +6,7 @@ ARG MAKE_TARGET
 
 RUN pip install --upgrade pip && \
     pip install poetry==$POETRY_VERSION
-COPY --chown=default . .
+COPY --chown=1000 . .
 RUN poetry install
+USER 1000
 RUN make $MAKE_TARGET
