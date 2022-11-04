@@ -36,7 +36,7 @@ build-deploy:
 release:
 	git config --global --get user.email || git config --global user.email 'sd-app-sre+ci-ext@redhat.com'
 	git config --global --get user.name || git config --global user.name 'AppSRE ci.ext'
-	cz bump --changelog --yes && poetry publish --build
+	poetry run cz bump --changelog --yes && poetry publish --build
 .PHONY: release
 
 update-demos: $(gifs)
