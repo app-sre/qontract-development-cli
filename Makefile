@@ -34,7 +34,7 @@ build-deploy:
 .PHONY: build-deploy
 
 pypi:
-	poetry publish --build
+	poetry publish --build --skip-existing
 .PHONY: pypi
 
 release:

@@ -1,6 +1,10 @@
-## Unreleased
+## v0.4.0 (2022-11-04)
 
-## v0.3 (2022-10-24)
+### Features
+
+- move project to app-sre organization
+
+## v0.3.0 (2022-10-24)
 
 ### Bug Fixes
 
