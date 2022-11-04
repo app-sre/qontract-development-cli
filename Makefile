@@ -30,13 +30,15 @@ test:
 .PHONY: test
 
 build-deploy:
-	docker build -t qontract-development-test  --progress plain --build-arg MAKE_TARGET=release $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	docker build -t qontract-development-test  --progress plain --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: build-deploy
 
+pypi:
+	poetry publish --build
+.PHONY: pypi
+
 release:
-	git config --global --get user.email || git config --global user.email 'sd-app-sre+ci-ext@redhat.com'
-	git config --global --get user.name || git config --global user.name 'AppSRE ci.ext'
-	poetry run cz bump --changelog --yes && git push origin main && poetry publish --build
+	poetry run cz bump --changelog --yes
 .PHONY: release
 
 update-demos: $(gifs)
