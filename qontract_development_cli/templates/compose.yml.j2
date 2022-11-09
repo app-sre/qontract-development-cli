@@ -37,7 +37,9 @@ services:
     - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work
     - {{ env.settings.config.expanduser().absolute().parent }}:/config
     - tmp-volume:/tmp
+{% if env.settings.run_qontract_server or env.settings.run_vault %}
     links:
+{% endif %}
 {% if env.settings.run_qontract_server %}
     - qontract-server
 {% endif %}
