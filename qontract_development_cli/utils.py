@@ -1,4 +1,6 @@
-from pathlib import Path, PosixPath
+from multiprocessing import Process
+from pathlib import Path
+from pathlib import PosixPath
 
 import yaml
 from rich.console import Console
@@ -16,3 +18,10 @@ def screenshot(output_file: Path, title: str):
 
 
 console = Console(record=True)
+
+
+class EndlessProcess(Process):
+    def run(self):
+        if self._target:  # type: ignore
+            while True:
+                self._target(*self._args, **self._kwargs)  # type: ignore
