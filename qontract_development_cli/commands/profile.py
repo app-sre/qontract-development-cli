@@ -3,27 +3,28 @@ import subprocess
 import tempfile
 from multiprocessing import Process
 from pathlib import Path
+from qontract_development_cli.watchdog import watch_files
 from typing import Optional
 
 import typer
 from getkey import getkey
-from qontract_development_cli.watchdog import watch_files
-from rich.prompt import Confirm, Prompt
+from rich.prompt import Confirm
+from rich.prompt import Prompt
 from rich.table import Table
 
-from ..completions import complete_env, complete_profile
+from ..completions import complete_env
+from ..completions import complete_profile
 from ..config import config
-from ..models import Env, Profile
-from ..shell import (
-    compose_down,
-    compose_log_tail,
-    compose_restart,
-    compose_stop_project,
-    compose_up,
-    fetch_pull_requests,
-    make_bundle,
-    make_bundle_and_restart_server,
-)
+from ..models import Env
+from ..models import Profile
+from ..shell import compose_down
+from ..shell import compose_log_tail
+from ..shell import compose_restart
+from ..shell import compose_stop_project
+from ..shell import compose_up
+from ..shell import fetch_pull_requests
+from ..shell import make_bundle
+from ..shell import make_bundle_and_restart_server
 from ..templates import template
 from ..utils import console
 

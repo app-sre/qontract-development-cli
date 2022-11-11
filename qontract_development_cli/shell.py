@@ -12,6 +12,7 @@ from typing import Any
 from .models import Profile
 from .templates import template
 from .utils import console
+from .utils import EndlessProcess
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ def compose_down(compose_file: Path) -> None:
 
 def compose_log_tail(compose_file: Path) -> Process:
     compose_cmd = ["docker-compose", "-f", str(compose_file), "logs", "--follow"]
-    p = Process(target=subprocess.run, args=(compose_cmd,))
+    p = EndlessProcess(target=subprocess.run, args=(compose_cmd,))
     p.start()
     return p
 
