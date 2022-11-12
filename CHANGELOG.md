@@ -1,3 +1,13 @@
+## v0.5.0 (2022-11-12)
+
+### Bug Fixes
+
+- **compose-file**: fix empty qontract-reconcile.links list when no other container wants to be started (#14)
+
+### Features
+
+- **docker-compose**: run docker-compose logs in endless loop (#16)
+
 ## v0.4.0 (2022-11-04)
 
 ### Features
