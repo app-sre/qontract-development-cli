@@ -1,4 +1,7 @@
-from .models import Env, Profile
+from .models import (
+    Env,
+    Profile,
+)
 
 
 def complete_env():

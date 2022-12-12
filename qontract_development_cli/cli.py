@@ -7,9 +7,15 @@ import typer
 from rich.logging import RichHandler
 
 from .commands import config as config_cmd
-from .commands import env, profile
+from .commands import (
+    env,
+    profile,
+)
 from .config import config
-from .utils import console, screenshot
+from .utils import (
+    console,
+    screenshot,
+)
 
 app = typer.Typer()
 app.add_typer(env.app, name="env", help="Environment related commands.")

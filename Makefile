@@ -16,6 +16,7 @@ all:
 
 format:
 	poetry run black $(DIRS)
+	poetry run isort $(DIRS)
 .PHONY: format
 
 pr-check:
@@ -27,6 +28,7 @@ test:
 	poetry run flake8 $(DIRS)
 	poetry run mypy $(DIRS)
 	poetry run black --check $(DIRS)
+	poetry run isort --check-only $(DIRS)
 .PHONY: test
 
 build-deploy:

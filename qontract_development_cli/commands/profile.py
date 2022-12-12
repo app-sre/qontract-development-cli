@@ -3,28 +3,37 @@ import subprocess
 import tempfile
 from multiprocessing import Process
 from pathlib import Path
-from qontract_development_cli.watchdog import watch_files
 from typing import Optional
 
 import typer
 from getkey import getkey
-from rich.prompt import Confirm
-from rich.prompt import Prompt
+from rich.prompt import (
+    Confirm,
+    Prompt,
+)
 from rich.table import Table
 
-from ..completions import complete_env
-from ..completions import complete_profile
+from qontract_development_cli.watchdog import watch_files
+
+from ..completions import (
+    complete_env,
+    complete_profile,
+)
 from ..config import config
-from ..models import Env
-from ..models import Profile
-from ..shell import compose_down
-from ..shell import compose_log_tail
-from ..shell import compose_restart
-from ..shell import compose_stop_project
-from ..shell import compose_up
-from ..shell import fetch_pull_requests
-from ..shell import make_bundle
-from ..shell import make_bundle_and_restart_server
+from ..models import (
+    Env,
+    Profile,
+)
+from ..shell import (
+    compose_down,
+    compose_log_tail,
+    compose_restart,
+    compose_stop_project,
+    compose_up,
+    fetch_pull_requests,
+    make_bundle,
+    make_bundle_and_restart_server,
+)
 from ..templates import template
 from ..utils import console
 
@@ -82,9 +91,12 @@ def create(
         )
         raise typer.Exit(1)
     profile = Profile(name=profile_name)
-    profile.settings.integration_name = integration_name or Prompt.ask(
-        "Integration name", console=console
-    )
+    if integration_name is None:
+        profile.settings.integration_name = Prompt.ask(
+            "Integration name", console=console, default=profile_name
+        )
+    else:
+        profile.settings.integration_name = integration_name
     if integration_extra_args is None:
         profile.settings.integration_extra_args = Prompt.ask(
             "Integration extra arguments", default="", console=console
