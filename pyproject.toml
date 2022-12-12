@@ -29,6 +29,7 @@ flake8 = "^5.0.4"
 mypy = "^0.982"
 pytest = "^7.2.0"
 commitizen = "^2.37.0"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -58,3 +59,9 @@ update_changelog_on_bump = true
 major_version_zero = true
 change_type_map = { "feat" = "Features", "fix" = "Bug Fixes" }
 tag_format = "v$version"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+force_grid_wrap = 2
+float_to_top = true

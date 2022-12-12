@@ -1,6 +1,8 @@
 from multiprocessing import Process
-from pathlib import Path
-from pathlib import PosixPath
+from pathlib import (
+    Path,
+    PosixPath,
+)
 
 import yaml
 from rich.console import Console

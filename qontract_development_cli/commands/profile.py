@@ -7,14 +7,23 @@ from typing import Optional
 
 import typer
 from getkey import getkey
-from rich.prompt import Confirm, Prompt
+from rich.prompt import (
+    Confirm,
+    Prompt,
+)
 from rich.table import Table
 
 from qontract_development_cli.watchdog import watch_files
 
-from ..completions import complete_env, complete_profile
+from ..completions import (
+    complete_env,
+    complete_profile,
+)
 from ..config import config
-from ..models import Env, Profile
+from ..models import (
+    Env,
+    Profile,
+)
 from ..shell import (
     compose_down,
     compose_log_tail,

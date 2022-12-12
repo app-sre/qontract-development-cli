@@ -1,9 +1,15 @@
 import copy
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import (
+    Any,
+    Optional,
+)
 
-from pydantic import BaseModel, validator
+from pydantic import (
+    BaseModel,
+    validator,
+)
 
 from .config import config
 from .utils import yaml

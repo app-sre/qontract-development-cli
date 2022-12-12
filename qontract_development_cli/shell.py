@@ -11,8 +11,10 @@ from typing import Any
 
 from .models import Profile
 from .templates import template
-from .utils import console
-from .utils import EndlessProcess
+from .utils import (
+    EndlessProcess,
+    console,
+)
 
 log = logging.getLogger(__name__)
 
