@@ -1,3 +1,9 @@
+## v0.6.0 (2022-12-13)
+
+### Features
+
+- **profile run**: monitor app-interface file changes and restart containers
+
 ## v0.5.1 (2022-12-12)
 
 ## v0.5.0 (2022-11-12)

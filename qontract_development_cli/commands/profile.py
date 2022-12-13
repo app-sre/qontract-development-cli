@@ -198,6 +198,14 @@ def run(
         ".json .yml .yaml",
         help="Monitor these file extensions",
     ),
+    app_interface_monitor_file_changes: bool = typer.Option(
+        True,
+        help="Rebuild bundle and restart qontract-server when files changed in app-interface path",
+    ),
+    app_interface_monitor_file_extensions: str = typer.Option(
+        ".json .yml .yaml",
+        help="Monitor these file extensions",
+    ),
 ):
     """Run a profile."""
     env = Env(name=env_name)
@@ -261,6 +269,20 @@ def run(
             watch_files(
                 path=profile.settings.qontract_schemas_path.expanduser().absolute(),
                 extensions=qontract_schemas_monitor_file_extensions.split(" "),
+                action=make_bundle_and_restart_server,
+                action_args=(
+                    profile.settings.app_interface_path,
+                    profile.settings.qontract_server_path,
+                    compose_file,
+                ),
+            ),
+        )
+
+    if app_interface_monitor_file_changes:
+        file_watchers.append(
+            watch_files(
+                path=profile.settings.app_interface_path.expanduser().absolute(),
+                extensions=app_interface_monitor_file_extensions.split(" "),
                 action=make_bundle_and_restart_server,
                 action_args=(
                     profile.settings.app_interface_path,
