@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qontract-development-cli"
-version = "0.6.0"
+version = "0.7.0"
 description = "Helper tool for qontract-reconcile development"
 authors = ["Christian Assing <cassing@redhat.com>"]
 license = "MIT"
@@ -53,7 +53,7 @@ ignore_missing_imports = true
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.6.0"
+version = "0.7.0"
 version_files = ["pyproject.toml:version"]
 update_changelog_on_bump = true
 major_version_zero = true
