@@ -15,7 +15,7 @@ services:
       dockerfile: ./dockerfiles/Dockerfile
       target: dev-image
       args:
-        CONTAINER_UID: {{ config.container_uid }}
+        CONTAINER_UID: {{ profile.settings.container_uid }}
     {% else %}
     image: {{ profile.settings.qontract_reconcile_image }}
     {% endif %}
@@ -33,6 +33,9 @@ services:
 {% endif %}
     - gitlab_pr_submitter_queue_url={{ profile.settings.gitlab_pr_submitter_queue_url }}
     - LOG_LEVEL={{ profile.settings.log_level.upper() }}
+    {% for key, value in profile.settings.additional_environment.items() %}
+    - {{ key }}={{ value }}
+    {% endfor %}
     volumes:
     - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work
     - {{ env.settings.config.expanduser().absolute().parent }}:/config
