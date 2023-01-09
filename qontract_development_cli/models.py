@@ -49,6 +49,7 @@ class ProfileSettings(BaseModel):
     qontract_schemas_upstream: str = "upstream"
     run_once: bool = True
     sleep_duration_secs: int = 10
+    additional_environment: dict[str, Any] = {}
 
 
 class Base(BaseModel):

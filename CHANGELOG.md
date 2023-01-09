@@ -1,3 +1,9 @@
+## v0.7.0 (2023-01-09)
+
+### Features
+
+- support arbitrary environment variables
+
 ## v0.6.0 (2022-12-13)
 
 ### Features

@@ -125,31 +125,32 @@ A profile specifies all settings to run a qontract-reconcile integration (e.g., 
 
 #### Settings
 
-| **Key**                        | **Description**                                                    | **Default**                               |
-| ------------------------------ | ------------------------------------------------------------------ | ----------------------------------------- |
-| container_uid                  | Change ownership of /recconcile files in container to this user id | current UID                               |
-| debugger                       | Python debugger                                                    | debugpy                                   |
-| dry_run                        | Run --dry-run mode                                                 | true                                      |
-| gitlab_pr_submitter_queue_url  | Gitlab pr submitter queue url                                      |                                           |
-| **integration_name**           | Intergration name                                                  |                                           |
-| **integration_extra_args**     | Intergration extra arguments                                       |                                           |
-| log_level                      | Log level                                                          | info                                      |
-| app_interface_path             | App-interface instance path. (Overrides *env.app_interface_path*)  |                                           |
-| app_interface_pr               | App-interface PR/MR number                                         |                                           |
-| app_interface_upstream         | Upstream remote name                                               | upstream                                  |
-| qontract_reconcile_build_image | Build qontract-reconcile image                                     | true                                      |
-| qontract_reconcile_image       | Qontract-reconcile image                                           | quay.io/app-sre/qontract-reconcile:latest |
-| qontract_reconcile_path        | Qontract-reconcile path                                            | ~/workspace/qontract-reconcile            |
-| qontract_reconcile_pr          | Qontract-reconcile PR/MR number                                    |                                           |
-| qontract_reconcile_upstream    | Upstream remote name                                               | upstream                                  |
-| qontract_server_build_image    | Build qontract-server image                                        | true                                      |
-| qontract_server_image          | Qontract-server image                                              | quay.io/app-sre/qontract-server:latest    |
-| qontract_server_path           | Qontract-server path                                               | ~/workspace/qontract-server               |
-| qontract_schemas_path          | Qontract-schemas path                                              | ~/workspace/qontract-schemas              |
-| qontract_schemas_pr            | Qontract-schemas PR/MR number                                      |                                           |
-| qontract_schemas_upstream      | Upstream remote name                                               | upstream                                  |
-| run_once                       | If 'true', execute the integration once and exit                   | true                                      |
-| sleep_duration_secs            | If not *run_once*, sleep duration until integration runs again     | 10                                        |
+| **Key**                        | **Description**                                                                            | **Default**                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| additional_environment         | Dictionary of additional environment variables to pass to the qontract-reconcile container | `{}`                                      |
+| container_uid                  | Change ownership of /recconcile files in container to this user id                         | current UID                               |
+| debugger                       | Python debugger                                                                            | debugpy                                   |
+| dry_run                        | Run --dry-run mode                                                                         | true                                      |
+| gitlab_pr_submitter_queue_url  | Gitlab pr submitter queue url                                                              |                                           |
+| **integration_name**           | Intergration name                                                                          |                                           |
+| **integration_extra_args**     | Intergration extra arguments                                                               |                                           |
+| log_level                      | Log level                                                                                  | info                                      |
+| app_interface_path             | App-interface instance path. (Overrides *env.app_interface_path*)                          |                                           |
+| app_interface_pr               | App-interface PR/MR number                                                                 |                                           |
+| app_interface_upstream         | Upstream remote name                                                                       | upstream                                  |
+| qontract_reconcile_build_image | Build qontract-reconcile image                                                             | true                                      |
+| qontract_reconcile_image       | Qontract-reconcile image                                                                   | quay.io/app-sre/qontract-reconcile:latest |
+| qontract_reconcile_path        | Qontract-reconcile path                                                                    | ~/workspace/qontract-reconcile            |
+| qontract_reconcile_pr          | Qontract-reconcile PR/MR number                                                            |                                           |
+| qontract_reconcile_upstream    | Upstream remote name                                                                       | upstream                                  |
+| qontract_server_build_image    | Build qontract-server image                                                                | true                                      |
+| qontract_server_image          | Qontract-server image                                                                      | quay.io/app-sre/qontract-server:latest    |
+| qontract_server_path           | Qontract-server path                                                                       | ~/workspace/qontract-server               |
+| qontract_schemas_path          | Qontract-schemas path                                                                      | ~/workspace/qontract-schemas              |
+| qontract_schemas_pr            | Qontract-schemas PR/MR number                                                              |                                           |
+| qontract_schemas_upstream      | Upstream remote name                                                                       | upstream                                  |
+| run_once                       | If 'true', execute the integration once and exit                                           | true                                      |
+| sleep_duration_secs            | If not *run_once*, sleep duration until integration runs again                             | 10                                        |
 
 > :point_right: **Bold keys** are mandatory or should be customized.
 
