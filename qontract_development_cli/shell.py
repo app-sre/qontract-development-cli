@@ -26,7 +26,7 @@ def compose_up(
     build: bool = False,
 ) -> None:
     log.info("Starting all containers")
-    compose_cmd = ["docker-compose", "-f", str(compose_file), "up", "-d"]
+    compose_cmd = ["docker", "compose", "-f", str(compose_file), "up", "-d"]
     if force_recreate:
         compose_cmd.append("--force-recreate")
     if remove_orphan:
@@ -38,18 +38,18 @@ def compose_up(
 
 def compose_restart(compose_file: Path, container: str) -> None:
     log.info(f"Restarting {container} container")
-    compose_cmd = ["docker-compose", "-f", str(compose_file), "restart", container]
+    compose_cmd = ["docker", "compose", "-f", str(compose_file), "restart", container]
     subprocess.run(compose_cmd)
 
 
 def compose_down(compose_file: Path) -> None:
     log.info("Stopping all containers")
-    compose_cmd = ["docker-compose", "-f", str(compose_file), "down"]
+    compose_cmd = ["docker", "compose", "-f", str(compose_file), "down"]
     subprocess.run(compose_cmd)
 
 
 def compose_log_tail(compose_file: Path) -> Process:
-    compose_cmd = ["docker-compose", "-f", str(compose_file), "logs", "--follow"]
+    compose_cmd = ["docker", "compose", "-f", str(compose_file), "logs", "--follow"]
     p = EndlessProcess(target=subprocess.run, args=(compose_cmd,))
     p.start()
     return p
@@ -58,7 +58,7 @@ def compose_log_tail(compose_file: Path) -> Process:
 def compose_list_projects() -> list[dict[str, Any]]:
     return json.loads(
         subprocess.run(
-            ["docker-compose", "ls", "--format", "json"],
+            ["docker", "compose", "ls", "--format", "json"],
             capture_output=True,
             check=True,
         ).stdout
@@ -69,7 +69,7 @@ def compose_stop_project(project_name: str):
     log.info("Stopping running projects")
     for p in compose_list_projects():
         if p["Name"] == project_name:
-            subprocess.run(["docker-compose", "-f", p["ConfigFiles"], "down"])
+            subprocess.run(["docker", "compose", "-f", p["ConfigFiles"], "down"])
 
 
 def make_bundle(app_interface_path: Path, qontract_server_path: Path):
