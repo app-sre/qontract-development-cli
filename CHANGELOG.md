@@ -1,3 +1,9 @@
+## v0.7.1 (2023-02-14)
+
+### Bug Fixes
+
+- **docker compose**: support docker compose plugin and compose standalone binary
+
 ## v0.7.0 (2023-01-09)
 
 ### Features
