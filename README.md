@@ -100,6 +100,7 @@ An environment specifies app-interface instance settings, e.g., **dev** vs. **pr
 | app_interface_state_bucket         | S3 bucket                            | empty                                          |
 | app_interface_state_bucket_account | AWS S3 account                       | empty                                          |
 | **config**                         | app-interface config                 | ~/workspace/qontract-reconcile/config.dev.toml |
+| gitlab_pr_submitter_queue_url      | Gitlab pr submitter queue url        |                                                |
 | run_qontract_reconcile             | Run qontract-reconcile container     | true                                           |
 | run_qontract_server                | Run qontract-server container        | true                                           |
 | run_vault                          | Run vault container                  | false                                          |
@@ -131,7 +132,6 @@ A profile specifies all settings to run a qontract-reconcile integration (e.g., 
 | container_uid                  | Change ownership of /recconcile files in container to this user id                         | current UID                               |
 | debugger                       | Python debugger                                                                            | debugpy                                   |
 | dry_run                        | Run --dry-run mode                                                                         | true                                      |
-| gitlab_pr_submitter_queue_url  | Gitlab pr submitter queue url                                                              |                                           |
 | **integration_name**           | Intergration name                                                                          |                                           |
 | **integration_extra_args**     | Intergration extra arguments                                                               |                                           |
 | log_level                      | Log level                                                                                  | info                                      |

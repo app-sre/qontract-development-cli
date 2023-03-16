@@ -31,7 +31,7 @@ services:
 {% if  profile.settings.run_once %}
     - RUN_ONCE=1
 {% endif %}
-    - gitlab_pr_submitter_queue_url={{ profile.settings.gitlab_pr_submitter_queue_url }}
+    - gitlab_pr_submitter_queue_url={{ env.settings.gitlab_pr_submitter_queue_url }}
     - LOG_LEVEL={{ profile.settings.log_level.upper() }}
     {% for key, value in profile.settings.additional_environment.items() %}
     - {{ key }}={{ value }}
