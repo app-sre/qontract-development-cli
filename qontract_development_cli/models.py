@@ -20,6 +20,7 @@ class EnvSettings(BaseModel):
     app_interface_state_bucket: str = ""
     app_interface_state_bucket_account: str = ""
     config: Path = Path("~/workspace/qontract-reconcile/config.dev.toml")
+    gitlab_pr_submitter_queue_url: str = ""
     run_qontract_reconcile: bool = True
     run_qontract_server: bool = True
     run_vault: bool = False
@@ -29,7 +30,6 @@ class ProfileSettings(BaseModel):
     container_uid: int = os.getuid()
     debugger: str = "debugpy"
     dry_run: bool = True
-    gitlab_pr_submitter_queue_url: str = ""
     integration_extra_args: str
     integration_name: str
     log_level: str = "INFO"
