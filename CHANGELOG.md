@@ -1,3 +1,9 @@
+## v0.8.0 (2023-03-16)
+
+### Bug Fixes
+
+- gitlab_pr_submitter_queue_url as env settings
+
 ## v0.7.1 (2023-02-14)
 
 ### Bug Fixes
