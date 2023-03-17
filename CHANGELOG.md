@@ -1,3 +1,10 @@
+## v0.8.1 (2023-03-17)
+
+### Bug Fixes
+
+- document release process
+- simplify getting compose binary
+
 ## v0.8.0 (2023-03-16)
 
 ### Bug Fixes
