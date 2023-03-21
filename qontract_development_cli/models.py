@@ -51,6 +51,7 @@ class ProfileSettings(BaseModel):
     sleep_duration_secs: int = 10
     additional_environment: dict[str, Any] = {}
     internal_redhat_ca: bool = False
+    extra_hosts: list[str] = []
 
 
 class Base(BaseModel):
