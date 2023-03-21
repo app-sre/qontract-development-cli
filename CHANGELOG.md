@@ -1,3 +1,10 @@
+## v0.9.0 (2023-03-21)
+
+### Features
+
+- extra_host profile setting
+- support internal RedHat CAs
+
 ## v0.8.1 (2023-03-17)
 
 ### Bug Fixes

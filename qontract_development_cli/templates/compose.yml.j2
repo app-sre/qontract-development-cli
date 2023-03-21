@@ -2,6 +2,15 @@
 name: {{ config.docker_compose_project_name }}
 services:
 
+{% if profile.settings.internal_redhat_ca %}
+  internal-certificates:
+    image: quay.io/app-sre/internal-redhat-ca:latest
+    container_name: internal-certificates
+    command: |
+      sh -c 'cp -r /etc/pki/. /tmp/'
+    volumes:
+    - pki-volume:/tmp
+{% endif %}
 {% if env.settings.run_qontract_reconcile %}
   qontract-reconcile:
     container_name: qontract-reconcile-{{ profile.settings.integration_name }}
@@ -28,6 +37,9 @@ services:
     - CONFIG=/config/{{ env.settings.config.name }}
     - APP_INTERFACE_STATE_BUCKET={{ env.settings.app_interface_state_bucket }}
     - APP_INTERFACE_STATE_BUCKET_ACCOUNT={{ env.settings.app_interface_state_bucket_account }}
+{% if profile.settings.internal_redhat_ca %}
+    - REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
+{% endif %}
 {% if  profile.settings.run_once %}
     - RUN_ONCE=1
 {% endif %}
@@ -40,6 +52,9 @@ services:
     - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work
     - {{ env.settings.config.expanduser().absolute().parent }}:/config
     - tmp-volume:/tmp
+{% if profile.settings.internal_redhat_ca %}
+    - pki-volume:/etc/pki
+{% endif %}
 {% if env.settings.run_qontract_server or env.settings.run_vault %}
     links:
 {% endif %}
@@ -54,6 +69,17 @@ services:
     - 5678:5678 # Debugger Port
     networks:
     - qontract-development
+{% if profile.settings.extra_hosts %}
+    extra_hosts:
+    {% for entry in profile.settings.extra_hosts %}
+    - "{{ entry }}"
+    {% endfor %}
+{% endif %}
+{% if profile.settings.internal_redhat_ca %}
+    depends_on:
+      internal-certificates:
+        condition: service_completed_successfully # Let the init container create the pki directory first
+{% endif %}
 {% endif %}
 
 {% if env.settings.run_qontract_server %}
@@ -94,6 +120,9 @@ services:
 
 volumes:
   tmp-volume:
+{% if profile.settings.internal_redhat_ca %}
+  pki-volume:
+{% endif %}
 
 networks:
   qontract-development:
