@@ -50,6 +50,7 @@ class ProfileSettings(BaseModel):
     run_once: bool = True
     sleep_duration_secs: int = 10
     additional_environment: dict[str, Any] = {}
+    internal_redhat_ca: bool = False
 
 
 class Base(BaseModel):
