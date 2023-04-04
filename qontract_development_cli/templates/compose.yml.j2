@@ -29,6 +29,8 @@ services:
     image: {{ profile.settings.qontract_reconcile_image }}
     {% endif %}
     environment:
+    - COMMAND={{ profile.settings.command }}
+    - COMMAND_EXTRA_ARGS={{ profile.settings.command_extra_args }}
     - INTEGRATION_NAME={{ profile.settings.integration_name }}
     - INTEGRATION_EXTRA_ARGS={{ profile.settings.integration_extra_args }}
     - DRY_RUN={% if profile.settings.dry_run %}--dry-run{% else %}--no-dry-run{%endif%}

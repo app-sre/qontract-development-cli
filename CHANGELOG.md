@@ -1,3 +1,9 @@
+## v0.10.0 (2023-03-29)
+
+### Features
+
+- support running arbitrary qontract-reconcile commands
+
 ## v0.9.0 (2023-03-21)
 
 ### Features
