@@ -1,0 +1,4 @@
+---
+integration_name: github
+additional_environment:
+  GITHUB_API: https://github-mirror.devshift.net

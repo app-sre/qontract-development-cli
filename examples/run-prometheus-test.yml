@@ -1,0 +1,4 @@
+---
+command: tools/qontract_cli.py
+command_extra_args: run-prometheus-test -s config resources/observability/prometheusrules/skupper-network-monitoring-prometheusrulestests.yaml appsrep05ue1
+debugger: ''
