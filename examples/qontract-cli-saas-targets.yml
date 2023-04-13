@@ -1,0 +1,3 @@
+---
+command: tools/qontract_cli.py
+command_extra_args: saas-targets --saas-file-name saas-skupper-network-monitoring

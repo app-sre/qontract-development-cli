@@ -51,19 +51,27 @@ $ pipx run qontract-development-cli
 Qontract Development CLI currently provides the following features (get help with `-h` or `--help`):
 
 - Run `qontract-reconcile` and `qontract-server` as docker containers on your local machine
-- Support for different environments (dev, prod, ...) via the `env` command
+- Support for different App-Interface environments (dev, prod, ...) via the `env` command
 - Configure your [qontract-reconcile integration][qontract-reconcile] with the `profile` command
 - Support pull request reviews (see `profile create`)
 - Bootstrap your initial configurations with the `config` command
-- Shell autocompletion (see `qd --help`)
+- Shell auto-completion (see `qd --help`)
+- Automatically restart `qontract-reconcile` container when files change
+- Automatically rebuild the App-Interface bundle and restart the `qontract-server` container when files change
 
-## Commands
+## Examples
+
+Take a look at the [examples](examples) directory for different profile examples.
+
+## Usage
+
+The following sections describe all available commands and their options.
 
 ### Config
 
-Manage global qontract-development CLI configuration.
+Manage global qontract-development-cli configuration.
 
-`qd config [sub-cmd] --help`
+`$ qd config [sub-cmd] --help`
 
 * **edit**: open the configuration file in your favorite editor
 * **init**: create a default configuration
@@ -84,7 +92,7 @@ Manage global qontract-development CLI configuration.
 
 An environment specifies app-interface instance settings, e.g., **dev** vs. **prod** config and path to the actual app-interface instance.
 
-`qd env [sub-cmd] --help`
+`$ qd env [sub-cmd] --help`
 
 * **edit**: Create/edit an environment file in your editor.
 * **ls**: List all available environments.
@@ -111,11 +119,11 @@ An environment specifies app-interface instance settings, e.g., **dev** vs. **pr
 
 A profile specifies all settings to run a qontract-reconcile integration (e.g., *sql-query*).
 
-`qd profile [sub-cmd] --help`
+`$ qd profile [sub-cmd] --help`
 
 * **create**: Create a new profile to run an integration.
 
-  Supports the creation of a new profile from an open PR/MR. See `qd profile create --help` for all available options.
+  Supports the creation of a new profile from an open PR/MR. See `$ qd profile create --help` for all available options.
 
 * **edit**: Edit a profile in your editor.
 * **ls**: List all available profiles.
@@ -166,7 +174,7 @@ It's a pretty handy feature to create a profile from a pull request (merge reque
 $ qd profile create --app-interface PATH_TO_YOUR_LOCAL/app-interface-dev-data --app-interface-pr NUMBER --qontract-schemas-pr NUMBER --qontract-reconcile-pr NUMBER --integration-name glitchtip --integration-extra-args '' glitchtip-pr-check
 ```
 
-Which results into this profile:
+Which results in this profile:
 
 ```shell
 $ qd profile show glitchtip-pr-check

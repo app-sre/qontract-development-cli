@@ -1,0 +1,3 @@
+---
+integration_name: terraform-resources
+integration_extra_args: --account-name image-builder-stage --print-to-file /dev/stdout

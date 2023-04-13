@@ -1,0 +1,5 @@
+---
+integration_name: glitchtip
+dry_run: false
+log_level: debug
+

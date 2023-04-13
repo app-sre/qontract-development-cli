@@ -1,0 +1,3 @@
+---
+command: tools/glitchtip_access_reporter.py
+command_extra_args: --gitlab-project-id 13582
