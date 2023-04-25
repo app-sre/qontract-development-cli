@@ -1,3 +1,9 @@
+## v0.11.0 (2023-04-25)
+
+### Features
+
+- --skip-initial-make-bundle profile run option
+
 ## v0.10.0 (2023-03-29)
 
 ### Features
