@@ -206,6 +206,10 @@ def run(
         ".json .yml .yaml",
         help="Monitor these file extensions",
     ),
+    skip_initial_make_bundle: bool = typer.Option(
+        False,
+        help="Do not run 'make bundle' before starting the integration",
+    ),
 ):
     """Run a profile."""
     env = Env(name=env_name)
@@ -238,7 +242,7 @@ def run(
         )
     )
 
-    if env.settings.run_qontract_server:
+    if env.settings.run_qontract_server and not skip_initial_make_bundle:
         make_bundle(
             profile.settings.app_interface_path, profile.settings.qontract_server_path
         )
