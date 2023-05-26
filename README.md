@@ -87,7 +87,6 @@ Manage global qontract-development-cli configuration.
 | profiles_dir                | Directory to store profile files      | User config directory / profiles     |
 | worktrees_dir               | Directory to store git repo worktrees | User cache directory / worktrees     |
 
-
 ## Environments
 
 An environment specifies app-interface instance settings, e.g., **dev** vs. **prod** config and path to the actual app-interface instance.
@@ -131,6 +130,16 @@ A profile specifies all settings to run a qontract-reconcile integration (e.g., 
 * **run**: Run a profile.
 * **show**: Display profile.
 
+### --no-dry-run
+
+By default `qd` runs integrations in `dry-run` mode if not explicitly specified differently in the profile config.
+There is also a `--no-dry-run` flag which lets you disable `dry-run` mode from command line.
+
+```
+$ qd profile run dev my-integration --no-dry-run
+```
+
+The command line flag takes precedence over any configuration you might have in the profile settings.
 
 #### Settings
 
