@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qontract-development-cli"
-version = "0.11.0"
+version = "0.12.0"
 description = "Helper tool for qontract-reconcile development"
 authors = ["Christian Assing <cassing@redhat.com>"]
 license = "MIT"

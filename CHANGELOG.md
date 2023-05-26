@@ -1,3 +1,9 @@
+## v0.12.0 (2023-05-26)
+
+### Features
+
+- --no-dry-run profile run option
+
 ## v0.11.0 (2023-04-25)
 
 ### Features
