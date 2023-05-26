@@ -210,6 +210,10 @@ def run(
         False,
         help="Do not run 'make bundle' before starting the integration",
     ),
+    no_dry_run: bool = typer.Option(
+        False,
+        help="Disable dry-run mode",
+    ),
 ):
     """Run a profile."""
     env = Env(name=env_name)
@@ -217,6 +221,9 @@ def run(
     profile.settings.app_interface_path = (
         profile.settings.app_interface_path or env.settings.app_interface_path
     )
+    if no_dry_run:
+        # if --no-dry-run is set on command line, then it takes prio over all other dry-run settings
+        profile.settings.dry_run = False
     # prepare worktrees
     fetch_pull_requests(profile, config.worktrees_dir)
 
