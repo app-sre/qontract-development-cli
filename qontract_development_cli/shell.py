@@ -52,6 +52,12 @@ def compose_restart(compose_file: Path, container: str) -> None:
     subprocess.run(compose_cmd)
 
 
+def container_restart(container: str) -> None:
+    log.info(f"Restarting {container} container")
+    compose_cmd = ["docker", "restart", container]
+    subprocess.run(compose_cmd)
+
+
 def compose_down(compose_file: Path) -> None:
     log.info("Stopping all containers")
     compose_cmd = _docker_compose_bin + ["-f", str(compose_file), "down"]
