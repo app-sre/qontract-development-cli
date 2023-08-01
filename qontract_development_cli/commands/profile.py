@@ -30,6 +30,7 @@ from ..shell import (
     compose_restart,
     compose_stop_project,
     compose_up,
+    container_restart,
     fetch_pull_requests,
     make_bundle,
     make_bundle_and_restart_server,
@@ -271,8 +272,10 @@ def run(
             watch_files(
                 path=profile.settings.qontract_reconcile_path.expanduser().absolute(),
                 extensions=qontract_reconcile_monitor_file_extensions.split(" "),
-                action=compose_restart,
-                action_args=(compose_file, "qontract-reconcile"),
+                action=container_restart,
+                action_args=(
+                    f"qontract-reconcile-{ profile.settings.integration_name }",
+                ),
             ),
         )
     if qontract_schemas_monitor_file_changes:
@@ -310,7 +313,9 @@ def run(
             key = "q"
 
         if key.lower() == "r":
-            compose_restart(compose_file, "qontract-reconcile")
+            container_restart(
+                f"qontract-reconcile-{ profile.settings.integration_name }"
+            )
         elif key.lower() == "b":
             if not env.settings.run_qontract_server:
                 console.print(
