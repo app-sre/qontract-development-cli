@@ -39,9 +39,6 @@ pypi:
 	poetry publish --build --skip-existing
 .PHONY: pypi
 
-release:
-	poetry run cz bump --changelog --yes
-.PHONY: release
 
 update-demos: $(gifs)
 
