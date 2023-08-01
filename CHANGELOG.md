@@ -1,3 +1,27 @@
+## v0.11.1 (2023-08-01)
+
+### Bug Fixes
+
+- **docker-compose**: fix qontract-reconcile restart
+- **compose-file**: fix empty qontract-reconcile.links list when no other container wants to be started (#14)
+- **release**: local release and push to pypi via jenkins job (#12)
+- **release**: fix release process (#11)
+
+### Features
+
+- **docker-compose**: run docker-compose logs in endless loop (#16)
+- move project to app-sre organization
+
+## v0 (2022-10-24)
+
+### Bug Fixes
+
+- consitent logging
+
+### Features
+
+- **profile run**: monitor file changes and restart containers
+
 ## v0.12.0 (2023-05-26)
 
 ### Features

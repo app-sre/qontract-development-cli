@@ -27,7 +27,6 @@ from ..models import (
 from ..shell import (
     compose_down,
     compose_log_tail,
-    compose_restart,
     compose_stop_project,
     compose_up,
     container_restart,
