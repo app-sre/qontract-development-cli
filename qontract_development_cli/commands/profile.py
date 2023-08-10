@@ -142,7 +142,7 @@ def ls():
     """List all available profiles."""
     console.print(f"Profiles directory: [b]{config.profiles_dir}[/]")
     console.print("[b]Profiles:[/]")
-    for p in Profile.list_all():
+    for p in sorted(Profile.list_all()):
         console.print(f"* {p.name}")
 
 

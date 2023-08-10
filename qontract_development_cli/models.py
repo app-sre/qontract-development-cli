@@ -61,6 +61,9 @@ class Base(BaseModel):
     default: bool = False
     _root: Path
 
+    def __lt__(self, other: "Base") -> bool:
+        return self.name < other.name
+
     @validator("name")
     def name_remove_suffix(cls, v) -> str:
         p = Path(v)
