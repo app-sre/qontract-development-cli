@@ -83,7 +83,7 @@ def create(
     qontract_reconcile_upstream: str = typer.Option(
         "upstream", help="Upstream remote name"
     ),
-):
+) -> None:
     """Create a new profile to run an integration."""
     if profile_name in [p.name for p in Profile.list_all()]:
         console.print(
@@ -130,7 +130,7 @@ def edit(
     profile_name: str = typer.Argument(
         ..., help="Profile to edit.", autocompletion=complete_profile
     )
-):
+) -> None:
     """Edit a profile in your editor."""
     profile = Profile(name=profile_name)
     console.print(f"Opening [b]{profile.name}[/] in your editor ...")
@@ -138,7 +138,7 @@ def edit(
 
 
 @app.command()
-def ls():
+def ls() -> None:
     """List all available profiles."""
     console.print(f"Profiles directory: [b]{config.profiles_dir}[/]")
     console.print("[b]Profiles:[/]")
@@ -152,7 +152,7 @@ def rm(
         ..., help="Profile to remove.", autocompletion=complete_profile
     ),
     force: bool = typer.Option(False, "--force", "-f", help="Do not ask any question."),
-):
+) -> None:
     """Remove profile."""
     profile = Profile(name=profile_name)
     if force or Confirm.ask(
@@ -166,7 +166,7 @@ def show(
     profile_name: str = typer.Argument(
         ..., help="Profile to display.", autocompletion=complete_profile
     )
-):
+) -> None:
     """Display profile."""
     profile = Profile(name=profile_name)
     console.print(profile.file.read_text())
@@ -214,7 +214,7 @@ def run(
         False,
         help="Disable dry-run mode",
     ),
-):
+) -> None:
     """Run a profile."""
     env = Env(name=env_name)
     profile = Profile(name=profile_name)

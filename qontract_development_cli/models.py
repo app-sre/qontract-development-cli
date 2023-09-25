@@ -65,7 +65,7 @@ class Base(BaseModel):
         return self.name < other.name
 
     @validator("name")
-    def name_remove_suffix(cls, v) -> str:
+    def name_remove_suffix(cls, v: str) -> str:
         p = Path(v)
         return str(p.parent / p.stem)
 
@@ -83,7 +83,7 @@ class Base(BaseModel):
         return items
 
     @property
-    def name_path_safe(self):
+    def name_path_safe(self) -> str:
         return self.name.replace("/", "_")
 
     @property
@@ -103,7 +103,7 @@ class Base(BaseModel):
             pass
         return values
 
-    def dump(self):
+    def dump(self) -> None:
         values = self.settings.dict(  # type: ignore
             exclude_defaults=not self.default, exclude_unset=not self.default
         )
@@ -122,13 +122,13 @@ class Env(Base):
     default: bool = True
     settings: EnvSettings
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if "settings" not in kwargs:
             kwargs["settings"] = EnvSettings()
         super().__init__(*args, **kwargs)
         self.settings = EnvSettings(**self.settings_as_dict)
 
-    def load_settings(self):
+    def load_settings(self) -> None:
         self.settings = EnvSettings(**self.settings_as_dict)
 
 
@@ -136,7 +136,7 @@ class Profile(Base):
     _root: Path = config.profiles_dir
     settings: ProfileSettings
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if "settings" not in kwargs:
             kwargs["settings"] = ProfileSettings(**self.default_settings_as_dict)
         super().__init__(*args, **kwargs)
@@ -157,7 +157,7 @@ class Profile(Base):
             pass
         return defaults
 
-    def dump(self):
+    def dump(self) -> None:
         values = self.settings.dict(
             exclude_defaults=not self.default, exclude_unset=not self.default
         )

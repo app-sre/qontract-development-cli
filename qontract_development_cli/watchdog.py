@@ -35,7 +35,7 @@ class ExtensionFilter(DefaultFilter):
 
 def _watcher(
     path: Path, extensions: Sequence[str], action: Callable, action_args: Tuple
-):
+) -> None:
     # logger must be setup in child process
     logging.basicConfig(
         level="INFO",

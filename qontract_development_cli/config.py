@@ -37,7 +37,7 @@ class Config(BaseSettings):
     profiles_dir: Path = user_config_dir / "profiles"
     worktrees_dir: Path = user_cache_dir / "worktrees"
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.environments_dir.mkdir(parents=True, exist_ok=True)
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
@@ -48,10 +48,12 @@ class Config(BaseSettings):
         env_prefix = "qontract_development_"
 
         @classmethod
-        def customise_sources(cls, init_settings, env_settings, file_secret_settings):
+        def customise_sources(
+            cls, init_settings: Any, env_settings: Any, file_secret_settings: Any
+        ) -> tuple:
             return (init_settings, env_settings, yaml_config_settings_source)
 
-    def save(self):
+    def save(self) -> None:
         user_config_file.write_text(
             yaml.dump(
                 self.dict(),

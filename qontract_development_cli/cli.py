@@ -29,7 +29,7 @@ app.add_typer(profile.app, name="profile", help="Profile related commands.")
 def main(
     debug: bool = typer.Option(False, help="Enable debug"),
     screen_capture_file: Path = typer.Option(None, writable=True),
-):
+) -> None:
     logging.basicConfig(
         level="DEBUG" if config.debug or debug else "INFO",
         format="%(name)-20s: %(message)s",
