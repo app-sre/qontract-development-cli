@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def edit(env_name: str = typer.Argument(..., help="Env to edit or create.")):
+def edit(env_name: str = typer.Argument(..., help="Env to edit or create.")) -> None:
     """Create/edit an environment file in your editor."""
     env = Env(name=env_name)
     console.print(f"Opening [b]{env.name}[/] in your editor ...")
@@ -22,7 +22,7 @@ def edit(env_name: str = typer.Argument(..., help="Env to edit or create.")):
 
 
 @app.command()
-def ls():
+def ls() -> None:
     """List all available environments."""
     console.print(f"Environments directory: [b]{config.environments_dir}[/]")
     console.print("[b]Environments:[/]")
@@ -35,7 +35,7 @@ def rm(
     env_name: str = typer.Argument(
         ..., help="Environment to remove.", autocompletion=complete_env
     )
-):
+) -> None:
     """Remove environment."""
     env = Env(name=env_name)
     if Confirm.ask(f"Do you really want to remove environment [b red]{env.name}[/]?"):
@@ -47,7 +47,7 @@ def show(
     env_name: str = typer.Argument(
         ..., help="Environment to display.", autocompletion=complete_env
     )
-):
+) -> None:
     """Display environment."""
     env = Env(name=env_name)
     console.print(env.file.read_text())

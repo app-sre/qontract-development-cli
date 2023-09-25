@@ -81,14 +81,14 @@ def compose_list_projects() -> list[dict[str, Any]]:
     )
 
 
-def compose_stop_project(project_name: str):
+def compose_stop_project(project_name: str) -> None:
     log.info("Stopping running projects")
     for p in compose_list_projects():
         if p["Name"] == project_name:
             subprocess.run(_docker_compose_bin + ["-f", p["ConfigFiles"], "down"])
 
 
-def make_bundle(app_interface_path: Path, qontract_server_path: Path):
+def make_bundle(app_interface_path: Path, qontract_server_path: Path) -> None:
     log.info("Make bundle")
     shell_env = copy.deepcopy(os.environ)
     shell_env.update(
@@ -99,12 +99,12 @@ def make_bundle(app_interface_path: Path, qontract_server_path: Path):
 
 def make_bundle_and_restart_server(
     app_interface_path: Path, qontract_server_path: Path, compose_file: Path
-):
+) -> None:
     make_bundle(app_interface_path, qontract_server_path)
     compose_restart(compose_file, "qontract-server")
 
 
-def fetch_pull_requests(profile: Profile, worktrees_dir: Path):
+def fetch_pull_requests(profile: Profile, worktrees_dir: Path) -> None:
     log.info("Preparing worktrees")
     repos: list[dict[str, str]] = []
 

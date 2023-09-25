@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def init():
+def init() -> None:
     """Dump default files (config, environment, profiles)"""
     # qontract-development config
     config.save()
@@ -74,7 +74,7 @@ def init():
 
 
 @app.command()
-def edit():
+def edit() -> None:
     """Edit config in your editor."""
     console.print(f"Opening [b]{user_config_file}[/] in your editor ...")
     subprocess.run([config.editor, user_config_file])

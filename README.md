@@ -207,25 +207,8 @@ Running this profile will:
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-### Commits
-
-Use [Conventional Commit messages](https://www.conventionalcommits.org).
-The most important prefixes you should have in mind are:
-
-* `fix:` which represents bug fixes and correlates to a [SemVer](https://semver.org/) patch.
-* `feat` represents a new feature and correlates to a SemVer minor.
-* `feat!:`,  or `fix!:`, `refactor!:`, etc., which represent a breaking change
-  (indicated by the `!`) and will result in a SemVer major.
-
 ### Release
 
-To release a new version, run:
-
-```shell
-$ make release
-```
-
-This will:
 * Bump the version in `pyproject.toml`
 * Update the `CHANGELOG.md`
 * Commit the changes

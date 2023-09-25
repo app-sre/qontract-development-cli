@@ -434,7 +434,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "e9ea1e237d148310c5b45072dfb0d89a8cb490bacabcaddfc233e51025119fa6"
+content-hash = "5363ea8917faa69fd4819b9c3877efc62e00520ad191f7fbfcb5a86dc018ef2d"
 
 [metadata.files]
 anyio = [
