@@ -1,3 +1,10 @@
+## v0.13.1 (2023-09-25)
+
+### Bug Fixes
+
+- add type hints
+- sort `profile ls` output
+
 ## v0.13.0 (2023-08-01)
 
 ### Bug Fixes
