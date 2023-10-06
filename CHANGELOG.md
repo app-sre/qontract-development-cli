@@ -1,3 +1,9 @@
+## v0.13.2 (2023-10-06)
+
+### Bug Fixes
+
+- selinux support
+
 ## v0.13.1 (2023-09-25)
 
 ### Bug Fixes
