@@ -51,11 +51,11 @@ services:
     - {{ key }}={{ value }}
     {% endfor %}
     volumes:
-    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work
-    - {{ env.settings.config.expanduser().absolute().parent }}:/config
-    - tmp-volume:/tmp
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work:z
+    - {{ env.settings.config.expanduser().absolute().parent }}:/config:z
+    - tmp-volume:/tmp:z
 {% if profile.settings.internal_redhat_ca %}
-    - pki-volume:/etc/pki
+    - pki-volume:/etc/pki:z
 {% endif %}
 {% if env.settings.run_qontract_server or env.settings.run_vault %}
     links:
