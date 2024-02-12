@@ -15,24 +15,23 @@ all:
 	@echo $(patsubst %.tape,%.c,$(tape_files))
 
 format:
-	poetry run black $(DIRS)
-	poetry run isort $(DIRS)
+	poetry run ruff check
+	poetry run ruff format
 .PHONY: format
 
 pr-check:
-	docker build -t qontract-development-test --progress plain --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	docker build -t qontract-development-test --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: pr-check
 
 test:
-	poetry run pytest -vv
-	poetry run flake8 $(DIRS)
+	poetry run ruff check --no-fix
+	poetry run ruff format --check
 	poetry run mypy $(DIRS)
-	poetry run black --check $(DIRS)
-	poetry run isort --check-only $(DIRS)
+	poetry run pytest -vv
 .PHONY: test
 
 build-deploy:
-	docker build -t qontract-development-test  --progress plain --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
+	docker build -t qontract-development-test --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
 .PHONY: build-deploy
 
 pypi:

@@ -38,7 +38,7 @@ def compose_up(
         compose_cmd.append("--remove-orphans")
     if build:
         compose_cmd.append("--build")
-    subprocess.run(compose_cmd)
+    subprocess.run(compose_cmd, check=True)
 
 
 def compose_restart(compose_file: Path, container: str) -> None:
@@ -49,19 +49,19 @@ def compose_restart(compose_file: Path, container: str) -> None:
         "restart",
         container,
     ]
-    subprocess.run(compose_cmd)
+    subprocess.run(compose_cmd, check=True)
 
 
 def container_restart(container: str) -> None:
     log.info(f"Restarting {container} container")
     compose_cmd = ["docker", "restart", container]
-    subprocess.run(compose_cmd)
+    subprocess.run(compose_cmd, check=True)
 
 
 def compose_down(compose_file: Path) -> None:
     log.info("Stopping all containers")
     compose_cmd = _docker_compose_bin + ["-f", str(compose_file), "down"]
-    subprocess.run(compose_cmd)
+    subprocess.run(compose_cmd, check=True)
 
 
 def compose_log_tail(compose_file: Path) -> Process:
@@ -85,16 +85,20 @@ def compose_stop_project(project_name: str) -> None:
     log.info("Stopping running projects")
     for p in compose_list_projects():
         if p["Name"] == project_name:
-            subprocess.run(_docker_compose_bin + ["-f", p["ConfigFiles"], "down"])
+            subprocess.run(
+                _docker_compose_bin + ["-f", p["ConfigFiles"], "down"], check=True
+            )
 
 
 def make_bundle(app_interface_path: Path, qontract_server_path: Path) -> None:
     log.info("Make bundle")
     shell_env = copy.deepcopy(os.environ)
-    shell_env.update(
-        {"APP_INTERFACE_PATH": str(app_interface_path.expanduser().absolute())}
+    shell_env.update({
+        "APP_INTERFACE_PATH": str(app_interface_path.expanduser().absolute())
+    })
+    subprocess.run(
+        ["make", "-C", str(qontract_server_path), "bundle"], env=shell_env, check=True
     )
-    subprocess.run(["make", "-C", str(qontract_server_path), "bundle"], env=shell_env)
 
 
 def make_bundle_and_restart_server(
@@ -114,14 +118,12 @@ def fetch_pull_requests(profile: Profile, worktrees_dir: Path) -> None:
             / profile.settings.app_interface_path.name
             / str(profile.settings.app_interface_pr)
         )
-        repos.append(
-            {
-                "workdir": str(wd),
-                "dir": str(profile.settings.app_interface_path),
-                "pr": str(profile.settings.app_interface_pr),
-                "upstream": profile.settings.app_interface_upstream,
-            }
-        )
+        repos.append({
+            "workdir": str(wd),
+            "dir": str(profile.settings.app_interface_path),
+            "pr": str(profile.settings.app_interface_pr),
+            "upstream": profile.settings.app_interface_upstream,
+        })
         profile.settings.app_interface_path = wd
     if profile.settings.qontract_schemas_pr:
         wd = (
@@ -129,14 +131,12 @@ def fetch_pull_requests(profile: Profile, worktrees_dir: Path) -> None:
             / profile.settings.qontract_schemas_path.name
             / str(profile.settings.qontract_schemas_pr)
         )
-        repos.append(
-            {
-                "workdir": str(wd),
-                "dir": str(profile.settings.qontract_schemas_path),
-                "pr": str(profile.settings.qontract_schemas_pr),
-                "upstream": profile.settings.qontract_schemas_upstream,
-            }
-        )
+        repos.append({
+            "workdir": str(wd),
+            "dir": str(profile.settings.qontract_schemas_path),
+            "pr": str(profile.settings.qontract_schemas_pr),
+            "upstream": profile.settings.qontract_schemas_upstream,
+        })
         profile.settings.qontract_schemas_path = wd
     if profile.settings.qontract_reconcile_pr:
         wd = (
@@ -144,14 +144,12 @@ def fetch_pull_requests(profile: Profile, worktrees_dir: Path) -> None:
             / profile.settings.qontract_reconcile_path.name
             / str(profile.settings.qontract_reconcile_pr)
         )
-        repos.append(
-            {
-                "workdir": str(wd),
-                "dir": str(profile.settings.qontract_reconcile_path),
-                "pr": str(profile.settings.qontract_reconcile_pr),
-                "upstream": profile.settings.qontract_reconcile_upstream,
-            }
-        )
+        repos.append({
+            "workdir": str(wd),
+            "dir": str(profile.settings.qontract_reconcile_path),
+            "pr": str(profile.settings.qontract_reconcile_pr),
+            "upstream": profile.settings.qontract_reconcile_upstream,
+        })
         profile.settings.qontract_reconcile_path = wd
 
     if not repos:

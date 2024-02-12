@@ -1,3 +1,13 @@
+## v0.14.0 (unreleased)
+
+### Features
+
+- Python 3.11 support and drop 3.9 support
+
+### Chore
+
+- Use [ruff](https://docs.astral.sh/ruff/) for code linting and formatting
+
 ## v0.13.2 (2023-10-06)
 
 ### Bug Fixes
