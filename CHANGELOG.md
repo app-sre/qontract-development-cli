@@ -3,6 +3,7 @@
 ### Features
 
 - Python 3.11 support and drop 3.9 support
+- Support [localstack](https://github.com/localstack/localstack)
 
 ### Chore
 

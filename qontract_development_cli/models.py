@@ -54,6 +54,16 @@ class ProfileSettings(BaseModel):
     additional_environment: dict[str, Any] = {}
     internal_redhat_ca: bool = False
     extra_hosts: list[str] = []
+    localstack: bool = False
+    localstack_compose_file: Path | None
+
+    @validator("localstack_compose_file", always=True)
+    def default_localstack_compose_file(cls, v: Path | None, values: dict) -> Path:
+        return (
+            v
+            if v
+            else values["qontract_reconcile_path"] / "dev/localstack/docker-compose.yml"
+        )
 
 
 class Base(BaseModel):
@@ -144,7 +154,10 @@ class Profile(Base):
 
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
-        defaults = {"integration_name": "changeme", "integration_extra_args": ""}
+        defaults = {
+            "integration_name": "changeme",
+            "integration_extra_args": "",
+        }
         try:
             defaults.update(
                 yaml.safe_load(
