@@ -3,61 +3,69 @@
 [![PyPI](https://img.shields.io/pypi/v/qontract-development-cli)][pypi-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
 ![PyPI - License](https://img.shields.io/pypi/l/qontract-development-cli)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 Qontract Development CLI supports your daily [qontract-reconcile][qontract-reconcile] development work.
+
+[toc]
 
 ## Installation
 
 You can install this library from [PyPI][pypi-link] with `pip`:
 
 ```shell
-$ python3 -m pip install qontract-development-cli
+python3 -m pip install qontract-development-cli
 ```
 
 Or install it with `pipx`:
+
 ```shell
-$ pipx install qontract-development-cli
+pipx install qontract-development-cli
 ```
 
 You can also use `pipx` to run the library without installing it:
 
 ```shell
-$ pipx run qontract-development-cli
+pipx run qontract-development-cli
 ```
 
 ## Quickstart
 
 * Create initial configuration
+
   ```shell
-  $ qd config init
+  qd config init
   ```
-  <img src="demo/qd_config_init.gif" />
+
+  ![qd init](/demo/qd_config_init.gif)
 
 * Create a profile `sql-query` to run the `sql-query` integration
+
   ```shell
-  $ qd profile create sql-query
+  qd profile create sql-query
   ```
-  <img src="demo/qd_profile_create.gif" />
+
+  ![qd profile create](/demo/qd_profile_create.gif)
 
 * Run `sql-query` profile
+
   ```shell
-  $ profile run dev sql-query
+  qd profile run dev sql-query
   ```
-  <img src="images/profile_run_sql_query.svg" />
+
+  ![qd sql_query](/images/profile_run_sql_query.svg)
 
 ## Features
 
 Qontract Development CLI currently provides the following features (get help with `-h` or `--help`):
 
-- Run `qontract-reconcile` and `qontract-server` as docker containers on your local machine
-- Support for different App-Interface environments (dev, prod, ...) via the `env` command
-- Configure your [qontract-reconcile integration][qontract-reconcile] with the `profile` command
-- Support pull request reviews (see `profile create`)
-- Bootstrap your initial configurations with the `config` command
-- Shell auto-completion (see `qd --help`)
-- Automatically restart `qontract-reconcile` container when files change
-- Automatically rebuild the App-Interface bundle and restart the `qontract-server` container when files change
+* Run `qontract-reconcile` and `qontract-server` as docker containers on your local machine
+* Support for different App-Interface environments (dev, prod, ...) via the `env` command
+* Configure your [qontract-reconcile integration][qontract-reconcile] with the `profile` command
+* Support pull request reviews (see `profile create`)
+* Bootstrap your initial configurations with the `config` command
+* Shell auto-completion (see `qd --help`)
+* Automatically restart `qontract-reconcile` container when files change
+* Automatically rebuild the App-Interface bundle and restart the `qontract-server` container when files change
 
 ## Examples
 
@@ -71,12 +79,13 @@ The following sections describe all available commands and their options.
 
 Manage global qontract-development-cli configuration.
 
-`$ qd config [sub-cmd] --help`
+`qd config [sub-cmd] --help`
 
 * **edit**: open the configuration file in your favorite editor
 * **init**: create a default configuration
 
-#### Settings
+#### Global Settings
+
 | **Key**                     | **Description**                       | **Default**                          |
 | --------------------------- | ------------------------------------- | ------------------------------------ |
 | debug                       | Enable/disable debug mode             | false                                |
@@ -87,19 +96,18 @@ Manage global qontract-development-cli configuration.
 | profiles_dir                | Directory to store profile files      | User config directory / profiles     |
 | worktrees_dir               | Directory to store git repo worktrees | User cache directory / worktrees     |
 
-## Environments
+### Environments
 
 An environment specifies app-interface instance settings, e.g., **dev** vs. **prod** config and path to the actual app-interface instance.
 
-`$ qd env [sub-cmd] --help`
+`qd env [sub-cmd] --help`
 
 * **edit**: Create/edit an environment file in your editor.
 * **ls**: List all available environments.
 * **rm**: Remove environment.
 * **show**: Display environment.
 
-
-#### Settings
+#### Environment Settings
 
 | **Key**                            | **Description**                      | **Default**                                    |
 | ---------------------------------- | ------------------------------------ | ---------------------------------------------- |
@@ -114,11 +122,11 @@ An environment specifies app-interface instance settings, e.g., **dev** vs. **pr
 
 > :point_right: **Bold keys** are mandatory or should be customized.
 
-## Profiles
+### Profiles
 
 A profile specifies all settings to run a qontract-reconcile integration (e.g., *sql-query*).
 
-`$ qd profile [sub-cmd] --help`
+`qd profile [sub-cmd] --help`
 
 * **create**: Create a new profile to run an integration.
 
@@ -130,18 +138,18 @@ A profile specifies all settings to run a qontract-reconcile integration (e.g., 
 * **run**: Run a profile.
 * **show**: Display profile.
 
-### --no-dry-run
+#### --no-dry-run
 
-By default `qd` runs integrations in `dry-run` mode if not explicitly specified differently in the profile config.
-There is also a `--no-dry-run` flag which lets you disable `dry-run` mode from command line.
+By default, `qd` runs integrations in `dry-run` mode if not explicitly specified differently in the profile config.
+There is also a `--no-dry-run` flag which lets you disable `dry-run` mode from the command line.
 
-```
-$ qd profile run dev my-integration --no-dry-run
+```shell
+qd profile run dev my-integration --no-dry-run
 ```
 
 The command line flag takes precedence over any configuration you might have in the profile settings.
 
-#### Settings
+#### Profile Settings
 
 | **Key**                        | **Description**                                                                                                                                                              | **Default**                                 |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -180,7 +188,7 @@ The command line flag takes precedence over any configuration you might have in 
 It's a pretty handy feature to create a profile from a pull request (merge request). E.g.:
 
 ```shell
-$ qd profile create --app-interface PATH_TO_YOUR_LOCAL/app-interface-dev-data --app-interface-pr NUMBER --qontract-schemas-pr NUMBER --qontract-reconcile-pr NUMBER --integration-name glitchtip --integration-extra-args '' glitchtip-pr-check
+qd profile create --app-interface PATH_TO_YOUR_LOCAL/app-interface-dev-data --app-interface-pr NUMBER --qontract-schemas-pr NUMBER --qontract-reconcile-pr NUMBER --integration-name glitchtip --integration-extra-args '' glitchtip-pr-check
 ```
 
 Which results in this profile:
@@ -196,6 +204,7 @@ qontract_schemas_pr: NUMBER
 ```
 
 Running this profile will:
+
 * Create new git worktrees (see `config.worktrees_dir`) for app-interface-dev-data, qontract-schema, and qontract-reconcile PRs
 * Start the containers with the adapted path to these worktrees
 * Restarting the profile will fetch PR updates
@@ -204,8 +213,8 @@ Running this profile will:
 
 ## Development
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 ### Release
 
@@ -213,8 +222,6 @@ Running this profile will:
 * Update the `CHANGELOG.md`
 * Commit the changes
 
-
 [pypi-link]:                https://pypi.org/project/qontract-development-cli/
 [pypi-platforms]:           https://img.shields.io/pypi/pyversions/qontract-development-cli
-[pypi-version]:             https://badge.fury.io/py/qontract-development-cli.svg
 [qontract-reconcile]:       https://github.com/app-sre/qontract-reconcile

@@ -42,7 +42,7 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def create(
+def create(  # noqa: PLR0913, PLR0917
     profile_name: str = typer.Argument(..., help="Profile to create."),
     integration_name: Optional[str] = typer.Option(None),
     integration_extra_args: Optional[str] = typer.Option(None),
@@ -129,12 +129,12 @@ def create(
 def edit(
     profile_name: str = typer.Argument(
         ..., help="Profile to edit.", autocompletion=complete_profile
-    )
+    ),
 ) -> None:
     """Edit a profile in your editor."""
     profile = Profile(name=profile_name)
     console.print(f"Opening [b]{profile.name}[/] in your editor ...")
-    subprocess.run([config.editor, profile.file])
+    subprocess.run([config.editor, profile.file], check=True)
 
 
 @app.command()
@@ -165,7 +165,7 @@ def rm(
 def show(
     profile_name: str = typer.Argument(
         ..., help="Profile to display.", autocompletion=complete_profile
-    )
+    ),
 ) -> None:
     """Display profile."""
     profile = Profile(name=profile_name)
@@ -173,7 +173,7 @@ def show(
 
 
 @app.command(no_args_is_help=True)
-def run(
+def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
     env_name: str = typer.Argument(
         ..., help="Environment to use.", autocompletion=complete_env
     ),

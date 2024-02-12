@@ -9,27 +9,24 @@ repository = "http://github.com/chassing/qontract-development-cli"
 homepage = "http://github.com/chassing/qontract-development-cli"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.11,<4.0"
 Jinja2 = "^3.1.2"
-typer = "^0.6.1"
-rich = "^12.5.1"
+typer = "^0.9.0"
+rich = "^13.7.0"
 pydantic = "^1.10.2"
 appdirs = "^1.4.4"
-PyYAML = "^6.0"
+PyYAML = "^6.0.1"
 getkey = "^0.6.5"
-watchfiles = "^0.18.0"
-textual = "^0.2.1"
+watchfiles = "^0.21.0"
 
 [tool.poetry.dev-dependencies]
 types-PyYAML = "^6.0.12"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
-flake8 = "^5.0.4"
-mypy = "^0.982"
-pytest = "^7.2.0"
-isort = "^5.10.1"
+pytest = "^8.0.0"
+mypy = "^1.8.0"
 types-pyyaml = "^6.0.12.11"
+ruff = "^0.2.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -48,7 +45,6 @@ show_error_codes = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
-
 [[tool.mypy.overrides]]
 module = ["getkey.*"]
 ignore_missing_imports = true
@@ -62,8 +58,30 @@ major_version_zero = true
 change_type_map = { "feat" = "Features", "fix" = "Bug Fixes" }
 tag_format = "v$version"
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-force_grid_wrap = 2
-float_to_top = true
+[tool.ruff]
+line-length = 88
+target-version = 'py311'
+required-version = "0.2.1"
+src = ["qontract_development_cli"]
+extend-exclude = [".local", ".cache"]
+fix = true
+
+[tool.ruff.lint]
+preview = true
+# defaults are ["E4", "E7", "E9", "F"]
+extend-select = [
+    # flake8 default rules
+    "E1", # preview rule
+    "E2", # preview rule
+    "W",
+    # isort
+    "I",
+    # pylint
+    "PL",
+]
+
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["qontract_development_cli"]

@@ -77,4 +77,4 @@ def init() -> None:
 def edit() -> None:
     """Edit config in your editor."""
     console.print(f"Opening [b]{user_config_file}[/] in your editor ...")
-    subprocess.run([config.editor, user_config_file])
+    subprocess.run([config.editor, user_config_file], check=True)

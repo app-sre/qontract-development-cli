@@ -18,7 +18,7 @@ def edit(env_name: str = typer.Argument(..., help="Env to edit or create.")) -> 
     """Create/edit an environment file in your editor."""
     env = Env(name=env_name)
     console.print(f"Opening [b]{env.name}[/] in your editor ...")
-    subprocess.run([config.editor, env.file])
+    subprocess.run([config.editor, env.file], check=True)
 
 
 @app.command()
@@ -34,7 +34,7 @@ def ls() -> None:
 def rm(
     env_name: str = typer.Argument(
         ..., help="Environment to remove.", autocompletion=complete_env
-    )
+    ),
 ) -> None:
     """Remove environment."""
     env = Env(name=env_name)
@@ -46,7 +46,7 @@ def rm(
 def show(
     env_name: str = typer.Argument(
         ..., help="Environment to display.", autocompletion=complete_env
-    )
+    ),
 ) -> None:
     """Display environment."""
     env = Env(name=env_name)
