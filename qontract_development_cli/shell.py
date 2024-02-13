@@ -97,7 +97,7 @@ def make_bundle(app_interface_path: Path, qontract_server_path: Path) -> None:
         "APP_INTERFACE_PATH": str(app_interface_path.expanduser().absolute())
     })
     subprocess.run(
-        ["make", "-C", str(qontract_server_path), "bundle"], env=shell_env, check=True
+        ["make", "-C", str(qontract_server_path), "bundle"], env=shell_env, check=False
     )
 
 
