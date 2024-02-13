@@ -1,4 +1,10 @@
-## v0.14.0 (unreleased)
+## v0.14.1 (2024-02-13)
+
+### Bug Fixes
+
+- fix `make bundle` command
+
+## v0.14.0 (2024-02-13)
 
 ### Features
 
