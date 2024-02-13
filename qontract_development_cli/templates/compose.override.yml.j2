@@ -1,0 +1,7 @@
+---
+{% if  profile.settings.localstack %}
+services:
+  localstack:
+    networks:
+    - qontract-development
+{% endif %}

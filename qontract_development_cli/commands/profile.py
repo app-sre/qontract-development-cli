@@ -238,16 +238,18 @@ def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
     )
     console.print(settings)
 
-    tmp_dir = Path(tempfile.mkdtemp(prefix="qd-"))
-    compose_file = tmp_dir / "compose.yml"
-    compose_file.write_text(
-        template(
-            "compose.yml.j2",
-            config=config,
-            env=env,
-            profile=profile,
+    compose_dir = Path(tempfile.mkdtemp(prefix="qd-"))
+    # render compose files
+    for f in ["compose.override.yml", "compose.yml"]:
+        compose_file = compose_dir / f
+        compose_file.write_text(
+            template(
+                f"{f}.j2",
+                config=config,
+                env=env,
+                profile=profile,
+            )
         )
-    )
 
     if env.settings.run_qontract_server and not skip_initial_make_bundle:
         make_bundle(

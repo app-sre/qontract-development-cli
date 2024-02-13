@@ -47,6 +47,12 @@ services:
 {% endif %}
     - gitlab_pr_submitter_queue_url={{ env.settings.gitlab_pr_submitter_queue_url }}
     - LOG_LEVEL={{ profile.settings.log_level.upper() }}
+{% if  profile.settings.localstack %}
+    - AWS_ENDPOINT_URL=http://localstack:4566
+    - AWS_ACCESS_KEY_ID=test
+    - AWS_SECRET_ACCESS_KEY=test
+    - AWS_REGION=us-east-1
+{% endif %}
     {% for key, value in profile.settings.additional_environment.items() %}
     - {{ key }}={{ value }}
     {% endfor %}
@@ -93,6 +99,8 @@ services:
     image: {{ profile.settings.qontract_server_image }}
     {% endif %}
     container_name: qontract-server
+    stop_grace_period: 1s
+    stop_signal: SIGKILL
     volumes:
     - {{ profile.settings.qontract_server_path.expanduser().absolute() }}/bundle:/bundle:ro
     environment:
@@ -129,3 +137,8 @@ volumes:
 networks:
   qontract-development:
     name: qontract-development
+
+{% if  profile.settings.localstack %}
+include:
+  - {{ profile.settings.localstack_compose_file }}
+{% endif %}
