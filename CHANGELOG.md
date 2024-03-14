@@ -1,3 +1,9 @@
+## v0.14.2 (2024-03-14)
+
+### Features
+
+- **profile run**: support `--skip-initial-make-bundle` option via profile settings
+
 ## v0.14.1 (2024-02-13)
 
 ### Bug Fixes
