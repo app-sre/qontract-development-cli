@@ -182,6 +182,7 @@ The command line flag takes precedence over any configuration you might have in 
 | sleep_duration_secs            | If not *run_once*, sleep duration until integration runs again                                                                                                               | `10`                                                         |
 | localstack                     | Run localstack container and set AWS related environment variables                                                                                                           | `false`                                                      |
 | localstack_compose_file        | Path to your Localstack docker-compose file                                                                                                                                  | `qontract_server_path` / `dev/localstack/docker-compose.yml` |
+| skip_initial_make_bundle       | Skip initial make bundle step                                                                                                                                                | `false`                                                      |
 
 > :point_right: **Bold keys** are mandatory or should be customized.
 

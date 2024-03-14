@@ -56,6 +56,7 @@ class ProfileSettings(BaseModel):
     extra_hosts: list[str] = []
     localstack: bool = False
     localstack_compose_file: Path | None
+    skip_initial_make_bundle: bool = False
 
     @validator("localstack_compose_file", always=True)
     def default_localstack_compose_file(cls, v: Path | None, values: dict) -> Path:
