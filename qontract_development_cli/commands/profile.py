@@ -224,6 +224,9 @@ def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
     if no_dry_run:
         # if --no-dry-run is set on command line, then it takes prio over all other dry-run settings
         profile.settings.dry_run = False
+    skip_initial_make_bundle = (
+        skip_initial_make_bundle or profile.settings.skip_initial_make_bundle
+    )
     # prepare worktrees
     fetch_pull_requests(profile, config.worktrees_dir)
 
