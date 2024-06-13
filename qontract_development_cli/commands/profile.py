@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 from multiprocessing import Process
 from pathlib import Path
+from typing import Optional
 
 import typer
 from getkey import getkey
@@ -39,13 +40,18 @@ from ..utils import console
 app = typer.Typer()
 log = logging.getLogger(__name__)
 
+# see https://github.com/tiangolo/typer/issues/533
+OptionalStr = Optional[str]  # noqa: UP007
+OptionalInt = Optional[int]  # noqa: UP007
+OptionalPath = Optional[Path]  # noqa: UP007
+
 
 @app.command()
 def create(  # noqa: PLR0913, PLR0917
     profile_name: str = typer.Argument(..., help="Profile to create."),
-    integration_name: str | None = typer.Option(None),
-    integration_extra_args: str | None = typer.Option(None),
-    app_interface: Path | None = typer.Option(
+    integration_name: OptionalStr = typer.Option(None),
+    integration_extra_args: OptionalStr = typer.Option(None),
+    app_interface: OptionalPath = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -54,9 +60,9 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local app-interface instance git working copy.",
     ),
-    app_interface_pr: int | None = typer.Option(None, help="PR/MR to use"),
+    app_interface_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
     app_interface_upstream: str = typer.Option("upstream", help="Upstream remote name"),
-    qontract_schemas: Path | None = typer.Option(
+    qontract_schemas: OptionalPath = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -65,11 +71,11 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local qontract-schemas git working copy.",
     ),
-    qontract_schemas_pr: int | None = typer.Option(None, help="PR/MR to use"),
+    qontract_schemas_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
     qontract_schemas_upstream: str = typer.Option(
         "upstream", help="Upstream remote name"
     ),
-    qontract_reconcile: Path | None = typer.Option(
+    qontract_reconcile: OptionalPath = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -78,7 +84,7 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local qontract-reconcile git working copy.",
     ),
-    qontract_reconcile_pr: int | None = typer.Option(None, help="PR/MR to use"),
+    qontract_reconcile_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
     qontract_reconcile_upstream: str = typer.Option(
         "upstream", help="Upstream remote name"
     ),
