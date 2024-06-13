@@ -1,3 +1,9 @@
+## v0.14.3 (2024-06-13)
+
+### Chore
+
+- Upgrade `ruff` and other dependencies
+
 ## v0.14.2 (2024-03-14)
 
 ### Features

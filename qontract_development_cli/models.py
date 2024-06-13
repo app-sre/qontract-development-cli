@@ -1,10 +1,7 @@
 import copy
 import os
 from pathlib import Path
-from typing import (
-    Any,
-    Optional,
-)
+from typing import Any
 
 from pydantic import (
     BaseModel,
@@ -35,19 +32,19 @@ class ProfileSettings(BaseModel):
     integration_extra_args: str = ""
     integration_name: str = ""
     log_level: str = "INFO"
-    app_interface_path: Optional[Path] = None
-    app_interface_pr: Optional[int] = None
+    app_interface_path: Path | None = None
+    app_interface_pr: int | None = None
     app_interface_upstream: str = "upstream"
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/app-sre/qontract-reconcile:latest"
     qontract_reconcile_path: Path = Path("~/workspace/qontract-reconcile")
-    qontract_reconcile_pr: Optional[int] = None
+    qontract_reconcile_pr: int | None = None
     qontract_reconcile_upstream: str = "upstream"
     qontract_server_build_image: bool = True
     qontract_server_image: str = "quay.io/app-sre/qontract-server:latest"
     qontract_server_path: Path = Path("~/workspace/qontract-server")
     qontract_schemas_path: Path = Path("~/workspace/qontract-schemas")
-    qontract_schemas_pr: Optional[int] = None
+    qontract_schemas_pr: int | None = None
     qontract_schemas_upstream: str = "upstream"
     run_once: bool = True
     sleep_duration_secs: int = 10
