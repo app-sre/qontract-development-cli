@@ -26,7 +26,7 @@ types-PyYAML = "^6.0.12"
 pytest = "^8.0.0"
 mypy = "^1.8.0"
 types-pyyaml = "^6.0.12.11"
-ruff = "^0.2.1"
+ruff = "^0.4.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -61,7 +61,7 @@ tag_format = "v$version"
 [tool.ruff]
 line-length = 88
 target-version = 'py311'
-required-version = "0.2.1"
+required-version = "0.4.8"
 src = ["qontract_development_cli"]
 extend-exclude = [".local", ".cache"]
 fix = true
@@ -78,6 +78,8 @@ extend-select = [
     "I",
     # pylint
     "PL",
+    # pyupgrade
+    "UP",
 ]
 
 [tool.ruff.format]

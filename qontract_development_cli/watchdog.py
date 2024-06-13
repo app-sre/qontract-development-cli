@@ -1,13 +1,7 @@
 import logging
+from collections.abc import Callable, Sequence
 from multiprocessing import Process
 from pathlib import Path
-from typing import (
-    Callable,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
 
 from rich.logging import RichHandler
 from watchfiles import (
@@ -24,7 +18,7 @@ class ExtensionFilter(DefaultFilter):
         self,
         *,
         extensions: Sequence[str],
-        ignore_paths: Optional[Sequence[Union[str, Path]]] = None,
+        ignore_paths: Sequence[str | Path] | None = None,
     ) -> None:
         self.extensions = tuple(extensions)
         super().__init__(ignore_paths=ignore_paths)
@@ -34,7 +28,7 @@ class ExtensionFilter(DefaultFilter):
 
 
 def _watcher(
-    path: Path, extensions: Sequence[str], action: Callable, action_args: Tuple
+    path: Path, extensions: Sequence[str], action: Callable, action_args: tuple
 ) -> None:
     # logger must be setup in child process
     logging.basicConfig(
@@ -50,7 +44,7 @@ def _watcher(
 
 
 def watch_files(
-    path: Path, extensions: Sequence[str], action: Callable, action_args: Tuple
+    path: Path, extensions: Sequence[str], action: Callable, action_args: tuple
 ) -> Process:
     p = Process(target=_watcher, args=(path, extensions, action, action_args))
     p.start()

@@ -3,7 +3,6 @@ import subprocess
 import tempfile
 from multiprocessing import Process
 from pathlib import Path
-from typing import Optional
 
 import typer
 from getkey import getkey
@@ -44,9 +43,9 @@ log = logging.getLogger(__name__)
 @app.command()
 def create(  # noqa: PLR0913, PLR0917
     profile_name: str = typer.Argument(..., help="Profile to create."),
-    integration_name: Optional[str] = typer.Option(None),
-    integration_extra_args: Optional[str] = typer.Option(None),
-    app_interface: Optional[Path] = typer.Option(
+    integration_name: str | None = typer.Option(None),
+    integration_extra_args: str | None = typer.Option(None),
+    app_interface: Path | None = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -55,9 +54,9 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local app-interface instance git working copy.",
     ),
-    app_interface_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    app_interface_pr: int | None = typer.Option(None, help="PR/MR to use"),
     app_interface_upstream: str = typer.Option("upstream", help="Upstream remote name"),
-    qontract_schemas: Optional[Path] = typer.Option(
+    qontract_schemas: Path | None = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -66,11 +65,11 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local qontract-schemas git working copy.",
     ),
-    qontract_schemas_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    qontract_schemas_pr: int | None = typer.Option(None, help="PR/MR to use"),
     qontract_schemas_upstream: str = typer.Option(
         "upstream", help="Upstream remote name"
     ),
-    qontract_reconcile: Optional[Path] = typer.Option(
+    qontract_reconcile: Path | None = typer.Option(
         None,
         file_okay=False,
         dir_okay=True,
@@ -79,7 +78,7 @@ def create(  # noqa: PLR0913, PLR0917
         exists=True,
         help="Path to local qontract-reconcile git working copy.",
     ),
-    qontract_reconcile_pr: Optional[int] = typer.Option(None, help="PR/MR to use"),
+    qontract_reconcile_pr: int | None = typer.Option(None, help="PR/MR to use"),
     qontract_reconcile_upstream: str = typer.Option(
         "upstream", help="Upstream remote name"
     ),
@@ -278,7 +277,7 @@ def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
                 extensions=qontract_reconcile_monitor_file_extensions.split(" "),
                 action=container_restart,
                 action_args=(
-                    f"qontract-reconcile-{ profile.settings.integration_name }",
+                    f"qontract-reconcile-{profile.settings.integration_name}",
                 ),
             ),
         )
@@ -317,9 +316,7 @@ def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
             key = "q"
 
         if key.lower() == "r":
-            container_restart(
-                f"qontract-reconcile-{ profile.settings.integration_name }"
-            )
+            container_restart(f"qontract-reconcile-{profile.settings.integration_name}")
         elif key.lower() == "b":
             if not env.settings.run_qontract_server:
                 console.print(
