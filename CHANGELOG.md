@@ -1,3 +1,9 @@
+## v0.14.5 (2024-06-19)
+
+### Bugfix
+
+- Fix render bug for docker-compose file.
+
 ## v0.14.4 (2024-06-19)
 
 ### Bugfix

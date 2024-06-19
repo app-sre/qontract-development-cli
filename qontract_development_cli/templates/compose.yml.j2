@@ -35,7 +35,7 @@ services:
     - COMMAND_EXTRA_ARGS={{ profile.settings.command_extra_args }}
     - INTEGRATION_NAME={{ profile.settings.integration_name }}
     - INTEGRATION_EXTRA_ARGS={{ profile.settings.integration_extra_args }}
-    - DRY_RUN={% if profile.settings.dry_run %}--dry-run{% else %}--no-dry-run{%endif%}
+    - DRY_RUN={% if profile.settings.dry_run %}--dry-run{% else %}--no-dry-run{% endif +%}
     - SLEEP_DURATION_SECS={{ profile.settings.sleep_duration_secs }}
     - DEBUGGER={{ profile.settings.debugger }}
     - CONFIG=/config/{{ env.settings.config.name }}
