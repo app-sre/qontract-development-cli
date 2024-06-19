@@ -7,7 +7,10 @@ from jinja2 import (
 )
 
 environment = Environment(
-    loader=FileSystemLoader(str(Path(__file__).parent / "templates"))
+    loader=FileSystemLoader(str(Path(__file__).parent / "templates")),
+    trim_blocks=True,
+    lstrip_blocks=True,
+    keep_trailing_newline=True,
 )
 
 

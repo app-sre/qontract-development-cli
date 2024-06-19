@@ -6,6 +6,7 @@ services:
   internal-certificates:
     image: quay.io/app-sre/internal-redhat-ca:latest
     container_name: internal-certificates
+    platform: linux/amd64
     command: |
       sh -c 'cp -r /etc/pki/. /tmp/'
     volumes:
@@ -14,6 +15,7 @@ services:
 {% if env.settings.run_qontract_reconcile %}
   qontract-reconcile:
     container_name: qontract-reconcile-{{ profile.settings.integration_name }}
+    platform: linux/amd64
     stop_grace_period: 1s
     stop_signal: SIGKILL
     tty: true
@@ -99,6 +101,7 @@ services:
     image: {{ profile.settings.qontract_server_image }}
     {% endif %}
     container_name: qontract-server
+    platform: linux/amd64
     stop_grace_period: 1s
     stop_signal: SIGKILL
     volumes:
@@ -116,6 +119,7 @@ services:
 {% if env.settings.run_vault %}
   vault:
     container_name: vault
+    platform: linux/amd64
     image: "vault:1.5.4"
     environment:
     - VAULT_ADDR=http://127.0.0.1:8200
