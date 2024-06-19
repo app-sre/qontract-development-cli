@@ -1,3 +1,9 @@
+## v0.14.4 (2024-06-19)
+
+### Bugfix
+
+- Remove `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested` log message on Apple Silicon
+
 ## v0.14.3 (2024-06-13)
 
 ### Chore
