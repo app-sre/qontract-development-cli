@@ -1,6 +1,7 @@
 import atexit
 import logging
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
 
@@ -21,11 +22,20 @@ app.add_typer(
 app.add_typer(profile.app, name="profile", help="Profile related commands.")
 
 
+def version_callback(value: bool) -> None:  # noqa: FBT001
+    if value:
+        rich_print(f"Version: {version('qontract-development-cli')}")
+        raise typer.Exit
+
+
 @app.callback(no_args_is_help=True)
 def main(
     *,
     debug: Annotated[bool, typer.Option(help="Enable debug")] = False,
     screen_capture_file: Annotated[Path | None, typer.Option(writable=True)] = None,
+    version: Annotated[  # noqa: ARG001
+        bool | None, typer.Option(callback=version_callback, help="Display version")
+    ] = None,
 ) -> None:
     logging.basicConfig(
         level="DEBUG" if config.debug or debug else "INFO",

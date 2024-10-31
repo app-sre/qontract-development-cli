@@ -25,6 +25,7 @@ pr-check:
 .PHONY: pr-check
 
 test:
+	$(UV_RUN) qd --version
 	$(UV_RUN) ruff check --no-fix
 	$(UV_RUN) ruff format --check
 	$(UV_RUN) mypy $(DIRS)
