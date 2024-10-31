@@ -8,7 +8,21 @@ Qontract Development CLI supports your daily [qontract-reconcile][qontract-recon
 
 [toc]
 
-## Installation
+## Recommended Installation Method
+
+The recommended way to install `qontract-development-cli` is to use the [uv](https://docs.astral.sh/uv/) tool:
+
+```shell
+uv tool install qontract-development-cli
+```
+
+and upgrade an existing installation with:
+
+```shell
+uv tool upgrade qontract-development-cli
+```
+
+## Alternative Installation Methods
 
 You can install this library from [PyPI][pypi-link] with `pip`:
 
@@ -16,16 +30,16 @@ You can install this library from [PyPI][pypi-link] with `pip`:
 python3 -m pip install qontract-development-cli
 ```
 
-Or install it with `pipx`:
+or install it with `pipx`:
 
 ```shell
 pipx install qontract-development-cli
 ```
 
-You can also use `pipx` to run the library without installing it:
+and upgrade an existing installation with:
 
 ```shell
-pipx run qontract-development-cli
+pipx upgrade qontract-development-cli
 ```
 
 ## Quickstart
