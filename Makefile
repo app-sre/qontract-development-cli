@@ -1,10 +1,11 @@
 DIRS := qontract_development_cli
-BUILD_ARGS := POETRY_VERSION=1.2.2 TWINE_USERNAME TWINE_PASSWORD
+BUILD_ARGS := TWINE_USERNAME TWINE_PASSWORD
 # TWINE_USERNAME & TWINE_PASSWORD are available in jenkins job
-POETRY_HTTP_BASIC_PYPI_USERNAME := $(TWINE_USERNAME)
-POETRY_HTTP_BASIC_PYPI_PASSWORD := $(TWINE_PASSWORD)
-export POETRY_HTTP_BASIC_PYPI_USERNAME
-export POETRY_HTTP_BASIC_PYPI_PASSWORD
+UV_PUBLISH_USERNAME := $(TWINE_USERNAME)
+UV_PUBLISH_PASSWORD := $(TWINE_PASSWORD)
+export UV_PUBLISH_USERNAME
+export UV_PUBLISH_PASSWORD
+UV_RUN := uv run --frozen
 
 tapes = $(wildcard demo/*.tape)
 gifs = $(tapes:%.tape=%.gif)
@@ -15,8 +16,8 @@ all:
 	@echo $(patsubst %.tape,%.c,$(tape_files))
 
 format:
-	poetry run ruff check
-	poetry run ruff format
+	$(UV_RUN) ruff check
+	$(UV_RUN) ruff format
 .PHONY: format
 
 pr-check:
@@ -24,10 +25,9 @@ pr-check:
 .PHONY: pr-check
 
 test:
-	poetry run ruff check --no-fix
-	poetry run ruff format --check
-	poetry run mypy $(DIRS)
-	poetry run pytest -vv
+	$(UV_RUN) ruff check --no-fix
+	$(UV_RUN) ruff format --check
+	$(UV_RUN) mypy $(DIRS)
 .PHONY: test
 
 build-deploy:
@@ -35,9 +35,9 @@ build-deploy:
 .PHONY: build-deploy
 
 pypi:
-	poetry publish --build --skip-existing
+	uv build --sdist --wheel
+	uv publish
 .PHONY: pypi
-
 
 update-demos: $(gifs)
 

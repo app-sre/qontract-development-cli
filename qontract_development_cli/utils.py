@@ -1,8 +1,5 @@
 from multiprocessing import Process
-from pathlib import (
-    Path,
-    PosixPath,
-)
+from pathlib import Path, PosixPath
 from typing import Any
 
 import yaml
@@ -27,6 +24,6 @@ console = Console(record=True)
 
 class EndlessProcess(Process):
     def run(self) -> None:
-        if self._target:  # type: ignore
+        if self._target:  # type: ignore[attr-defined]
             while True:
-                self._target(*self._args, **self._kwargs)  # type: ignore
+                self._target(*self._args, **self._kwargs)  # type: ignore[attr-defined]

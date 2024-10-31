@@ -4,11 +4,7 @@ from multiprocessing import Process
 from pathlib import Path
 
 from rich.logging import RichHandler
-from watchfiles import (
-    Change,
-    DefaultFilter,
-    watch,
-)
+from watchfiles import Change, DefaultFilter, watch
 
 log = logging.getLogger(__name__)
 

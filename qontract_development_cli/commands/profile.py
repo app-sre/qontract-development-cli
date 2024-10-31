@@ -1,16 +1,13 @@
+# noqa: A005 - profile is shadowing python built-in 'profile'
 import logging
 import subprocess
 import tempfile
-from multiprocessing import Process
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Annotated
 
 import typer
 from getkey import getkey
-from rich.prompt import (
-    Confirm,
-    Prompt,
-)
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
 from qontract_development_cli.watchdog import watch_files
@@ -37,57 +34,67 @@ from ..shell import (
 from ..templates import template
 from ..utils import console
 
+if TYPE_CHECKING:
+    from multiprocessing import Process
+
 app = typer.Typer()
 log = logging.getLogger(__name__)
-
-# see https://github.com/tiangolo/typer/issues/533
-OptionalStr = Optional[str]  # noqa: UP007
-OptionalInt = Optional[int]  # noqa: UP007
-OptionalPath = Optional[Path]  # noqa: UP007
 
 
 @app.command()
 def create(  # noqa: PLR0913, PLR0917
     profile_name: str = typer.Argument(..., help="Profile to create."),
-    integration_name: OptionalStr = typer.Option(None),
-    integration_extra_args: OptionalStr = typer.Option(None),
-    app_interface: OptionalPath = typer.Option(
-        None,
-        file_okay=False,
-        dir_okay=True,
-        readable=True,
-        resolve_path=True,
-        exists=True,
-        help="Path to local app-interface instance git working copy.",
-    ),
-    app_interface_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
-    app_interface_upstream: str = typer.Option("upstream", help="Upstream remote name"),
-    qontract_schemas: OptionalPath = typer.Option(
-        None,
-        file_okay=False,
-        dir_okay=True,
-        readable=True,
-        resolve_path=True,
-        exists=True,
-        help="Path to local qontract-schemas git working copy.",
-    ),
-    qontract_schemas_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
-    qontract_schemas_upstream: str = typer.Option(
-        "upstream", help="Upstream remote name"
-    ),
-    qontract_reconcile: OptionalPath = typer.Option(
-        None,
-        file_okay=False,
-        dir_okay=True,
-        readable=True,
-        resolve_path=True,
-        exists=True,
-        help="Path to local qontract-reconcile git working copy.",
-    ),
-    qontract_reconcile_pr: OptionalInt = typer.Option(None, help="PR/MR to use"),
-    qontract_reconcile_upstream: str = typer.Option(
-        "upstream", help="Upstream remote name"
-    ),
+    integration_name: Annotated[str | None, typer.Option()] = None,
+    integration_extra_args: Annotated[str | None, typer.Option()] = None,
+    app_interface: Annotated[
+        Path | None,
+        typer.Option(
+            file_okay=False,
+            dir_okay=True,
+            readable=True,
+            resolve_path=True,
+            exists=True,
+            help="Path to local app-interface instance git working copy.",
+        ),
+    ] = None,
+    app_interface_pr: Annotated[int | None, typer.Option(help="PR/MR to use")] = None,
+    app_interface_upstream: Annotated[
+        str, typer.Option(help="Upstream remote name")
+    ] = "upstream",
+    qontract_schemas: Annotated[
+        Path | None,
+        typer.Option(
+            file_okay=False,
+            dir_okay=True,
+            readable=True,
+            resolve_path=True,
+            exists=True,
+            help="Path to local qontract-schemas git working copy.",
+        ),
+    ] = None,
+    qontract_schemas_pr: Annotated[
+        int | None, typer.Option(help="PR/MR to use")
+    ] = None,
+    qontract_schemas_upstream: Annotated[
+        str, typer.Option(help="Upstream remote name")
+    ] = "upstream",
+    qontract_reconcile: Annotated[
+        Path | None,
+        typer.Option(
+            file_okay=False,
+            dir_okay=True,
+            readable=True,
+            resolve_path=True,
+            exists=True,
+            help="Path to local qontract-reconcile git working copy.",
+        ),
+    ] = None,
+    qontract_reconcile_pr: Annotated[
+        int | None, typer.Option(help="PR/MR to use")
+    ] = None,
+    qontract_reconcile_upstream: Annotated[
+        str, typer.Option(help="Upstream remote name")
+    ] = "upstream",
 ) -> None:
     """Create a new profile to run an integration."""
     if profile_name in [p.name for p in Profile.list_all()]:
@@ -132,9 +139,9 @@ def create(  # noqa: PLR0913, PLR0917
 
 @app.command()
 def edit(
-    profile_name: str = typer.Argument(
-        ..., help="Profile to edit.", autocompletion=complete_profile
-    ),
+    profile_name: Annotated[
+        str, typer.Argument(help="Profile to edit.", autocompletion=complete_profile)
+    ],
 ) -> None:
     """Edit a profile in your editor."""
     profile = Profile(name=profile_name)
@@ -153,10 +160,13 @@ def ls() -> None:
 
 @app.command()
 def rm(
-    profile_name: str = typer.Argument(
-        ..., help="Profile to remove.", autocompletion=complete_profile
-    ),
-    force: bool = typer.Option(False, "--force", "-f", help="Do not ask any question."),
+    profile_name: Annotated[
+        str, typer.Argument(help="Profile to remove.", autocompletion=complete_profile)
+    ],
+    *,
+    force: Annotated[
+        bool, typer.Option("--force", "-f", help="Do not ask any question.")
+    ] = False,
 ) -> None:
     """Remove profile."""
     profile = Profile(name=profile_name)
@@ -178,47 +188,53 @@ def show(
 
 
 @app.command(no_args_is_help=True)
-def run(  # noqa: PLR0912, PLR0917, PLR0913, PLR0915
-    env_name: str = typer.Argument(
-        ..., help="Environment to use.", autocompletion=complete_env
-    ),
-    profile_name: str = typer.Argument(
-        ..., help="Profile to run.", autocompletion=complete_profile
-    ),
-    force_recreate: bool = typer.Option(False, help="Recreate all containers."),
-    force_build: bool = typer.Option(False, help="Rebuild all containers."),
-    qontract_reconcile_monitor_file_changes: bool = typer.Option(
-        True,
-        help="Restart integration when files changed in qontract-reconcile path",
-    ),
-    qontract_reconcile_monitor_file_extensions: str = typer.Option(
-        ".py .pyx .pyd",
-        help="Monitor these file extensions",
-    ),
-    qontract_schemas_monitor_file_changes: bool = typer.Option(
-        True,
-        help="Rebuild bundle and restart qontract-server when files changed in qontract-schemas path",
-    ),
-    qontract_schemas_monitor_file_extensions: str = typer.Option(
-        ".json .yml .yaml",
-        help="Monitor these file extensions",
-    ),
-    app_interface_monitor_file_changes: bool = typer.Option(
-        True,
-        help="Rebuild bundle and restart qontract-server when files changed in app-interface path",
-    ),
-    app_interface_monitor_file_extensions: str = typer.Option(
-        ".json .yml .yaml",
-        help="Monitor these file extensions",
-    ),
-    skip_initial_make_bundle: bool = typer.Option(
-        False,
-        help="Do not run 'make bundle' before starting the integration",
-    ),
-    no_dry_run: bool = typer.Option(
-        False,
-        help="Disable dry-run mode",
-    ),
+def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
+    env_name: Annotated[
+        str, typer.Argument(help="Environment to use.", autocompletion=complete_env)
+    ],
+    profile_name: Annotated[
+        str, typer.Argument(help="Profile to run.", autocompletion=complete_profile)
+    ],
+    *,
+    force_recreate: Annotated[
+        bool, typer.Option(help="Recreate all containers.")
+    ] = False,
+    force_build: Annotated[bool, typer.Option(help="Rebuild all containers.")] = False,
+    qontract_reconcile_monitor_file_changes: Annotated[
+        bool,
+        typer.Option(
+            help="Restart integration when files changed in qontract-reconcile path"
+        ),
+    ] = True,
+    qontract_reconcile_monitor_file_extensions: Annotated[
+        str, typer.Option(help="Monitor these file extensions")
+    ] = ".py .pyx .pyd",
+    qontract_schemas_monitor_file_changes: Annotated[
+        bool,
+        typer.Option(
+            help="Rebuild bundle and restart qontract-server when files changed in qontract-schemas path"
+        ),
+    ] = True,
+    qontract_schemas_monitor_file_extensions: Annotated[
+        str, typer.Option(help="Monitor these file extensions")
+    ] = ".json .yml .yaml",
+    app_interface_monitor_file_changes: Annotated[
+        bool,
+        typer.Option(
+            help="Rebuild bundle and restart qontract-server when files changed in app-interface path"
+        ),
+    ] = True,
+    app_interface_monitor_file_extensions: Annotated[
+        str, typer.Option(help="Monitor these file extensions")
+    ] = ".json .yml .yaml",
+    skip_initial_make_bundle: Annotated[
+        bool,
+        typer.Option(help="Do not run 'make bundle' before starting the integration"),
+    ] = False,
+    no_dry_run: Annotated[
+        bool,
+        typer.Option(help="Disable dry-run mode"),
+    ] = False,
 ) -> None:
     """Run a profile."""
     env = Env(name=env_name)

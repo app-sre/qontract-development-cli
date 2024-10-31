@@ -1,10 +1,14 @@
 import os
 import platform
 from pathlib import Path
-from typing import Any
 
-from appdirs import AppDirs  # type: ignore
-from pydantic import BaseSettings
+from appdirs import AppDirs
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
 
 from .utils import yaml
 
@@ -20,14 +24,6 @@ user_cache_dir.mkdir(parents=True, exist_ok=True)
 is_mac = platform.system().lower() == "darwin"
 
 
-def yaml_config_settings_source(settings: BaseSettings) -> dict[str, Any]:
-    encoding = settings.__config__.env_file_encoding
-    if user_config_file.exists():
-        cfg = yaml.safe_load(user_config_file.read_text(encoding))
-        return cfg if cfg else {}
-    return {}
-
-
 class Config(BaseSettings):
     debug: bool = False
     defaults_profile: str = "defaults"
@@ -37,31 +33,41 @@ class Config(BaseSettings):
     profiles_dir: Path = user_config_dir / "profiles"
     worktrees_dir: Path = user_cache_dir / "worktrees"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
+        super().__init__()
         self.environments_dir.mkdir(parents=True, exist_ok=True)
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
 
-    class Config:
-        extra = "ignore"
-        env_file_encoding = "utf-8"
-        env_prefix = "qontract_development_"
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return (
+            init_settings,
+            env_settings,
+            YamlConfigSettingsSource(settings_cls),
+        )
 
-        @classmethod
-        def customise_sources(
-            cls, init_settings: Any, env_settings: Any, file_secret_settings: Any
-        ) -> tuple:
-            return (init_settings, env_settings, yaml_config_settings_source)
+    model_config = SettingsConfigDict(
+        yaml_file=user_config_file,
+        yaml_file_encoding="utf-8",
+        env_prefix="qontract_development_",
+    )
 
     def save(self) -> None:
         user_config_file.write_text(
             yaml.dump(
-                self.dict(),
+                self.model_dump(),
                 explicit_start=True,
                 indent=4,
                 default_flow_style=False,
             ),
-            encoding=self.__config__.env_file_encoding,
+            encoding=self.model_config["yaml_file_encoding"],
         )
 
 

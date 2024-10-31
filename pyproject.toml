@@ -1,39 +1,39 @@
-[tool.poetry]
+[project]
 name = "qontract-development-cli"
 version = "0.14.5"
 description = "Helper tool for qontract-reconcile development"
-authors = ["Christian Assing <cassing@redhat.com>"]
-license = "MIT"
+authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
+license = { text = "MIT" }
 readme = "README.md"
-repository = "http://github.com/chassing/qontract-development-cli"
+requires-python = ">= 3.11"
+dependencies = [
+    "appdirs ~=1.4.4",
+    "getkey ~=0.6.5",
+    "jinja2 ~=3.1.4",
+    "pydantic ~=2.9.2",
+    "pydantic-settings ~=2.6.0",
+    "pyyaml ~=6.0.2",
+    "rich ~=13.9.3",
+    "typer ~=0.12.5",
+    "watchfiles ~=0.24.0",
+]
+
+[dependency-groups]
+dev = ["mypy ~=1.13.0", "ruff ~=0.7.1", "types-pyyaml ~=6.0.12"]
+[project.urls]
 homepage = "http://github.com/chassing/qontract-development-cli"
+repository = "http://github.com/chassing/qontract-development-cli"
+documentation = "http://github.com/chassing/qontract-development-cli"
 
-[tool.poetry.dependencies]
-python = ">=3.11,<4.0"
-Jinja2 = "^3.1.2"
-typer = "^0.9.0"
-rich = "^13.7.0"
-pydantic = "^1.10.2"
-appdirs = "^1.4.4"
-PyYAML = "^6.0.1"
-getkey = "^0.6.5"
-watchfiles = "^0.21.0"
-
-[tool.poetry.dev-dependencies]
-types-PyYAML = "^6.0.12"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-mypy = "^1.8.0"
-types-pyyaml = "^6.0.12.11"
-ruff = "^0.4.8"
+[project.scripts]
+qd = "qontract_development_cli.__main__:app"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.scripts]
-qd = "qontract_development_cli.__main__:app"
+[tool.hatch.build.targets.sdist]
+only-include = ["qontract_development_cli"]
 
 [tool.mypy]
 plugins = "pydantic.mypy"
@@ -46,40 +46,52 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [[tool.mypy.overrides]]
-module = ["getkey.*"]
+module = ["getkey.*", "appdirs.*"]
 ignore_missing_imports = true
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-version = "0.11.1"
-version_files = ["pyproject.toml:version"]
-update_changelog_on_bump = true
-major_version_zero = true
-change_type_map = { "feat" = "Features", "fix" = "Bug Fixes" }
-tag_format = "v$version"
 
 [tool.ruff]
 line-length = 88
 target-version = 'py311'
-required-version = "0.4.8"
 src = ["qontract_development_cli"]
 extend-exclude = [".local", ".cache"]
 fix = true
 
 [tool.ruff.lint]
 preview = true
-# defaults are ["E4", "E7", "E9", "F"]
-extend-select = [
-    # flake8 default rules
-    "E1", # preview rule
-    "E2", # preview rule
-    "W",
-    # isort
-    "I",
-    # pylint
-    "PL",
-    # pyupgrade
-    "UP",
+select = ["ALL"]
+ignore = [
+    "ANN401", # Disallow *args, **kwargs with ANY
+    "ARG003", # Unusable arguments
+    "CPY",    # Missing copyright header
+    "D10",    # docstrings
+    "D203",   # 1 blank line required before class docstring
+    "D211",   # No blank lines allowed before class docstring
+    "D212",   # multi-line-summary-first-line
+    "D213",   # multi-line-summary-second-line
+    "D4",     # Doc string style
+    "E501",   # Line too long
+    "G004",   # Logging statement uses string formatting
+    "S101",   # Use of assert detected. Pytest uses assert
+    "EM101",
+    "EM102",
+    "S404",   # subprocess possibly insecure
+    "S603",   # subprocess check user input
+    "S607",   # subprocess partical executable path
+    "TID252", # relative imports
+    "TRY003",
+    # pydoclint
+    "DOC",
+    # May conflict with the formatter, https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q",
+    "COM812",
+    "COM819",
+    "ISC001",
 ]
 
 [tool.ruff.format]

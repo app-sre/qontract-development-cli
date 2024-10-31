@@ -1,12 +1,10 @@
+import contextlib
 import copy
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar, Self
 
-from pydantic import (
-    BaseModel,
-    validator,
-)
+from pydantic import BaseModel, model_validator
 
 from .config import config
 from .utils import yaml
@@ -29,7 +27,7 @@ class ProfileSettings(BaseModel):
     container_uid: int = os.getuid()
     debugger: str = "debugpy"
     dry_run: bool = True
-    integration_extra_args: str = ""
+    integration_extra_args: str | int = ""
     integration_name: str = ""
     log_level: str = "INFO"
     app_interface_path: Path | None = None
@@ -55,39 +53,42 @@ class ProfileSettings(BaseModel):
     localstack_compose_file: Path | None
     skip_initial_make_bundle: bool = False
 
-    @validator("localstack_compose_file", always=True)
-    def default_localstack_compose_file(cls, v: Path | None, values: dict) -> Path:
-        return (
-            v
-            if v
-            else values["qontract_reconcile_path"] / "dev/localstack/docker-compose.yml"
+    @model_validator(mode="after")
+    def default_localstack_compose_file(self) -> Self:
+        self.localstack_compose_file = (
+            self.localstack_compose_file
+            or self.qontract_reconcile_path / "dev/localstack/docker-compose.yml"
         )
+        return self
 
 
 class Base(BaseModel):
     name: str
     default: bool = False
-    _root: Path
+    root: ClassVar[Path]
 
     def __lt__(self, other: "Base") -> bool:
         return self.name < other.name
 
-    @validator("name")
-    def name_remove_suffix(cls, v: str) -> str:
-        p = Path(v)
-        return str(p.parent / p.stem)
+    @model_validator(mode="after")
+    def name_remove_suffix(self) -> Self:
+        p = Path(self.name)
+        self.name = str(p.parent / p.stem)
+        return self
 
     @property
     def file(self) -> Path:
-        p = self._root / self.name
+        p = self.root / self.name
         p.parent.mkdir(parents=True, exist_ok=True)
         return p.with_suffix(".yml")
 
     @classmethod
     def list_all(cls) -> list["Base"]:
         items = []
-        for f in [f for f in list(cls._root.glob("**/*")) if f.is_file()]:
-            items.append(cls(name=str(f.relative_to(cls._root))))
+        for f in [f for f in list(cls.root.glob("**/*")) if f.is_file()]:
+            items.append(  # noqa: PERF401
+                cls(name=str(f.relative_to(cls.root)))
+            )
         return items
 
     @property
@@ -101,18 +102,18 @@ class Base(BaseModel):
     @property
     def settings_as_dict(self) -> dict[str, Any]:
         values = self.default_settings_as_dict
-        try:
+        with contextlib.suppress(FileNotFoundError):
             values.update(
                 **yaml.safe_load(
-                    self.file.read_text(encoding=config.__config__.env_file_encoding)
+                    self.file.read_text(
+                        encoding=config.model_config["yaml_file_encoding"]
+                    )
                 )
             )
-        except FileNotFoundError:
-            pass
         return values
 
     def dump(self) -> None:
-        values = self.settings.dict(  # type: ignore
+        values = self.settings.dict(  # type: ignore[attr-defined]
             exclude_defaults=not self.default, exclude_unset=not self.default
         )
         self.file.write_text(
@@ -126,7 +127,7 @@ class Base(BaseModel):
 
 
 class Env(Base):
-    _root: Path = config.environments_dir
+    root: ClassVar[Path] = config.environments_dir
     default: bool = True
     settings: EnvSettings
 
@@ -141,7 +142,7 @@ class Env(Base):
 
 
 class Profile(Base):
-    _root: Path = config.profiles_dir
+    root: ClassVar[Path] = config.profiles_dir
     settings: ProfileSettings
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -155,17 +156,17 @@ class Profile(Base):
         defaults = {
             "integration_name": "changeme",
             "integration_extra_args": "",
+            "localstack_compose_file": None,
         }
-        try:
+        with contextlib.suppress(FileNotFoundError, AttributeError, NameError):
             defaults.update(
                 yaml.safe_load(
                     DEFAULT_PROFILE.file.read_text(
-                        encoding=config.__config__.env_file_encoding
+                        encoding=config.model_config["yaml_file_encoding"]
                     )
                 )
             )
-        except (FileNotFoundError, AttributeError, NameError):
-            pass
+
         return defaults
 
     def dump(self) -> None:
