@@ -12,10 +12,7 @@ from typing import Any
 
 from .models import Profile
 from .templates import template
-from .utils import (
-    EndlessProcess,
-    console,
-)
+from .utils import EndlessProcess, console
 
 log = logging.getLogger(__name__)
 
@@ -26,12 +23,13 @@ _docker_compose_bin = (
 
 def compose_up(
     compose_file: Path,
+    *,
     force_recreate: bool = False,
     remove_orphan: bool = True,
     build: bool = False,
 ) -> None:
     log.info("Starting all containers")
-    compose_cmd = _docker_compose_bin + ["-f", str(compose_file), "up", "-d"]
+    compose_cmd = [*_docker_compose_bin, "-f", str(compose_file), "up", "-d"]
     if force_recreate:
         compose_cmd.append("--force-recreate")
     if remove_orphan:
@@ -43,12 +41,7 @@ def compose_up(
 
 def compose_restart(compose_file: Path, container: str) -> None:
     log.info(f"Restarting {container} container")
-    compose_cmd = _docker_compose_bin + [
-        "-f",
-        str(compose_file),
-        "restart",
-        container,
-    ]
+    compose_cmd = [*_docker_compose_bin, "-f", str(compose_file), "restart", container]
     subprocess.run(compose_cmd, check=True)
 
 
@@ -60,12 +53,12 @@ def container_restart(container: str) -> None:
 
 def compose_down(compose_file: Path) -> None:
     log.info("Stopping all containers")
-    compose_cmd = _docker_compose_bin + ["-f", str(compose_file), "down"]
+    compose_cmd = [*_docker_compose_bin, "-f", str(compose_file), "down"]
     subprocess.run(compose_cmd, check=True)
 
 
 def compose_log_tail(compose_file: Path) -> Process:
-    compose_cmd = _docker_compose_bin + ["-f", str(compose_file), "logs", "--follow"]
+    compose_cmd = [*_docker_compose_bin, "-f", str(compose_file), "logs", "--follow"]
     p = EndlessProcess(target=subprocess.run, args=(compose_cmd,))
     p.start()
     return p
@@ -74,7 +67,7 @@ def compose_log_tail(compose_file: Path) -> Process:
 def compose_list_projects() -> list[dict[str, Any]]:
     return json.loads(
         subprocess.run(
-            _docker_compose_bin + ["ls", "--format", "json"],
+            [*_docker_compose_bin, "ls", "--format", "json"],
             capture_output=True,
             check=True,
         ).stdout
@@ -86,7 +79,7 @@ def compose_stop_project(project_name: str) -> None:
     for p in compose_list_projects():
         if p["Name"] == project_name:
             subprocess.run(
-                _docker_compose_bin + ["-f", p["ConfigFiles"], "down"], check=True
+                [*_docker_compose_bin, "-f", p["ConfigFiles"], "down"], check=True
             )
 
 
@@ -97,7 +90,9 @@ def make_bundle(app_interface_path: Path, qontract_server_path: Path) -> None:
         "APP_INTERFACE_PATH": str(app_interface_path.expanduser().absolute())
     })
     subprocess.run(
-        ["make", "-C", str(qontract_server_path), "bundle"], env=shell_env, check=False
+        ["make", "-C", str(qontract_server_path), "bundle"],
+        env=shell_env,
+        check=False,
     )
 
 

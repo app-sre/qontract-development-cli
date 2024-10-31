@@ -5,14 +5,8 @@ from pathlib import Path
 import typer
 from rich.prompt import Prompt
 
-from ..config import (
-    config,
-    user_config_file,
-)
-from ..models import (
-    DEFAULT_PROFILE,
-    Env,
-)
+from ..config import config, user_config_file
+from ..models import DEFAULT_PROFILE, Env
 from ..utils import console
 
 app = typer.Typer()

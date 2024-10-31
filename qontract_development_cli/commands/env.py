@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from typing import Annotated
 
 import typer
 from rich.prompt import Confirm
@@ -14,7 +15,9 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def edit(env_name: str = typer.Argument(..., help="Env to edit or create.")) -> None:
+def edit(
+    env_name: Annotated[str, typer.Argument(help="Env to edit or create.")],
+) -> None:
     """Create/edit an environment file in your editor."""
     env = Env(name=env_name)
     console.print(f"Opening [b]{env.name}[/] in your editor ...")
@@ -32,9 +35,9 @@ def ls() -> None:
 
 @app.command()
 def rm(
-    env_name: str = typer.Argument(
-        ..., help="Environment to remove.", autocompletion=complete_env
-    ),
+    env_name: Annotated[
+        str, typer.Argument(help="Environment to remove.", autocompletion=complete_env)
+    ],
 ) -> None:
     """Remove environment."""
     env = Env(name=env_name)
@@ -44,9 +47,9 @@ def rm(
 
 @app.command()
 def show(
-    env_name: str = typer.Argument(
-        ..., help="Environment to display.", autocompletion=complete_env
-    ),
+    env_name: Annotated[
+        str, typer.Argument(help="Environment to display.", autocompletion=complete_env)
+    ],
 ) -> None:
     """Display environment."""
     env = Env(name=env_name)
