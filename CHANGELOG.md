@@ -1,3 +1,11 @@
+# Changelog
+
+## v0.15.3 (2024-12-09)
+
+### Chore
+
+* Use Konflux for CI/CD
+
 ## v0.15.2 (2024-12-06)
 
 ### Bugfix

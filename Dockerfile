@@ -1,27 +1,29 @@
-FROM registry.access.redhat.com/ubi9/python-311:1-77.1726664316
-COPY --from=ghcr.io/astral-sh/uv:0.4.27 /uv /bin/uv
+FROM registry.access.redhat.com/ubi9/python-311:1-77.1726664316 as base
+COPY --from=ghcr.io/astral-sh/uv:0.5.6@sha256:92aa10fc236a5cbd3624c9909f855a860bd209fef17756c831ee84c478423517 /uv /bin/uv
 
-ARG TWINE_USERNAME
-ARG TWINE_PASSWORD
-ARG MAKE_TARGET
+COPY LICENSE /licenses/
 
-USER 0
-WORKDIR /app
-RUN chown -R 1001:0 .
+ENV \
+    # use venv from ubi image
+    UV_PROJECT_ENVIRONMENT=$APP_ROOT \
+    # disable uv cache. it doesn't make sense in a container
+    UV_NO_CACHE=true
 
-USER 1001
-
-# Install dependencies
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project
-
+# Test lock file is up to date
+RUN uv lock --locked
 # other project related files
-COPY LICENSE README.md Makefile ./
-
+COPY README.md Makefile ./
 # the source code
 COPY qontract_development_cli ./qontract_development_cli
 
-# Sync the project
-RUN uv sync --frozen --no-editable
+# Install dependencies
+RUN uv sync --frozen
 
-RUN make $MAKE_TARGET
+FROM base AS test
+RUN make test
+
+FROM test AS pypi
+# Secrets are owned by root and are not readable by others :(
+USER root
+RUN --mount=type=secret,id=app-sre-pypi-credentials/token make -s pypi
