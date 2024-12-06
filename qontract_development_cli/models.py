@@ -22,7 +22,7 @@ class EnvSettings(BaseModel):
 
 
 class ProfileSettings(BaseModel):
-    command: str = "dockerfiles/hack/run-integration.py"
+    command: str = "run-integration"
     command_extra_args: str = ""
     container_uid: int = os.getuid()
     debugger: str = "debugpy"

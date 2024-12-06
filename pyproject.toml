@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.15.1"
+version = "0.15.2"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -9,17 +9,17 @@ requires-python = ">= 3.11"
 dependencies = [
     "appdirs ~=1.4.4",
     "getkey ~=0.6.5",
-    "jinja2 ~=3.1.4",
-    "pydantic ~=2.9.2",
-    "pydantic-settings ~=2.6.0",
+    "jinja2 ~=3.1",
+    "pydantic ~=2.9",
+    "pydantic-settings ~=2.6",
     "pyyaml ~=6.0.2",
-    "rich ~=13.9.3",
+    "rich ~=13.9",
     "typer ~=0.12.5",
     "watchfiles ~=0.24.0",
 ]
 
 [dependency-groups]
-dev = ["mypy ~=1.13.0", "ruff ~=0.7.1", "types-pyyaml ~=6.0.12"]
+dev = ["mypy ~=1.13", "ruff ~=0.7", "types-pyyaml ~=6.0"]
 [project.urls]
 homepage = "http://github.com/chassing/qontract-development-cli"
 repository = "http://github.com/chassing/qontract-development-cli"
