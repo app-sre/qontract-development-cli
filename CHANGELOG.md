@@ -1,3 +1,13 @@
+## v0.15.2 (2024-12-06)
+
+### Bugfix
+
+* Update default `config.command` because [qontract-reconcile - uv migrations](https://github.com/app-sre/qontract-reconcile/pull/4790) changes the `run-integration` command.
+
+### Chore
+
+* Bump dependencies
+
 ## v0.15.1 (2024-10-31)
 
 ### Chore
