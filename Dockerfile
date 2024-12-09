@@ -1,5 +1,5 @@
 FROM registry.access.redhat.com/ubi9/python-311:1-77.1726664316
-COPY --from=ghcr.io/astral-sh/uv:0.4.27 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.5.7 /uv /bin/uv
 
 ARG TWINE_USERNAME
 ARG TWINE_PASSWORD
