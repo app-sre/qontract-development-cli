@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.15.2"
+version = "0.15.3"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -35,7 +35,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.sdist]
 only-include = ["qontract_development_cli"]
 
+[tool.hatch.build.targets.wheel]
+only-include = ["qontract_development_cli"]
+
 [tool.mypy]
+files = ["qontract_development_cli"]
 plugins = "pydantic.mypy"
 enable_error_code = "truthy-bool, redundant-expr"
 no_implicit_optional = true
