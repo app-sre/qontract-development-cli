@@ -222,7 +222,7 @@ Note that the Qontract Reconcile container will not start running until it is co
 }
 ```
 
-[PyCharm instructions](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html).
+**Please note that development does not currently work with PyCharm as debugpy is not yet supported. [This issue is being tracked here](https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy)**
 
 ### PR/MR support
 
