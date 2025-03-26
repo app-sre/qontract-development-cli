@@ -200,6 +200,30 @@ The command line flag takes precedence over any configuration you might have in 
 
 > :point_right: **Bold keys** are mandatory or should be customized.
 
+### Connecting your IDE to QR
+
+Note that the Qontract Reconcile container will not start running until it is connected to by a debugger. You can use a config like this for VSCode:
+
+```json
+{
+  "name": "Python: Docker Attach",
+  "type": "debugpy",
+  "request": "attach",
+  "connect": {
+    "host": "127.0.0.1",
+    "port": 5678
+  },
+  "pathMappings": [
+    {
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "."
+    }
+  ]
+}
+```
+
+**Please note that development does not currently work with PyCharm as debugpy is not yet supported. [This issue is being tracked here](https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy)**
+
 ### PR/MR support
 
 It's a pretty handy feature to create a profile from a pull request (merge request). E.g.:
