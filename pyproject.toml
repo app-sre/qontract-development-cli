@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.15.4"
+version = "0.15.5"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
