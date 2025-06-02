@@ -1,4 +1,3 @@
-# noqa: A005 - profile is shadowing python built-in 'profile'
 import logging
 import subprocess
 import tempfile
