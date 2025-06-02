@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.15.4"
+version = "0.15.5"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -14,7 +14,7 @@ dependencies = [
     "pydantic-settings ~=2.6",
     "pyyaml ~=6.0.2",
     "rich ~=14.0",
-    "typer ~=0.15.1",
+    "typer ~=0.16.0",
     "watchfiles ~=1.0.0",
 ]
 

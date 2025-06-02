@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.5 (2025-06-02)
+
+### Chore
+
+* Bump dependencies
+
 ## v0.15.4 (2024-12-10)
 
 ### Chore
