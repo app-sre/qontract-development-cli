@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.15.6 (2025-08-04)
+
+### Chore
+
+* Use Konflux builds for `qontract-reconcile` and `qontract-server` images
+* Bump dependencies
+
 ## v0.15.5 (2025-06-02)
 
 ### Chore
