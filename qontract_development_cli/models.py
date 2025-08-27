@@ -48,6 +48,7 @@ class ProfileSettings(BaseModel):
     sleep_duration_secs: int = 10
     additional_environment: dict[str, Any] = {}
     internal_redhat_ca: bool = False
+    internal_redhat_ca_image: str = "quay.io/redhat-services-prod/app-sre-tenant/container-images-int-master/internal-redhat-ca-master:latest"
     extra_hosts: list[str] = []
     localstack: bool = False
     localstack_compose_file: Path | None
