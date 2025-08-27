@@ -4,7 +4,7 @@ services:
 
 {% if profile.settings.internal_redhat_ca %}
   internal-certificates:
-    image: quay.io/app-sre/internal-redhat-ca:latest
+    image: {{ profile.settings.internal_redhat_ca_image }}
     container_name: internal-certificates
     platform: linux/amd64
     command: |
