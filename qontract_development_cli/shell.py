@@ -64,6 +64,19 @@ def compose_log_tail(compose_file: Path) -> Process:
     return p
 
 
+def kill_log_tail(p: Process, compose_file: Path) -> None:
+    p.kill()
+    subprocess.run(
+        [
+            "pkill",
+            "-9",
+            "-f",
+            " ".join([*_docker_compose_bin, "-f", str(compose_file), "logs"]),
+        ],
+        check=False,
+    )
+
+
 def compose_list_projects() -> list[dict[str, Any]]:
     return json.loads(
         subprocess.run(

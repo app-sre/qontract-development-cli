@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.15.8 (2025-10-02)
+
+### Bugfix
+
+* Always shutdown log tail process on exit
+
+## v0.15.7 (2025-08-27)
+
+### Bugfix
+
+* Update internal CA image
+* Introduce `internal_redhat_ca_image` setting
+
 ## v0.15.6 (2025-08-04)
 
 ### Chore
