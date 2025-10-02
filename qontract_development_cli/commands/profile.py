@@ -27,6 +27,7 @@ from ..shell import (
     compose_up,
     container_restart,
     fetch_pull_requests,
+    kill_log_tail,
     make_bundle,
     make_bundle_and_restart_server,
 )
@@ -352,7 +353,7 @@ def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
         elif key.lower() == "q":
             for p in file_watchers:
                 p.kill()
-            log_tail_proc.kill()
+            kill_log_tail(log_tail_proc, compose_file)
             compose_down(compose_file)
             raise typer.Exit(0)
         else:
