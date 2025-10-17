@@ -41,6 +41,7 @@ services:
     - CONFIG=/config/{{ env.settings.config.name }}
     - APP_INTERFACE_STATE_BUCKET={{ env.settings.app_interface_state_bucket }}
     - APP_INTERFACE_STATE_BUCKET_ACCOUNT={{ env.settings.app_interface_state_bucket_account }}
+    - GITHUB_API=https://github-mirror.devshift.net
 {% if profile.settings.internal_redhat_ca %}
     - REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
 {% endif %}
