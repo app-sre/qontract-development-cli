@@ -1,0 +1,21 @@
+services:
+  # Cache/Broker (Redis or Valkey compatible)
+  cache:
+    container_name: cache
+    platform: linux/amd64
+    image: {{ profile.settings.cache_image }}
+
+    ports:
+    - "6379:6379"
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+    volumes:
+    - cache_data:/data
+
+volumes:
+  cache_data:
