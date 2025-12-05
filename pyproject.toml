@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.15.8"
+version = "0.16.0"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -19,7 +19,13 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy ~=1.13", "ruff ~=0.7", "types-pyyaml ~=6.0"]
+dev = [
+    # dev dependencies
+    "mypy ~=1.13",
+    "ruff ~=0.7",
+    "types-pyyaml ~=6.0",
+]
+
 [project.urls]
 homepage = "http://github.com/chassing/qontract-development-cli"
 repository = "http://github.com/chassing/qontract-development-cli"
