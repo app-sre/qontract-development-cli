@@ -130,6 +130,9 @@ An environment specifies app-interface instance settings, e.g., **dev** vs. **pr
 | app_interface_state_bucket_account | AWS S3 account                       | empty                                          |
 | **config**                         | app-interface config                 | ~/workspace/qontract-reconcile/config.dev.toml |
 | gitlab_pr_submitter_queue_url      | Gitlab pr submitter queue url        |                                                |
+| run_qontract_api                   | Run qontract-api container           | false                                          |
+| run_qontract_api_worker            | Run qontract-api-worker container    | false                                          |
+| run_cache                          | Run cache (Redis) container          | false                                          |
 | run_qontract_reconcile             | Run qontract-reconcile container     | true                                           |
 | run_qontract_server                | Run qontract-server container        | true                                           |
 | run_vault                          | Run vault container                  | false                                          |
@@ -165,39 +168,55 @@ The command line flag takes precedence over any configuration you might have in 
 
 #### Profile Settings
 
-| **Key**                        | **Description**                                                                                                                                                              | **Default**                                                  |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| additional_environment         | Dictionary of additional environment variables to pass to the qontract-reconcile container                                                                                   | `{}`                                                         |
-| container_uid                  | Change ownership of /recconcile files in container to this user id                                                                                                           | current UID                                                  |
-| command                        | Command to run in the qontract-reconcile container.                                                                                                                          | `dockerfiles/hack/run-integration.py`                        |
-| command_extra_args             | Additional arguments to pass to the command.                                                                                                                                 |                                                              |
-| debugger                       | Python debugger                                                                                                                                                              | `debugpy`                                                    |
-| dry_run                        | Run --dry-run mode                                                                                                                                                           | `true`                                                       |
-| extra_hosts                    | List of 'HOSTNAME:IP' mapping entries for qontract-reconcile `/etc/hosts`. See [extra_hosts](https://docs.docker.com/compose/compose-file/#extra_hosts) docker compose file. | `[]`                                                         |
-| **integration_name**           | Intergration name                                                                                                                                                            |                                                              |
-| **integration_extra_args**     | Intergration extra arguments                                                                                                                                                 |                                                              |
-| **internal_redhat_ca**         | Inject Red Hat internal CAs and `REQUESTS_CA_BUNDLE` environment variable                                                                                                    | `false`                                                      |
-| internal_redhat_ca_image       | The Red Hat internal CA image                                                                                                                                                | Internal one                                                 |
-| log_level                      | Log level                                                                                                                                                                    | `info`                                                       |
-| app_interface_path             | App-interface instance path. (Overrides *env.app_interface_path*)                                                                                                            |                                                              |
-| app_interface_pr               | App-interface PR/MR number                                                                                                                                                   |                                                              |
-| app_interface_upstream         | Upstream remote name                                                                                                                                                         | `upstream`                                                   |
-| qontract_reconcile_build_image | Build qontract-reconcile image                                                                                                                                               | `true`                                                       |
-| qontract_reconcile_image       | Qontract-reconcile image                                                                                                                                                     | `quay.io/app-sre/qontract-reconcile:latest`                  |
-| qontract_reconcile_path        | Qontract-reconcile path                                                                                                                                                      | `~/workspace/qontract-reconcile`                             |
-| qontract_reconcile_pr          | Qontract-reconcile PR/MR number                                                                                                                                              |                                                              |
-| qontract_reconcile_upstream    | Upstream remote name                                                                                                                                                         | `upstream`                                                   |
-| qontract_server_build_image    | Build qontract-server image                                                                                                                                                  | `true`                                                       |
-| qontract_server_image          | Qontract-server image                                                                                                                                                        | `quay.io/app-sre/qontract-server:lates`t                     |
-| qontract_server_path           | Qontract-server path                                                                                                                                                         | `~/workspace/qontract-server`                                |
-| qontract_schemas_path          | Qontract-schemas path                                                                                                                                                        | `~/workspace/qontract-schemas`                               |
-| qontract_schemas_pr            | Qontract-schemas PR/MR number                                                                                                                                                |                                                              |
-| qontract_schemas_upstream      | Upstream remote name                                                                                                                                                         | `upstream`                                                   |
-| run_once                       | If 'true', execute the integration once and exit                                                                                                                             | `true`                                                       |
-| sleep_duration_secs            | If not *run_once*, sleep duration until integration runs again                                                                                                               | `10`                                                         |
-| localstack                     | Run localstack container and set AWS related environment variables                                                                                                           | `false`                                                      |
-| localstack_compose_file        | Path to your Localstack docker-compose file                                                                                                                                  | `qontract_server_path` / `dev/localstack/docker-compose.yml` |
-| skip_initial_make_bundle       | Skip initial make bundle step                                                                                                                                                | `false`                                                      |
+| **Key**                           | **Description**                                                                                                                                                              | **Default**                                                          |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| additional_environment            | Dictionary of additional environment variables to pass to the qontract-reconcile container                                                                                   | `{}`                                                                 |
+| container_uid                     | Change ownership of /recconcile files in container to this user id                                                                                                           | current UID                                                          |
+| command                           | Command to run in the qontract-reconcile container.                                                                                                                          | `run-integration`                                                    |
+| command_extra_args                | Additional arguments to pass to the command.                                                                                                                                 |                                                                      |
+| debugger                          | Python debugger                                                                                                                                                              | `debugpy`                                                            |
+| dry_run                           | Run --dry-run mode                                                                                                                                                           | `true`                                                               |
+| extra_hosts                       | List of 'HOSTNAME:IP' mapping entries for qontract-reconcile `/etc/hosts`. See [extra_hosts](https://docs.docker.com/compose/compose-file/#extra_hosts) docker compose file. | `[]`                                                                 |
+| **integration_name**              | Intergration name                                                                                                                                                            |                                                                      |
+| **integration_extra_args**        | Intergration extra arguments                                                                                                                                                 |                                                                      |
+| **internal_redhat_ca**            | Inject Red Hat internal CAs and `REQUESTS_CA_BUNDLE` environment variable                                                                                                    | `false`                                                              |
+| internal_redhat_ca_image          | The Red Hat internal CA image                                                                                                                                                | Internal one                                                         |
+| log_level                         | Log level                                                                                                                                                                    | `info`                                                               |
+| app_interface_path                | App-interface instance path. (Overrides *env.app_interface_path*)                                                                                                            |                                                                      |
+| app_interface_pr                  | App-interface PR/MR number                                                                                                                                                   |                                                                      |
+| app_interface_upstream            | Upstream remote name                                                                                                                                                         | `upstream`                                                           |
+| cache_image                       | Cache (Redis) image                                                                                                                                                          | `redis:7-alpine`                                                     |
+| cache_compose_file                | Cache docker-compose file template                                                                                                                                           | `cache.yml.j2`                                                       |
+| qontract_api_build_image          | Build qontract-api image                                                                                                                                                     | `true`                                                               |
+| qontract_api_image                | Qontract-api image                                                                                                                                                           | `quay.io/redhat-services-prod/.../qontract-api-master:latest`        |
+| qontract_api_compose_file         | Qontract-api docker-compose file template                                                                                                                                    | `api.yml.j2`                                                         |
+| qontract_api_debugger_port        | Debugger port for qontract-api                                                                                                                                               | `5679`                                                               |
+| qontract_api_worker_build_image   | Build qontract-api-worker image                                                                                                                                              | `true`                                                               |
+| qontract_api_worker_image         | Qontract-api-worker image                                                                                                                                                    | `quay.io/redhat-services-prod/.../qontract-api-worker-master:latest` |
+| qontract_api_worker_compose_file  | Qontract-api-worker docker-compose file template                                                                                                                             | `worker.yml.j2`                                                      |
+| qontract_api_worker_debugger_port | Debugger port for qontract-api-worker                                                                                                                                        | `5680`                                                               |
+| qontract_reconcile_build_image    | Build qontract-reconcile image                                                                                                                                               | `true`                                                               |
+| qontract_reconcile_image          | Qontract-reconcile image                                                                                                                                                     | `quay.io/redhat-services-prod/.../qontract-reconcile-master:latest`  |
+| qontract_reconcile_path           | Qontract-reconcile path                                                                                                                                                      | `~/workspace/qontract-reconcile`                                     |
+| qontract_reconcile_pr             | Qontract-reconcile PR/MR number                                                                                                                                              |                                                                      |
+| qontract_reconcile_upstream       | Upstream remote name                                                                                                                                                         | `upstream`                                                           |
+| qontract_reconcile_compose_file   | Qontract-reconcile docker-compose file template                                                                                                                              | `reconcile.yml.j2`                                                   |
+| qontract_reconcile_debugger_port  | Debugger port for qontract-reconcile                                                                                                                                         | `5678`                                                               |
+| qontract_server_build_image       | Build qontract-server image                                                                                                                                                  | `true`                                                               |
+| qontract_server_image             | Qontract-server image                                                                                                                                                        | `quay.io/redhat-services-prod/.../qontract-server-master:latest`     |
+| qontract_server_path              | Qontract-server path                                                                                                                                                         | `~/workspace/qontract-server`                                        |
+| qontract_server_compose_file      | Qontract-server docker-compose file template                                                                                                                                 | `server.yml.j2`                                                      |
+| qontract_server_debugger_port     | Debugger port for qontract-server                                                                                                                                            | `6789`                                                               |
+| qontract_schemas_path             | Qontract-schemas path                                                                                                                                                        | `~/workspace/qontract-schemas`                                       |
+| qontract_schemas_pr               | Qontract-schemas PR/MR number                                                                                                                                                |                                                                      |
+| qontract_schemas_upstream         | Upstream remote name                                                                                                                                                         | `upstream`                                                           |
+| run_once                          | If 'true', execute the integration once and exit                                                                                                                             | `true`                                                               |
+| sleep_duration_secs               | If not *run_once*, sleep duration until integration runs again                                                                                                               | `10`                                                                 |
+| localstack                        | Run localstack container and set AWS related environment variables                                                                                                           | `false`                                                              |
+| localstack_compose_file           | Path to your Localstack docker-compose file                                                                                                                                  | `qontract_reconcile_path` / `dev/localstack/docker-compose.yml`      |
+| skip_initial_make_bundle          | Skip initial make bundle step                                                                                                                                                | `false`                                                              |
+| vault_image                       | Vault image                                                                                                                                                                  | `vault:1.5.4`                                                        |
+| vault_compose_file                | Vault docker-compose file template                                                                                                                                           | `vault.yml.j2`                                                       |
 
 > :point_right: **Bold keys** are mandatory or should be customized.
 
@@ -207,20 +226,66 @@ Note that the Qontract Reconcile container will not start running until it is co
 
 ```json
 {
-  "name": "Python: Docker Attach",
-  "type": "debugpy",
-  "request": "attach",
-  "connect": {
-    "host": "127.0.0.1",
-    "port": 5678
-  },
-  "pathMappings": [
+  "version": "0.2.0",
+  "configurations": [
     {
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "."
+      "name": "Python Debugger: Reconcile",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": { "host": "localhost", "port": 5678 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}", "remoteRoot": "/work" }
+      ],
+      "justMyCode": false,
+      "autoReload": {
+        "enable": true
+      }
+    },
+    {
+      "name": "Python Debugger: Api",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": { "host": "localhost", "port": 5679 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}", "remoteRoot": "/opt/app-root/src" }
+      ],
+      "justMyCode": false,
+      "autoReload": {
+        "enable": true
+      }
+    },
+    {
+      "name": "Python Debugger: Worker",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": { "host": "localhost", "port": 5680 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}", "remoteRoot": "/opt/app-root/src" }
+      ],
+      "justMyCode": true,
+      "autoReload": {
+        "enable": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug: Reconcile + qontract-api",
+      "configurations": [
+        "Python Debugger: Reconcile",
+        "Python Debugger: Api",
+        "Python Debugger: Worker"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Full Stack",
+        "order": 0
+      }
     }
   ]
 }
+
 ```
 
 **Please note that development does not currently work with PyCharm as debugpy is not yet supported. [This issue is being tracked here](https://youtrack.jetbrains.com/issue/PY-63403/Support-debugpy)**
