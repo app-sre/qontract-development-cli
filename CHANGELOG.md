@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.0 (2025-12-09)
+
+### Features
+
+* Support qontract-api
+* Expose more settings
+
 ## v0.15.8 (2025-10-02)
 
 ### Bugfix
