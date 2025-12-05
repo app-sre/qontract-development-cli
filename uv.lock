@@ -497,7 +497,7 @@ wheels = [
 
 [[package]]
 name = "qontract-development-cli"
-version = "0.15.8"
+version = "0.16.0"
 source = { editable = "." }
 dependencies = [
     { name = "appdirs" },
