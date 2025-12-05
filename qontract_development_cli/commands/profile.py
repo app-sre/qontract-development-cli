@@ -264,16 +264,32 @@ def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
 
     compose_dir = Path(tempfile.mkdtemp(prefix="qd-"))
     # render compose files
-    for f in ["compose.override.yml", "compose.yml"]:
-        compose_file = compose_dir / f
-        compose_file.write_text(
+    compose_template_files = profile.settings.compose_template_files(
+        api=env.settings.run_qontract_api,
+        cache=env.settings.run_cache,
+        reconcile=env.settings.run_qontract_reconcile,
+        server=env.settings.run_qontract_server,
+        vault=env.settings.run_vault,
+        worker=env.settings.run_qontract_api_worker,
+    )
+    for template_file in [
+        "compose.yml.j2",
+        "compose.override.yml.j2",
+        *compose_template_files,
+    ]:
+        f = compose_dir / template_file.removesuffix(".j2")
+        f.write_text(
             template(
-                f"{f}.j2",
+                template_file,
                 config=config,
                 env=env,
                 profile=profile,
+                compose_files=[f.removesuffix(".j2") for f in compose_template_files],
             )
         )
+
+    # main compose file
+    compose_file = compose_dir / "compose.yml"
 
     if env.settings.run_qontract_server and not skip_initial_make_bundle:
         make_bundle(
