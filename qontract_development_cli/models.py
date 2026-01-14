@@ -16,6 +16,9 @@ class EnvSettings(BaseModel):
     app_interface_state_bucket_account: str = ""
     config: Path = Path("~/workspace/qontract-reconcile/config.dev.toml")
     gitlab_pr_submitter_queue_url: str = ""
+    run_qontract_api: bool = False
+    run_qontract_api_worker: bool = False
+    run_cache: bool = False
     run_qontract_reconcile: bool = True
     run_qontract_server: bool = True
     run_vault: bool = False
@@ -33,26 +36,61 @@ class ProfileSettings(BaseModel):
     app_interface_path: Path | None = None
     app_interface_pr: int | None = None
     app_interface_upstream: str = "upstream"
+    extra_hosts: list[str] = []
+    run_once: bool = True
+    sleep_duration_secs: int = 10
+    additional_environment: dict[str, Any] = {}
+    skip_initial_make_bundle: bool = False
+
+    # api
+    qontract_api_build_image: bool = True
+    qontract_api_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-master:latest"
+    qontract_api_compose_file: str = "api.yml.j2"
+    qontract_api_debugger_port: int = 5679
+
+    # api-worker
+    qontract_api_worker_build_image: bool = True
+    qontract_api_worker_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-worker-master:latest"
+    qontract_api_worker_compose_file: str = "worker.yml.j2"
+    qontract_api_worker_debugger_port: int = 5680
+
+    # cache
+    cache_image: str = "redis:7-alpine"
+    cache_compose_file: str = "cache.yml.j2"
+
+    # reconcile
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-reconcile-master:latest"
     qontract_reconcile_path: Path = Path("~/workspace/qontract-reconcile")
     qontract_reconcile_pr: int | None = None
     qontract_reconcile_upstream: str = "upstream"
+    qontract_reconcile_compose_file: str = "reconcile.yml.j2"
+    qontract_reconcile_debugger_port: int = 5678
+
+    # server
     qontract_server_build_image: bool = True
     qontract_server_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-server-master/qontract-server-master:latest"
     qontract_server_path: Path = Path("~/workspace/qontract-server")
+    qontract_server_compose_file: str = "server.yml.j2"
+    qontract_server_debugger_port: int = 6789
+
+    # schemas
     qontract_schemas_path: Path = Path("~/workspace/qontract-schemas")
     qontract_schemas_pr: int | None = None
     qontract_schemas_upstream: str = "upstream"
-    run_once: bool = True
-    sleep_duration_secs: int = 10
-    additional_environment: dict[str, Any] = {}
+
+    # internal redhat ca
     internal_redhat_ca: bool = False
     internal_redhat_ca_image: str = "quay.io/redhat-services-prod/app-sre-tenant/container-images-int-master/internal-redhat-ca-master:latest"
-    extra_hosts: list[str] = []
+    internal_redhat_ca_compose_file: str = "internal-redhat-ca.yml.j2"
+
+    # localstack
     localstack: bool = False
     localstack_compose_file: Path | None
-    skip_initial_make_bundle: bool = False
+
+    # vault
+    vault_image: str = "vault:1.5.4"
+    vault_compose_file: str = "vault.yml.j2"
 
     @model_validator(mode="after")
     def default_localstack_compose_file(self) -> Self:
@@ -61,6 +99,31 @@ class ProfileSettings(BaseModel):
             or self.qontract_reconcile_path / "dev/localstack/docker-compose.yml"
         )
         return self
+
+    @property
+    def qontract_api_path(self) -> Path | None:
+        return self.qontract_reconcile_path / "qontract_api"
+
+    def compose_template_files(  # noqa: PLR0913
+        self,
+        *,
+        api: bool,
+        cache: bool,
+        reconcile: bool,
+        server: bool,
+        vault: bool,
+        worker: bool,
+    ) -> list[str]:
+        files = [self.qontract_api_compose_file] if api else []
+        files += [self.qontract_api_worker_compose_file] if worker else []
+        files += [self.cache_compose_file] if cache else []
+        files += [self.qontract_reconcile_compose_file] if reconcile else []
+        files += [self.qontract_server_compose_file] if server else []
+        files += [self.vault_compose_file] if vault else []
+        files += (
+            [self.internal_redhat_ca_compose_file] if self.internal_redhat_ca else []
+        )
+        return files
 
 
 class Base(BaseModel):
@@ -171,8 +234,10 @@ class Profile(Base):
         return defaults
 
     def dump(self) -> None:
-        values = self.settings.dict(
-            exclude_defaults=not self.default, exclude_unset=not self.default
+        values = self.settings.model_dump(
+            mode="json",
+            exclude_defaults=not self.default,
+            exclude_unset=not self.default,
         )
 
         if not self.default:
