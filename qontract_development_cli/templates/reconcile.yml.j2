@@ -1,7 +1,7 @@
 services:
   qontract-reconcile:
     container_name: qontract-reconcile-{{ profile.settings.integration_name }}
-    platform: linux/amd64
+    platform: {{ profile.settings.qontract_reconcile_container_platform or env.settings.container_platform }}
     stop_grace_period: 1s
     stop_signal: SIGKILL
     tty: true

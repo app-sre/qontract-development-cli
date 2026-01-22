@@ -15,6 +15,7 @@ class EnvSettings(BaseModel):
     app_interface_state_bucket: str = ""
     app_interface_state_bucket_account: str = ""
     config: Path = Path("~/workspace/qontract-reconcile/config.dev.toml")
+    container_platform: str = "linux/amd64"
     gitlab_pr_submitter_queue_url: str = ""
     run_qontract_api: bool = False
     run_qontract_api_worker: bool = False
@@ -45,22 +46,26 @@ class ProfileSettings(BaseModel):
     # api
     qontract_api_build_image: bool = True
     qontract_api_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-master:latest"
+    qontract_api_container_platform: str | None = None
     qontract_api_compose_file: str = "api.yml.j2"
     qontract_api_debugger_port: int = 5679
 
     # api-worker
     qontract_api_worker_build_image: bool = True
     qontract_api_worker_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-worker-master:latest"
+    qontract_api_worker_container_platform: str | None = None
     qontract_api_worker_compose_file: str = "worker.yml.j2"
     qontract_api_worker_debugger_port: int = 5680
 
     # cache
     cache_image: str = "redis:7-alpine"
+    cache_container_platform: str | None = None
     cache_compose_file: str = "cache.yml.j2"
 
     # reconcile
     qontract_reconcile_build_image: bool = True
     qontract_reconcile_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-reconcile-master:latest"
+    qontract_reconcile_container_platform: str | None = None
     qontract_reconcile_path: Path = Path("~/workspace/qontract-reconcile")
     qontract_reconcile_pr: int | None = None
     qontract_reconcile_upstream: str = "upstream"
@@ -70,6 +75,7 @@ class ProfileSettings(BaseModel):
     # server
     qontract_server_build_image: bool = True
     qontract_server_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-server-master/qontract-server-master:latest"
+    qontract_server_container_platform: str | None = None
     qontract_server_path: Path = Path("~/workspace/qontract-server")
     qontract_server_compose_file: str = "server.yml.j2"
     qontract_server_debugger_port: int = 6789
@@ -82,6 +88,7 @@ class ProfileSettings(BaseModel):
     # internal redhat ca
     internal_redhat_ca: bool = False
     internal_redhat_ca_image: str = "quay.io/redhat-services-prod/app-sre-tenant/container-images-int-master/internal-redhat-ca-master:latest"
+    internal_redhat_ca_container_platform: str | None = None
     internal_redhat_ca_compose_file: str = "internal-redhat-ca.yml.j2"
 
     # localstack
@@ -90,6 +97,7 @@ class ProfileSettings(BaseModel):
 
     # vault
     vault_image: str = "vault:1.5.4"
+    vault_container_platform: str | None = None
     vault_compose_file: str = "vault.yml.j2"
 
     @model_validator(mode="after")

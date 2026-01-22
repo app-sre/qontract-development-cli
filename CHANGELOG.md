@@ -6,6 +6,7 @@
 
 * Support qontract-api
 * Expose more settings
+* Make docker container platform configurable. Global setting per environment and overrides per container in the used profile.
 
 ## v0.15.8 (2025-10-02)
 

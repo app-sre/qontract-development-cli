@@ -2,7 +2,7 @@ services:
   # Cache/Broker (Redis or Valkey compatible)
   cache:
     container_name: cache
-    platform: linux/amd64
+    platform: {{ profile.settings.cache_container_platform or env.settings.container_platform }}
     image: {{ profile.settings.cache_image }}
 
     ports:

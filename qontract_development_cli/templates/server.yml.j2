@@ -1,7 +1,7 @@
 services:
   qontract-server:
     container_name: qontract-server
-    platform: linux/amd64
+    platform: {{ profile.settings.qontract_server_container_platform or env.settings.container_platform }}
 
     {% if profile.settings.qontract_server_build_image %}
     build:

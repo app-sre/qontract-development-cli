@@ -2,7 +2,7 @@ services:
   # qontract-api Worker (FastAPI Celery Worker)
   qontract-api-worker:
     container_name: qontract-api-worker
-    platform: linux/amd64
+    platform: {{ profile.settings.qontract_api_worker_container_platform or env.settings.container_platform }}
     {% if profile.settings.qontract_api_worker_build_image %}
     build:
       context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}

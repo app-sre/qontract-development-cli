@@ -1,7 +1,7 @@
 services:
   vault:
     container_name: vault
-    platform: linux/amd64
+    platform: {{ profile.settings.vault_container_platform or env.settings.container_platform }}
     image: {{ profile.settings.vault_image }}
     environment:
     - VAULT_ADDR=http://127.0.0.1:8200

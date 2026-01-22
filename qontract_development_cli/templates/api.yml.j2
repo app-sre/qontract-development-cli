@@ -2,7 +2,7 @@ services:
   # qontract-api (FastAPI)
   qontract-api:
     container_name: qontract-api
-    platform: linux/amd64
+    platform: {{ profile.settings.qontract_api_container_platform or env.settings.container_platform }}
     {% if profile.settings.qontract_api_build_image %}
     build:
       context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
