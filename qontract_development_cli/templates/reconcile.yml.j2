@@ -1,0 +1,65 @@
+services:
+  qontract-reconcile:
+    container_name: qontract-reconcile-{{ profile.settings.integration_name }}
+    platform: {{ profile.settings.qontract_reconcile_container_platform or env.settings.container_platform }}
+    stop_grace_period: 1s
+    stop_signal: SIGKILL
+    tty: true
+{% if profile.settings.debugger %}
+    restart: unless-stopped
+{% else %}
+    restart: 'no'
+{% endif %}
+
+    {% if profile.settings.qontract_reconcile_build_image %}
+    build:
+      context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
+      dockerfile: ./dockerfiles/Dockerfile
+      target: dev-image
+      args:
+        CONTAINER_UID: {{ profile.settings.container_uid }}
+    {% else %}
+    image: {{ profile.settings.qontract_reconcile_image }}
+    {% endif %}
+
+    ports:
+    - 9090:9090 # Metrics Exporter
+    - {{ profile.settings.qontract_reconcile_debugger_port }}:5678 # Debugger Port
+
+    environment:
+    - COMMAND={{ profile.settings.command }}
+    - COMMAND_EXTRA_ARGS={{ profile.settings.command_extra_args }}
+    - INTEGRATION_NAME={{ profile.settings.integration_name }}
+    - INTEGRATION_EXTRA_ARGS={{ profile.settings.integration_extra_args }}
+    - DRY_RUN={% if profile.settings.dry_run %}--dry-run{% else %}--no-dry-run{% endif +%}
+    - SLEEP_DURATION_SECS={{ profile.settings.sleep_duration_secs }}
+    - DEBUGGER={{ profile.settings.debugger }}
+    - CONFIG=/config/{{ env.settings.config.name }}
+    - APP_INTERFACE_STATE_BUCKET={{ env.settings.app_interface_state_bucket }}
+    - APP_INTERFACE_STATE_BUCKET_ACCOUNT={{ env.settings.app_interface_state_bucket_account }}
+{% if  profile.settings.run_once %}
+    - RUN_ONCE=1
+{% endif %}
+    - gitlab_pr_submitter_queue_url={{ env.settings.gitlab_pr_submitter_queue_url }}
+    - LOG_LEVEL={{ profile.settings.log_level.upper() }}
+
+    {% for key, value in profile.settings.additional_environment.items() %}
+    - {{ key }}={{ value }}
+    {% endfor %}
+
+    volumes:
+    - tmp-volume:/tmp:z
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}:/work:z
+    - {{ env.settings.config.expanduser().absolute().parent }}:/config:z
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}/qontract_api_client:/opt/app-root/src/qontract_api_client
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}/qontract_utils:/opt/app-root/src/qontract_utils
+
+{% if profile.settings.extra_hosts %}
+    extra_hosts:
+    {% for entry in profile.settings.extra_hosts %}
+    - "{{ entry }}"
+    {% endfor %}
+{% endif %}
+
+volumes:
+  tmp-volume:

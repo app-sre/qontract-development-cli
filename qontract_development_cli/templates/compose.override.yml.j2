@@ -1,7 +1,113 @@
 ---
-{% if  profile.settings.localstack %}
 services:
+
+{% if profile.settings.localstack %}
   localstack:
+    networks:
+    - qontract-development
+{% endif %}
+
+
+{% if env.settings.run_qontract_api %}
+  qontract-api:
+    networks:
+    - qontract-development
+
+    {% if env.settings.run_cache %}
+    depends_on:
+      cache:
+        condition: service_healthy
+    {% endif %}
+{% endif %}
+
+
+{% if env.settings.run_qontract_api_worker %}
+  qontract-api-worker:
+    networks:
+    - qontract-development
+
+    {% if env.settings.run_cache %}
+    depends_on:
+      cache:
+        condition: service_healthy
+    {% endif %}
+
+    {% if env.settings.run_cache %}
+    links:
+    - cache
+    {% endif %}
+{% endif %}
+
+
+{% if env.settings.run_qontract_reconcile %}
+  qontract-reconcile:
+    networks:
+    - qontract-development
+
+    {% if profile.settings.localstack or profile.settings.internal_redhat_ca %}
+    environment:
+    {% if profile.settings.internal_redhat_ca %}
+    - REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
+    {% endif %}
+    {% if profile.settings.localstack %}
+    - AWS_ENDPOINT_URL=http://localstack:4566
+    - AWS_ACCESS_KEY_ID=test
+    - AWS_SECRET_ACCESS_KEY=test
+    - AWS_REGION=us-east-1
+    {% endif %}
+    {% endif %}
+
+    {% if profile.settings.internal_redhat_ca %}
+    volumes:
+    - pki-volume:/etc/pki:z
+    {% endif %}
+
+    {% if env.settings.run_qontract_api or env.settings.run_qontract_server or profile.settings.internal_redhat_ca %}
+    depends_on:
+    {% if env.settings.run_qontract_api %}
+      qontract-api:
+        condition: service_healthy
+    {% endif %}
+    {% if env.settings.run_qontract_server %}
+      qontract-server:
+        condition: service_healthy
+    {% endif %}
+    {% if profile.settings.internal_redhat_ca %}
+      internal-certificates:
+        condition: service_completed_successfully # Let the init container create the pki directory first
+    {% endif %}
+    {% endif %}
+
+    {% if env.settings.run_qontract_server or env.settings.run_qontract_api or env.settings.run_vault %}
+    links:
+    {% if env.settings.run_qontract_server %}
+    - qontract-server
+    {% endif %}
+    {% if env.settings.run_vault %}
+    - vault
+    {% endif %}
+    {% if env.settings.run_qontract_api %}
+    - qontract-api
+    {% endif %}
+    {% endif %}
+{% endif %}
+
+
+{% if env.settings.run_qontract_server %}
+  qontract-server:
+    networks:
+    - qontract-development
+{% endif %}
+
+
+{% if env.settings.run_vault %}
+  vault:
+    networks:
+    - qontract-development
+{% endif %}
+
+{% if env.settings.run_cache %}
+  cache:
     networks:
     - qontract-development
 {% endif %}

@@ -1,0 +1,24 @@
+services:
+  qontract-server:
+    container_name: qontract-server
+    platform: {{ profile.settings.qontract_server_container_platform or env.settings.container_platform }}
+
+    {% if profile.settings.qontract_server_build_image %}
+    build:
+      context: {{ profile.settings.qontract_server_path.expanduser().absolute() }}
+    {% else %}
+    image: {{ profile.settings.qontract_server_image }}
+    {% endif %}
+    stop_grace_period: 1s
+    stop_signal: SIGKILL
+
+    volumes:
+    - {{ profile.settings.qontract_server_path.expanduser().absolute() }}/bundle:/bundle:ro
+
+    environment:
+    - LOAD_METHOD=fs
+    - DATAFILES_FILE=/bundle/bundle.json
+
+    ports:
+    - 4000:4000
+    - {{ profile.settings.qontract_server_debugger_port }}:6789 # Debugger Port

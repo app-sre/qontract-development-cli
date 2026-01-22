@@ -1,0 +1,32 @@
+services:
+  # qontract-api Worker (FastAPI Celery Worker)
+  qontract-api-worker:
+    container_name: qontract-api-worker
+    platform: {{ profile.settings.qontract_api_worker_container_platform or env.settings.container_platform }}
+    {% if profile.settings.qontract_api_worker_build_image %}
+    build:
+      context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
+      dockerfile: {{ profile.settings.qontract_api_path.expanduser().absolute() }}/Dockerfile
+
+      target: debug
+    {% else %}
+    image: {{ profile.settings.qontract_api_workerimage }}
+    {% endif %}
+
+    ports:
+    - {{ profile.settings.qontract_api_worker_debugger_port }}:5678  # debugpy port
+
+    environment:
+    - QAPI_START_MODE=worker
+    - QAPI_CACHE_BROKER_URL=redis://cache:6379/0
+    # Enable debugpy
+    - DEBUGGER_ENABLED={% if profile.settings.debugger %}true{% else %}false{% endif %}
+    # Hot reload for development
+    - AUTO_RELOAD=1
+
+    volumes:
+    - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/app.sh:/opt/app-root/src/app.sh
+    - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/.env.yaml:/opt/app-root/src/.env.yaml
+    - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/.env:/opt/app-root/src/.env
+    - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/qontract_api:/opt/app-root/src/qontract_api/qontract_api
+    - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}/qontract_utils/qontract_utils:/opt/app-root/src/qontract_utils/qontract_utils

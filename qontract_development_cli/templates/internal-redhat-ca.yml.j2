@@ -1,0 +1,12 @@
+services:
+  internal-certificates:
+    image: {{ profile.settings.internal_redhat_ca_image }}
+    container_name: internal-certificates
+    platform: {{ profile.settings.internal_redhat_ca_container_platform or env.settings.container_platform }}
+    command: |
+      sh -c 'cp -r /etc/pki/. /tmp/'
+    volumes:
+    - pki-volume:/tmp
+
+volumes:
+  pki-volume:
