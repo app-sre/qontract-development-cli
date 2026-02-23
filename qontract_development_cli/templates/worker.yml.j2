@@ -7,13 +7,13 @@ services:
     build:
       context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
       dockerfile: {{ profile.settings.qontract_api_path.expanduser().absolute() }}/Dockerfile
-
       target: debug
     {% else %}
     image: {{ profile.settings.qontract_api_workerimage }}
     {% endif %}
 
     ports:
+    - 8000:8000
     - {{ profile.settings.qontract_api_worker_debugger_port }}:5678  # debugpy port
 
     environment:
@@ -26,7 +26,6 @@ services:
 
     volumes:
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/app.sh:/opt/app-root/src/app.sh
-    - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/.env.yaml:/opt/app-root/src/.env.yaml
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/.env:/opt/app-root/src/.env
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/qontract_api:/opt/app-root/src/qontract_api/qontract_api
     - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}/qontract_utils/qontract_utils:/opt/app-root/src/qontract_utils/qontract_utils

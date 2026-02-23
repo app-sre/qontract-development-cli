@@ -269,6 +269,7 @@ def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
         cache=env.settings.run_cache,
         reconcile=env.settings.run_qontract_reconcile,
         server=env.settings.run_qontract_server,
+        subscriber=env.settings.run_qontract_api_subscriber,
         vault=env.settings.run_vault,
         worker=env.settings.run_qontract_api_worker,
     )
