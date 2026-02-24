@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.0 (2026-02-24)
+
+### Features
+
+* Support qontract-api subscriber
+
+### Bugfixes
+
+* Get rid of unused `qontract-api/.env.yaml`
+
 ## v0.16.0 (2025-12-09)
 
 ### Features
