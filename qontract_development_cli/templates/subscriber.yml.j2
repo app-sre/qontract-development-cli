@@ -1,23 +1,23 @@
 services:
-  # qontract-api (FastAPI)
-  qontract-api:
-    container_name: qontract-api
-    platform: {{ profile.settings.qontract_api_container_platform or env.settings.container_platform }}
-    {% if profile.settings.qontract_api_build_image %}
+  # qontract-api (Event Subscriber)
+  qontract-api-subscriber:
+    container_name: qontract-api-subscriber
+    platform: {{ profile.settings.qontract_api_subscriber_container_platform or env.settings.container_platform }}
+    {% if profile.settings.qontract_api_subscriber_build_image %}
     build:
       context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
       dockerfile: {{ profile.settings.qontract_api_path.expanduser().absolute() }}/Dockerfile
       target: debug
     {% else %}
-    image: {{ profile.settings.qontract_api_image }}
+    image: {{ profile.settings.qontract_api_subscriber_image }}
     {% endif %}
 
     ports:
-    - 8080:8080
-    - {{ profile.settings.qontract_api_debugger_port }}:5678  # debugpy port
+    - 8081:8080
+    - {{ profile.settings.qontract_api_subscriber_debugger_port }}:5678  # debugpy port
 
     environment:
-    - QAPI_START_MODE=api
+    - QAPI_START_MODE=subscriber
     - QAPI_CACHE_BROKER_URL=redis://cache:6379/0
     # Enable debugpy
     - DEBUGGER_ENABLED={% if profile.settings.debugger %}true{% else %}false{% endif %}

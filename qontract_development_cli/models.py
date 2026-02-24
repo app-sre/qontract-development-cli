@@ -18,6 +18,7 @@ class EnvSettings(BaseModel):
     container_platform: str = "linux/amd64"
     gitlab_pr_submitter_queue_url: str = ""
     run_qontract_api: bool = False
+    run_qontract_api_subscriber: bool = False
     run_qontract_api_worker: bool = False
     run_cache: bool = False
     run_qontract_reconcile: bool = True
@@ -51,8 +52,15 @@ class ProfileSettings(BaseModel):
     qontract_api_debugger_port: int = 5679
 
     # api-worker
+    qontract_api_subscriber_build_image: bool = True
+    qontract_api_subscriber_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-master:latest"
+    qontract_api_subscriber_container_platform: str | None = None
+    qontract_api_subscriber_compose_file: str = "subscriber.yml.j2"
+    qontract_api_subscriber_debugger_port: int = 5681
+
+    # api-worker
     qontract_api_worker_build_image: bool = True
-    qontract_api_worker_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-worker-master:latest"
+    qontract_api_worker_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-master:latest"
     qontract_api_worker_container_platform: str | None = None
     qontract_api_worker_compose_file: str = "worker.yml.j2"
     qontract_api_worker_debugger_port: int = 5680
@@ -119,10 +127,12 @@ class ProfileSettings(BaseModel):
         cache: bool,
         reconcile: bool,
         server: bool,
+        subscriber: bool,
         vault: bool,
         worker: bool,
     ) -> list[str]:
         files = [self.qontract_api_compose_file] if api else []
+        files += [self.qontract_api_subscriber_compose_file] if subscriber else []
         files += [self.qontract_api_worker_compose_file] if worker else []
         files += [self.cache_compose_file] if cache else []
         files += [self.qontract_reconcile_compose_file] if reconcile else []
