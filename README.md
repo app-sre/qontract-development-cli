@@ -132,6 +132,7 @@ An environment specifies app-interface instance settings, e.g., **dev** vs. **pr
 | container_platform                 | Default Docker container platform for all images | linux/amd64                                    |
 | gitlab_pr_submitter_queue_url      | Gitlab pr submitter queue url                    |                                                |
 | run_qontract_api                   | Run qontract-api container                       | false                                          |
+| run_qontract_api_subscriber        | Run qontract-api-subscriber container            | false                                          |
 | run_qontract_api_worker            | Run qontract-api-worker container                | false                                          |
 | run_cache                          | Run cache (Redis) container                      | false                                          |
 | run_qontract_reconcile             | Run qontract-reconcile container                 | true                                           |
@@ -195,6 +196,11 @@ The command line flag takes precedence over any configuration you might have in 
 | qontract_api_container_platform        | Qontract-api container platform                                                                                                                                              | Default from [environment](#environment-settings)                    |
 | qontract_api_compose_file              | Qontract-api docker-compose file template                                                                                                                                    | `api.yml.j2`                                                         |
 | qontract_api_debugger_port             | Debugger port for qontract-api                                                                                                                                               | `5679`                                                               |
+| qontract_api_subscriber_build_image    | Build qontract-api-subscriber image                                                                                                                                          | `true`                                                               |
+| qontract_api_subscriber_image          | Qontract-api-subscriber image                                                                                                                                                | `quay.io/redhat-services-prod/.../qontract-api-master:latest`        |
+| qontract_api_subscriber_container_platform | Qontract-api-subscriber container platform                                                                                                                               | Default from [environment](#environment-settings)                    |
+| qontract_api_subscriber_compose_file   | Qontract-api-subscriber docker-compose file template                                                                                                                         | `subscriber.yml.j2`                                                  |
+| qontract_api_subscriber_debugger_port  | Debugger port for qontract-api-subscriber                                                                                                                                    | `5681`                                                               |
 | qontract_api_worker_build_image        | Build qontract-api-worker image                                                                                                                                              | `true`                                                               |
 | qontract_api_worker_image              | Qontract-api-worker image                                                                                                                                                    | `quay.io/redhat-services-prod/.../qontract-api-worker-master:latest` |
 | qontract_api_worker_container_platform | Qontract-api-worker container platform                                                                                                                                       | Default from [environment](#environment-settings)                    |
@@ -263,6 +269,19 @@ Note that the Qontract Reconcile container will not start running until it is co
       }
     },
     {
+      "name": "Python Debugger: Subscriber",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": { "host": "localhost", "port": 5681 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}", "remoteRoot": "/opt/app-root/src" }
+      ],
+      "justMyCode": true,
+      "autoReload": {
+        "enable": true
+      }
+    },
+    {
       "name": "Python Debugger: Worker",
       "type": "debugpy",
       "request": "attach",
@@ -282,6 +301,7 @@ Note that the Qontract Reconcile container will not start running until it is co
       "configurations": [
         "Python Debugger: Reconcile",
         "Python Debugger: Api",
+        "Python Debugger: Subscriber",
         "Python Debugger: Worker"
       ],
       "stopAll": true,

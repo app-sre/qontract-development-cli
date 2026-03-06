@@ -51,7 +51,7 @@ class ProfileSettings(BaseModel):
     qontract_api_compose_file: str = "api.yml.j2"
     qontract_api_debugger_port: int = 5679
 
-    # api-worker
+    # api-subscriber
     qontract_api_subscriber_build_image: bool = True
     qontract_api_subscriber_image: str = "quay.io/redhat-services-prod/app-sre-tenant/qontract-reconcile-master/qontract-api-master:latest"
     qontract_api_subscriber_container_platform: str | None = None
