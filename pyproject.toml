@@ -21,7 +21,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     # dev dependencies
-    "mypy ~=1.13",
+    "mypy ~=2.0",
     "ruff ~=0.7",
     "types-pyyaml ~=6.0",
 ]
