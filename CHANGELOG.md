@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.1 (2026-05-12)
+
+### Bugfixes
+
+* explicitly pass `compose.override.yml` to docker compose commands
+
 ## v0.17.0 (2026-02-24)
 
 ### Features
