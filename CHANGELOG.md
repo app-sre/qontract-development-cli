@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.2 (2026-05-13)
+
+### Features
+
+* Use `valkey/valkey:8-alpine` as default cache image
+
+### Bugfixes
+
+* Starting `qontract-api` stack
+
 ## v0.17.1 (2026-05-12)
 
 ### Bugfixes
