@@ -17,6 +17,25 @@ services:
     depends_on:
       cache:
         condition: service_healthy
+
+    links:
+    - cache
+    {% endif %}
+{% endif %}
+
+
+{% if env.settings.run_qontract_api_subscriber %}
+  qontract-api-subscriber:
+    networks:
+    - qontract-development
+
+    {% if env.settings.run_cache %}
+    depends_on:
+      cache:
+        condition: service_healthy
+
+    links:
+    - cache
     {% endif %}
 {% endif %}
 
@@ -30,9 +49,7 @@ services:
     depends_on:
       cache:
         condition: service_healthy
-    {% endif %}
 
-    {% if env.settings.run_cache %}
     links:
     - cache
     {% endif %}
@@ -62,20 +79,10 @@ services:
     - pki-volume:/etc/pki:z
     {% endif %}
 
-    {% if env.settings.run_qontract_api or env.settings.run_qontract_server or profile.settings.internal_redhat_ca %}
-    depends_on:
-    {% if env.settings.run_qontract_api %}
-      qontract-api:
-        condition: service_healthy
-    {% endif %}
-    {% if env.settings.run_qontract_server %}
-      qontract-server:
-        condition: service_healthy
-    {% endif %}
     {% if profile.settings.internal_redhat_ca %}
+    depends_on:
       internal-certificates:
         condition: service_completed_successfully # Let the init container create the pki directory first
-    {% endif %}
     {% endif %}
 
     {% if env.settings.run_qontract_server or env.settings.run_qontract_api or env.settings.run_vault %}

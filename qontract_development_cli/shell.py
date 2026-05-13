@@ -101,7 +101,8 @@ def compose_stop_project(project_name: str) -> None:
     for p in compose_list_projects():
         if p["Name"] == project_name:
             subprocess.run(
-                [*_docker_compose_bin, "-f", p["ConfigFiles"], "down"], check=True
+                [*_docker_compose_bin, "-f", p["ConfigFiles"].split(",")[0], "down"],
+                check=True,
             )
 
 
