@@ -66,7 +66,7 @@ class ProfileSettings(BaseModel):
     qontract_api_worker_debugger_port: int = 5680
 
     # cache
-    cache_image: str = "redis:7-alpine"
+    cache_image: str = "valkey/valkey:8-alpine"
     cache_container_platform: str | None = None
     cache_compose_file: str = "cache.yml.j2"
 
