@@ -1,6 +1,7 @@
 services:
   internal-certificates:
     image: {{ profile.settings.internal_redhat_ca_image }}
+    pull_policy: daily
     container_name: internal-certificates
     platform: {{ profile.settings.internal_redhat_ca_container_platform or env.settings.container_platform }}
     command: |
