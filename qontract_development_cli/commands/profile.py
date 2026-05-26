@@ -1,8 +1,9 @@
 import logging
 import subprocess
 import tempfile
+from multiprocessing import Process
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 import typer
 from getkey import getkey
@@ -33,9 +34,6 @@ from ..shell import (
 )
 from ..templates import template
 from ..utils import console
-
-if TYPE_CHECKING:
-    from multiprocessing import Process
 
 app = typer.Typer()
 log = logging.getLogger(__name__)

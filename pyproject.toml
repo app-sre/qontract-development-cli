@@ -1,11 +1,11 @@
 [project]
 name = "qontract-development-cli"
-version = "0.17.2"
+version = "0.18.0"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.14"
 dependencies = [
     "appdirs ~=1.4.4",
     "getkey ~=0.6.5",
@@ -15,7 +15,7 @@ dependencies = [
     "pyyaml ~=6.0.2",
     "rich ~=15.0",
     "typer ~=0.25.1",
-    "watchfiles ~=1.1.0",
+    "watchfiles ~=1.2.0",
 ]
 
 [dependency-groups]
@@ -61,7 +61,6 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 88
-target-version = 'py311'
 src = ["qontract_development_cli"]
 extend-exclude = [".local", ".cache"]
 fix = true
@@ -109,3 +108,13 @@ preview = true
 
 [tool.ruff.lint.isort]
 known-first-party = ["qontract_development_cli"]
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+runtime-evaluated-decorators = [
+    "dataclasses.dataclass",
+    "pydantic.dataclasses.dataclass",
+    "pydantic.validate_call",
+    "typer.Typer.command",
+    "typer.Typer.callback",
+]
