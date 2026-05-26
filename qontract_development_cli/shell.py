@@ -5,14 +5,17 @@ import os
 import subprocess
 import sys
 import tempfile
-from multiprocessing import Process
 from pathlib import Path
 from shutil import which
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from .models import Profile
 from .templates import template
 from .utils import EndlessProcess, console
+
+if TYPE_CHECKING:
+    from multiprocessing import Process
+
+    from .models import Profile
 
 log = logging.getLogger(__name__)
 

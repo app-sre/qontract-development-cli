@@ -1,7 +1,11 @@
-FROM registry.access.redhat.com/ubi9/python-311:9.8-1779719676@sha256:6ff4fa18cca7708ab388983bd336da82351d49427aa1a124590326a55a12b456 AS base
+FROM registry.access.redhat.com/ubi10/python-314-minimal:10.2-1779774002@sha256:36fb2f81e7364634ebf1f0aaef4625a28083fa756f66ae896c62b22150d9420a AS base
 COPY --from=ghcr.io/astral-sh/uv:0.11.16@sha256:440fd6477af86a2f1b38080c539f1672cd22acb1b1a47e321dba5158ab08864d /uv /bin/uv
 
 COPY LICENSE /licenses/
+
+USER root
+RUN microdnf install -y make
+USER 1001
 
 ENV \
     # use venv from ubi image

@@ -1,10 +1,13 @@
 import logging
-from collections.abc import Callable, Sequence
 from multiprocessing import Process
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from rich.logging import RichHandler
 from watchfiles import Change, DefaultFilter, watch
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+    from pathlib import Path
 
 log = logging.getLogger(__name__)
 

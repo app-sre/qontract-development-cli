@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.18.0 (2026-05-19)
+
+### Breaking Changes
+
+* Python 3.14 support and drop support for older versions
+
+### Chore
+
+* Bump dependencies
+
 ## v0.17.2 (2026-05-13)
 
 ### Features

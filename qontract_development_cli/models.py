@@ -149,7 +149,7 @@ class Base(BaseModel):
     default: bool = False
     root: ClassVar[Path]
 
-    def __lt__(self, other: "Base") -> bool:
+    def __lt__(self, other: Base) -> bool:
         return self.name < other.name
 
     @model_validator(mode="after")
@@ -165,7 +165,7 @@ class Base(BaseModel):
         return p.with_suffix(".yml")
 
     @classmethod
-    def list_all(cls) -> list["Base"]:
+    def list_all(cls) -> list[Base]:
         items = []
         for f in [f for f in list(cls.root.glob("**/*")) if f.is_file()]:
             items.append(  # noqa: PERF401
