@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18.1 (2026-06-03)
+
+### Bugfixes
+
+* Fix `cache_container_platform` setting not being applied to cache image
+
 ## v0.18.0 (2026-05-19)
 
 ### Breaking Changes
