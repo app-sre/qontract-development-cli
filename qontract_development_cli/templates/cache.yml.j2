@@ -3,6 +3,8 @@ services:
   cache:
     container_name: cache
     image: {{ profile.settings.cache_image }}
+    platform: {{ profile.settings.cache_container_platform or env.settings.container_platform }}
+
 
     ports:
     - "6379:6379"
