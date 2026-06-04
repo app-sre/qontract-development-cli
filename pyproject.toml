@@ -14,7 +14,7 @@ dependencies = [
     "pydantic-settings ~=2.6",
     "pyyaml ~=6.0.2",
     "rich ~=15.0",
-    "typer ~=0.25.1",
+    "typer ~=0.26.7",
     "watchfiles ~=1.2.0",
 ]
 
