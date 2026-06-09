@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.19.0 (2026-06-09)
+
+### Features
+
+* Add OPA (Open Policy Agent) sidecar support for qontract-api authorization
+* New `run_opa` environment toggle and `opa_build_image` profile setting
+* OPA image built from `qontract-reconcile/opa/Dockerfile` with Rego policy tests
+* Dev policy data mounted separately from prod image (`opa/dev/`)
+* OPA decision logs enabled via `dev/config.yaml`
+
 ## v0.18.1 (2026-06-03)
 
 ### Bugfixes

@@ -8,18 +8,36 @@ services:
 {% endif %}
 
 
+{% if env.settings.run_opa %}
+  opa:
+    networks:
+    - qontract-development
+{% endif %}
+
+
 {% if env.settings.run_qontract_api %}
   qontract-api:
     networks:
     - qontract-development
 
-    {% if env.settings.run_cache %}
+    {% if env.settings.run_cache or env.settings.run_opa %}
     depends_on:
+      {% if env.settings.run_cache %}
       cache:
         condition: service_healthy
+      {% endif %}
+      {% if env.settings.run_opa %}
+      opa:
+        condition: service_started
+      {% endif %}
 
     links:
+    {% if env.settings.run_cache %}
     - cache
+    {% endif %}
+    {% if env.settings.run_opa %}
+    - opa
+    {% endif %}
     {% endif %}
 {% endif %}
 

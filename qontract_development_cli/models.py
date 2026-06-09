@@ -21,6 +21,7 @@ class EnvSettings(BaseModel):
     run_qontract_api_subscriber: bool = False
     run_qontract_api_worker: bool = False
     run_cache: bool = False
+    run_opa: bool = False
     run_qontract_reconcile: bool = True
     run_qontract_server: bool = True
     run_vault: bool = False
@@ -103,6 +104,12 @@ class ProfileSettings(BaseModel):
     localstack: bool = False
     localstack_compose_file: Path | None
 
+    # opa
+    opa_build_image: bool = True
+    opa_image: str = "openpolicyagent/opa:latest"
+    opa_container_platform: str | None = None
+    opa_compose_file: str = "opa.yml.j2"
+
     # vault
     vault_image: str = "vault:1.5.4"
     vault_container_platform: str | None = None
@@ -120,11 +127,16 @@ class ProfileSettings(BaseModel):
     def qontract_api_path(self) -> Path | None:
         return self.qontract_reconcile_path / "qontract_api"
 
+    @property
+    def opa_path(self) -> Path | None:
+        return self.qontract_reconcile_path / "opa"
+
     def compose_template_files(  # noqa: PLR0913
         self,
         *,
         api: bool,
         cache: bool,
+        opa: bool,
         reconcile: bool,
         server: bool,
         subscriber: bool,
@@ -135,6 +147,7 @@ class ProfileSettings(BaseModel):
         files += [self.qontract_api_subscriber_compose_file] if subscriber else []
         files += [self.qontract_api_worker_compose_file] if worker else []
         files += [self.cache_compose_file] if cache else []
+        files += [self.opa_compose_file] if opa else []
         files += [self.qontract_reconcile_compose_file] if reconcile else []
         files += [self.qontract_server_compose_file] if server else []
         files += [self.vault_compose_file] if vault else []

@@ -265,6 +265,7 @@ def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
     compose_template_files = profile.settings.compose_template_files(
         api=env.settings.run_qontract_api,
         cache=env.settings.run_cache,
+        opa=env.settings.run_opa,
         reconcile=env.settings.run_qontract_reconcile,
         server=env.settings.run_qontract_server,
         subscriber=env.settings.run_qontract_api_subscriber,
