@@ -1,0 +1,37 @@
+services:
+  # OPA (Open Policy Agent) sidecar for qontract-api authorization
+  opa:
+    container_name: opa
+    platform: {{ profile.settings.opa_container_platform or env.settings.container_platform }}
+    {% if profile.settings.opa_build_image %}
+    build:
+      context: {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}
+      dockerfile: {{ profile.settings.opa_path.expanduser().absolute() }}/Dockerfile
+      target: prod
+    {% else %}
+    image: {{ profile.settings.opa_image }}
+    {% endif %}
+
+    entrypoint: ["/opa"]
+    command:
+    - run
+    - --server
+    - --addr=0.0.0.0:8181
+    - --config-file=/config/config.yaml
+    - --log-level=info
+    - --disable-telemetry
+    - --watch
+    - /authz
+    - /data
+
+    ports:
+    - 8181:8181
+
+    # /authz is baked into the image (Rego policies)
+    # /data is mounted from dev/ (dev policy data, NOT in the prod image)
+    # --watch uses fsnotify: works on Linux, not on macOS/Colima.
+    # On macOS, run: docker restart opa
+    volumes:
+    - {{ profile.settings.opa_path.expanduser().absolute() }}/authz:/authz:z
+    - {{ profile.settings.opa_path.expanduser().absolute() }}/dev:/data:z
+    - {{ profile.settings.opa_path.expanduser().absolute() }}/dev/config.yaml:/config/config.yaml:z

@@ -19,6 +19,11 @@ services:
     environment:
     - QAPI_START_MODE=api
     - QAPI_CACHE_BROKER_URL=redis://cache:6379/0
+    {% if env.settings.run_opa %}
+    - QAPI_OPA__HOST=http://opa:8181
+    {% else %}
+    - QAPI_OPA__ENABLED=false
+    {% endif %}
     # Enable debugpy
     - DEBUGGER_ENABLED={% if profile.settings.debugger %}true{% else %}false{% endif %}
     # Hot reload for development
