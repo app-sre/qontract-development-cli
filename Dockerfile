@@ -20,6 +20,7 @@ RUN uv lock --locked
 COPY README.md Makefile ./
 # the source code
 COPY qontract_development_cli ./qontract_development_cli
+COPY tests ./tests
 
 # Install dependencies
 RUN uv sync --frozen

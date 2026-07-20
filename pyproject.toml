@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.19.0"
+version = "0.19.1"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -22,9 +22,13 @@ dependencies = [
 dev = [
     # dev dependencies
     "mypy ~=2.0",
+    "pytest ~=8.3",
     "ruff ~=0.7",
     "types-pyyaml ~=6.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [project.urls]
 homepage = "http://github.com/chassing/qontract-development-cli"
