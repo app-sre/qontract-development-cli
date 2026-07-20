@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.19.1 (2026-07-20)
+
+### Bugfixes
+
+* Fix invalid `reconcile.yml` YAML when `integration_extra_args`, `command_extra_args`, or `additional_environment` values contain YAML-special characters (e.g. JSON passed to `--keycloak-instances`)
+
 ## v0.19.0 (2026-06-09)
 
 ### Features

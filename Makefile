@@ -13,6 +13,7 @@ test:
 	$(UV_RUN) ruff check --no-fix
 	$(UV_RUN) ruff format --check
 	$(UV_RUN) mypy
+	$(UV_RUN) pytest
 .PHONY: test
 
 # do not print pypi commands to avoid the token leaking to the logs
