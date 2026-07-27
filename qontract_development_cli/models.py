@@ -131,7 +131,7 @@ class ProfileSettings(BaseModel):
     def opa_path(self) -> Path | None:
         return self.qontract_reconcile_path / "opa"
 
-    def compose_template_files(  # noqa: PLR0913
+    def compose_template_files(  # ruff: ignore[too-many-arguments]
         self,
         *,
         api: bool,
@@ -181,7 +181,7 @@ class Base(BaseModel):
     def list_all(cls) -> list[Base]:
         items = []
         for f in [f for f in list(cls.root.glob("**/*")) if f.is_file()]:
-            items.append(  # noqa: PERF401
+            items.append(  # ruff: ignore[manual-list-comprehension]
                 cls(name=str(f.relative_to(cls.root)))
             )
         return items

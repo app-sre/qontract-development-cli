@@ -40,7 +40,7 @@ log = logging.getLogger(__name__)
 
 
 @app.command()
-def create(  # noqa: PLR0913, PLR0917
+def create(  # ruff: ignore[too-many-arguments, too-many-positional-arguments]
     profile_name: str = typer.Argument(..., help="Profile to create."),
     integration_name: Annotated[str | None, typer.Option()] = None,
     integration_extra_args: Annotated[str | None, typer.Option()] = None,
@@ -186,7 +186,7 @@ def show(
 
 
 @app.command(no_args_is_help=True)
-def run(  # noqa: C901, PLR0912, PLR0913, PLR0915
+def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-arguments, too-many-statements]
     env_name: Annotated[
         str, typer.Argument(help="Environment to use.", autocompletion=complete_env)
     ],
