@@ -22,7 +22,7 @@ app.add_typer(
 app.add_typer(profile.app, name="profile", help="Profile related commands.")
 
 
-def version_callback(value: bool) -> None:  # noqa: FBT001
+def version_callback(value: bool) -> None:  # ruff: ignore[boolean-type-hint-positional-argument]
     if value:
         rich_print(f"Version: {version('qontract-development-cli')}")
         raise typer.Exit
@@ -33,7 +33,7 @@ def main(
     *,
     debug: Annotated[bool, typer.Option(help="Enable debug")] = False,
     screen_capture_file: Annotated[Path | None, typer.Option(writable=True)] = None,
-    version: Annotated[  # noqa: ARG001
+    version: Annotated[  # ruff: ignore[unused-function-argument]
         bool | None, typer.Option(callback=version_callback, help="Display version")
     ] = None,
 ) -> None:
