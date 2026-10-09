@@ -109,8 +109,9 @@ environment noise, not integration findings.
 
 Keep the final report short. Separate **execution**, **proposed changes**, and
 **coverage**: exit 0 or quiet logs do not prove no drift or that changed behavior
-was exercised. Mark missing evidence unknown. Apart from creating missing profiles
-and explicitly approved edits as described above, do not alter existing configuration, create temporary profiles,
+was exercised. Mark missing evidence unknown. Apart from creating missing profiles,
+explicitly approved profile edits, and the local schema recovery below, do not alter
+existing configuration, create temporary profiles,
 attach a debugger, switch to wet-run, fix drift, rotate
 credentials, or change production configuration to overcome a failure.
 
@@ -122,6 +123,39 @@ operations, errors, and useful context over container lifecycle chatter.
 Do not add dry-run/not-applied boilerplate to the summary; the run mode is already
 known. Do not add scope bookkeeping such as "No other integrations started"
 unless the user asks about scope or a requested integration was skipped/blocked.
+
+## Forbidden schema recovery
+
+If a run reports `Forbidden schemas: [...]`, recover the local schema allowlist
+automatically for that integration, then retry once. This requires the selected
+local qontract-server bundle. If the run uses remote GraphQL instead, report the
+blocker without editing permissions or claiming a local edit fixes remote access.
+
+1. Resolve the app-interface checkout from the selected environment's
+   `app_interface_path`, honoring the effective profile/default/PR-worktree
+   overrides used by qd. Expand it to a full absolute path. Never guess a checkout
+   from the current directory, environment name, or a remembered workspace path.
+2. Read the checkout's applicable repository instructions. In its
+   `data/integrations/`, locate the unique definition with
+   `$schema: /app-sre/integration-1.yml` and `name` matching the integration.
+   This is the integration data file, not the schema specification in
+   qontract-schemas. If the checkout or matching definition is ambiguous, block
+   and ask rather than editing a different integration.
+3. Append only the schema paths reported as forbidden to its `schemas` list.
+   Deduplicate and preserve existing entries, ordering, unrelated fields, and
+   user changes. No wildcards, all-schema grants, file replacement, or edits to
+   other integrations. If all reported paths are already present, make no edit.
+4. Refresh the local bundle and retry the same environment/profile with
+   `--no-skip-initial-make-bundle` and a new output directory. This explicit flag
+   overrides a saved skip setting without modifying the profile. Keep both
+   attempts' logs/reports; do not rebuild images for schema-list changes.
+5. If the retry still fails, report that failure rather than repeatedly widening
+   permissions. Do not alter live authorization, credentials, or qd profiles.
+6. Report the full edited path and added schema paths in the Local edits row,
+   and note the initial error and retry outcome in Execution. Do not hide the
+   failed first attempt. If no file changed, omit Local edits and note the bundle
+   refresh/retry only. Do not commit or push app-interface changes; leave the
+   local diff available for the user's review.
 
 ## Final report (exact format)
 
@@ -137,6 +171,7 @@ the table. Do not add an introduction or closing commentary.
 | ---------------- | ------------------------------------------------------------ |
 | Execution        | <status>; exit <code>; <duration>; cleanup <cleanup-status>. |
 | Proposed changes | <action, resource, and cluster/namespace when reported>      |
+| Local edits      | <full edited path; added schema paths or explicitly approved profile edits> |
 | Coverage         | <evidence or a specific unproven behavior>                   |
 | Warnings         | <remaining non-routine warnings>                             |
 
@@ -161,6 +196,10 @@ the table. Do not add an introduction or closing commentary.
   exist, replace the fenced block with `No relevant application output.`
 - Coverage: use `Observed: <evidence>`, `Unproven: <requested behavior>`, or
   `Not assessed.` Never infer coverage from exit 0.
+- Omit Local edits when no existing file was changed. Otherwise list the full
+  absolute paths and actual edits. For a schema-recovery retry, append
+  `; retry: 1 after Forbidden schemas (initial exit <code>)` to Execution and
+  include both output directories in Artifacts.
 - Omit the entire Warnings row when no non-routine warnings remain. Artifacts
   is the saved output directory, or `Not created.` if no artifacts exist.
 

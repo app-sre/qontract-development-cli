@@ -35,7 +35,7 @@ class RunOptions(BaseModel, frozen=True):
     no_dry_run: bool = False
     force_build: bool = False
     force_recreate: bool = False
-    skip_initial_make_bundle: bool = False
+    skip_initial_make_bundle: bool | None = None
 
 
 def run_headless(options: RunOptions) -> int:
@@ -98,7 +98,8 @@ def _prepare_and_run(
     profile.settings.dry_run = True
     profile.settings.debugger = ""
     profile.settings.run_once = True
-    profile.settings.skip_initial_make_bundle |= options.skip_initial_make_bundle
+    if options.skip_initial_make_bundle is not None:
+        profile.settings.skip_initial_make_bundle = options.skip_initial_make_bundle
     compose_file = prepare_run(env, profile, directory, headless=True, runner=runner)
     return _run_stack(compose_file, runner=runner, options=options)
 

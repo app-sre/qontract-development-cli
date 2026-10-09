@@ -57,6 +57,8 @@
   to remote `upstream` and are not automatically cleaned up. Bundle rebuilds run
   `make -C <qontract_server_path> bundle` with `APP_INTERFACE_PATH` set; both modes
   stop on a nonzero bundle-build exit.
+  Explicit `--skip-initial-make-bundle` / `--no-skip-initial-make-bundle` flags
+  override the saved setting in memory only; an omitted flag inherits it.
 - Headless mode selects dry-run/run-once defaults and rejects `--no-dry-run`.
   `additional_environment` intentionally permits overriding generated runtime settings;
   preserve these user overrides rather than treating them as a bug. Keep the

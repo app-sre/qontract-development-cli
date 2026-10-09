@@ -417,6 +417,125 @@ def test_cli_build_aliases_select_headless_cached_build(
     )
 
 
+@pytest.mark.parametrize(
+    ("flags", "expected"),
+    [
+        ([], None),
+        (["--skip-initial-make-bundle"], True),
+        (["--no-skip-initial-make-bundle"], False),
+    ],
+)
+def test_cli_preserves_explicit_bundle_rebuild_selection(
+    options: RunOptions,
+    monkeypatch: pytest.MonkeyPatch,
+    flags: Sequence[str],
+    *,
+    expected: bool | None,
+) -> None:
+    execute = Mock(return_value=0)
+    monkeypatch.setattr(profile, "run_headless", execute)
+    result = CliRunner().invoke(
+        app,
+        [
+            "profile",
+            "run",
+            "test",
+            "test",
+            "--headless",
+            *flags,
+            "--output-dir",
+            str(options.output_dir),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    execute.assert_called_once_with(
+        RunOptions(
+            env_name="test",
+            profile_name="test",
+            output_dir=options.output_dir,
+            skip_initial_make_bundle=expected,
+        )
+    )
+
+
+@pytest.mark.parametrize("skip", [None, True, False])
+def test_bundle_refresh_can_override_saved_skip_without_editing_profile(
+    saved_config: Config,
+    runner: Mock,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    skip: bool | None,
+) -> None:
+    defaults = saved_config.profiles_dir / "defaults.yml"
+    before = defaults.read_bytes()
+    bundle = Mock()
+    monkeypatch.setattr(orchestration, "make_bundle", bundle)
+    options = RunOptions(
+        env_name="test",
+        profile_name="test",
+        output_dir=runner.setup_log.parent,
+        skip_initial_make_bundle=skip,
+    )
+    assert headless.run_headless(options) == 0
+    if skip is False:
+        bundle.assert_called_once()
+        assert bundle.call_args.kwargs == {"runner": runner}
+    else:
+        bundle.assert_not_called()
+    assert defaults.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    ("flags", "build_bundle"),
+    [
+        ([], False),
+        (["--skip-initial-make-bundle"], False),
+        (["--no-skip-initial-make-bundle"], True),
+    ],
+)
+def test_interactive_bundle_selection_respects_saved_defaults_and_explicit_cli_flags(
+    saved_config: Config,
+    monkeypatch: pytest.MonkeyPatch,
+    flags: Sequence[str],
+    *,
+    build_bundle: bool,
+) -> None:
+    defaults = saved_config.profiles_dir / "defaults.yml"
+    before = defaults.read_bytes()
+    bundle = Mock()
+    monkeypatch.setattr(orchestration, "make_bundle", bundle)
+    monkeypatch.setattr(profile, "get_config", lambda: saved_config)
+    monkeypatch.setattr(profile, "getkey", Mock(return_value="q"))
+    monkeypatch.setattr(profile, "compose_log_tail", Mock(return_value=Mock()))
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        Mock(
+            return_value=subprocess.CompletedProcess(
+                args=["test"],
+                returncode=0,
+                stdout=b"[]",
+            )
+        ),
+    )
+    result = CliRunner().invoke(
+        app,
+        [
+            "profile",
+            "run",
+            "test",
+            "test",
+            *flags,
+            "--no-qontract-reconcile-monitor-file-changes",
+            "--no-qontract-schemas-monitor-file-changes",
+            "--no-app-interface-monitor-file-changes",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert bundle.called is build_bundle
+    assert defaults.read_bytes() == before
+
+
 @pytest.mark.parametrize("extra_args", ["", "--foo bar"])
 def test_profile_create_is_noninteractive_when_both_integration_options_are_supplied(
     saved_config: Config,
