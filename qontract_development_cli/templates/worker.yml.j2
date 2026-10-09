@@ -9,7 +9,7 @@ services:
       dockerfile: {{ profile.settings.qontract_api_path.expanduser().absolute() }}/Dockerfile
       target: debug
     {% else %}
-    image: {{ profile.settings.qontract_api_workerimage }}
+    image: {{ profile.settings.qontract_api_worker_image }}
     {% endif %}
 
     ports:
@@ -22,10 +22,17 @@ services:
     # Enable debugpy
     - DEBUGGER_ENABLED={% if profile.settings.debugger %}true{% else %}false{% endif %}
     # Hot reload for development
-    - AUTO_RELOAD=1
+    - AUTO_RELOAD={{ '0' if headless else '1' }}
 
     volumes:
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/app.sh:/opt/app-root/src/app.sh
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/.env:/opt/app-root/src/.env
     - {{ profile.settings.qontract_api_path.expanduser().absolute() }}/qontract_api:/opt/app-root/src/qontract_api/qontract_api
     - {{ profile.settings.qontract_reconcile_path.expanduser().absolute() }}/qontract_utils/qontract_utils:/opt/app-root/src/qontract_utils/qontract_utils
+
+    healthcheck:
+      test: ["CMD", "/opt/app-root/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/metrics', timeout=2)"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 10s

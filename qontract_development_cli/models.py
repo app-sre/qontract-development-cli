@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 import contextlib
 import copy
 import os
 from pathlib import Path
-from typing import Any, ClassVar, Self
+from typing import Any, Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, TypeAdapter, model_validator
 
-from .config import config
+from .config import YAML_ENCODING, get_config
 from .utils import yaml
+
+_SETTINGS_ADAPTER = TypeAdapter(dict[str, object])
 
 
 class EnvSettings(BaseModel):
@@ -160,7 +164,14 @@ class ProfileSettings(BaseModel):
 class Base(BaseModel):
     name: str
     default: bool = False
-    root: ClassVar[Path]
+
+    @classmethod
+    def directory(cls) -> Path:
+        raise NotImplementedError
+
+    @property
+    def root(self) -> Path:
+        return self.directory()
 
     def __lt__(self, other: Base) -> bool:
         return self.name < other.name
@@ -174,15 +185,15 @@ class Base(BaseModel):
     @property
     def file(self) -> Path:
         p = self.root / self.name
-        p.parent.mkdir(parents=True, exist_ok=True)
         return p.with_suffix(".yml")
 
     @classmethod
     def list_all(cls) -> list[Base]:
         items = []
-        for f in [f for f in list(cls.root.glob("**/*")) if f.is_file()]:
+        root = cls.directory()
+        for f in [f for f in list(root.glob("**/*")) if f.is_file()]:
             items.append(  # ruff: ignore[manual-list-comprehension]
-                cls(name=str(f.relative_to(cls.root)))
+                cls(name=str(f.relative_to(root)))
             )
         return items
 
@@ -198,33 +209,31 @@ class Base(BaseModel):
     def settings_as_dict(self) -> dict[str, Any]:
         values = self.default_settings_as_dict
         with contextlib.suppress(FileNotFoundError):
-            values.update(
-                **yaml.safe_load(
-                    self.file.read_text(
-                        encoding=config.model_config["yaml_file_encoding"]
-                    )
-                )
-            )
+            values.update(_load_settings(self.file))
         return values
 
     def dump(self) -> None:
-        values = self.settings.dict(  # type: ignore[attr-defined]
-            exclude_defaults=not self.default, exclude_unset=not self.default
-        )
+        raise NotImplementedError
+
+
+class Env(Base):
+    default: bool = True
+    settings: EnvSettings
+
+    @classmethod
+    def directory(cls) -> Path:
+        return get_config().environments_dir
+
+    def dump(self) -> None:
+        self.file.parent.mkdir(parents=True, exist_ok=True)
         self.file.write_text(
             yaml.dump(
-                values,
+                self.settings.model_dump(),
                 explicit_start=True,
                 indent=4,
                 default_flow_style=False,
             )
         )
-
-
-class Env(Base):
-    root: ClassVar[Path] = config.environments_dir
-    default: bool = True
-    settings: EnvSettings
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if "settings" not in kwargs:
@@ -237,8 +246,11 @@ class Env(Base):
 
 
 class Profile(Base):
-    root: ClassVar[Path] = config.profiles_dir
     settings: ProfileSettings
+
+    @classmethod
+    def directory(cls) -> Path:
+        return get_config().profiles_dir
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         if "settings" not in kwargs:
@@ -248,16 +260,16 @@ class Profile(Base):
 
     @property
     def default_settings_as_dict(self) -> dict[str, Any]:
-        defaults = {
+        defaults: dict[str, object] = {
             "integration_name": "changeme",
             "integration_extra_args": "",
             "localstack_compose_file": None,
         }
         with contextlib.suppress(FileNotFoundError, AttributeError, NameError):
             defaults.update(
-                yaml.safe_load(
-                    DEFAULT_PROFILE.file.read_text(
-                        encoding=config.model_config["yaml_file_encoding"]
+                _load_settings(
+                    (self.directory() / get_config().defaults_profile).with_suffix(
+                        ".yml"
                     )
                 )
             )
@@ -274,9 +286,10 @@ class Profile(Base):
         if not self.default:
             # do not dump settings from defaults
             for k in copy.deepcopy(values):
-                if getattr(DEFAULT_PROFILE.settings, k, None) == values[k]:
+                if getattr(get_default_profile().settings, k, None) == values[k]:
                     del values[k]
 
+        self.file.parent.mkdir(parents=True, exist_ok=True)
         self.file.write_text(
             yaml.dump(
                 values,
@@ -287,4 +300,12 @@ class Profile(Base):
         )
 
 
-DEFAULT_PROFILE = Profile(name=config.defaults_profile, default=True)
+def get_default_profile() -> Profile:
+    """Read the defaults profile without creating or changing it."""
+    return Profile(name=get_config().defaults_profile, default=True)
+
+
+def _load_settings(path: Path) -> dict[str, object]:
+    return _SETTINGS_ADAPTER.validate_python(
+        yaml.safe_load(path.read_text(encoding=YAML_ENCODING))
+    )
