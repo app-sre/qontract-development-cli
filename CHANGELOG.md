@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.20.0 (2026-10-08)
+
+### Features
+
+* Let your coding agent run integration dry-runs and explain the results, without attaching an IDE debugger
+* Get AI-assisted setup of qd configuration, environments, and integration profiles
+
+### Bugfixes
+
+* Ensure explicitly requested dry-runs override saved profile settings
+* Keep complete integration output for review and apply dry-run settings consistently
+* Report invalid environment/profile YAML cleanly instead of crashing
+* Allow configuration editing before initialization
+
 ## v0.19.1 (2026-07-20)
 
 ### Bugfixes

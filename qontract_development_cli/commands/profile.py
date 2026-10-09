@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import subprocess
 import tempfile
@@ -16,23 +18,21 @@ from ..completions import (
     complete_env,
     complete_profile,
 )
-from ..config import config
+from ..config import get_config
+from ..headless import RunOptions, run_headless
 from ..models import (
-    Env,
     Profile,
 )
+from ..orchestration import prepare_run, resolve_run
 from ..shell import (
     compose_down,
     compose_log_tail,
     compose_stop_project,
     compose_up,
     container_restart,
-    fetch_pull_requests,
     kill_log_tail,
-    make_bundle,
     make_bundle_and_restart_server,
 )
-from ..templates import template
 from ..utils import console
 
 app = typer.Typer()
@@ -143,14 +143,15 @@ def edit(
 ) -> None:
     """Edit a profile in your editor."""
     profile = Profile(name=profile_name)
+    profile.file.parent.mkdir(parents=True, exist_ok=True)
     console.print(f"Opening [b]{profile.name}[/] in your editor ...")
-    subprocess.run([config.editor, profile.file], check=True)
+    subprocess.run([get_config().editor, profile.file], check=True)
 
 
 @app.command()
 def ls() -> None:
     """List all available profiles."""
-    console.print(f"Profiles directory: [b]{config.profiles_dir}[/]")
+    console.print(f"Profiles directory: [b]{get_config().profiles_dir}[/]")
     console.print("[b]Profiles:[/]")
     for p in sorted(Profile.list_all()):
         console.print(f"* {p.name}")
@@ -187,6 +188,7 @@ def show(
 
 @app.command(no_args_is_help=True)
 def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-arguments, too-many-statements]
+    ctx: typer.Context,
     env_name: Annotated[
         str, typer.Argument(help="Environment to use.", autocompletion=complete_env)
     ],
@@ -197,7 +199,14 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
     force_recreate: Annotated[
         bool, typer.Option(help="Recreate all containers.")
     ] = False,
-    force_build: Annotated[bool, typer.Option(help="Rebuild all containers.")] = False,
+    force_build: Annotated[
+        bool,
+        typer.Option(
+            "--force-rebuild",
+            "--force-build",
+            help="Rebuild service images using Docker's cache.",
+        ),
+    ] = False,
     qontract_reconcile_monitor_file_changes: Annotated[
         bool,
         typer.Option(
@@ -233,68 +242,65 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
         bool,
         typer.Option(help="Disable dry-run mode"),
     ] = False,
+    headless: Annotated[
+        bool,
+        typer.Option(help="Run once without a terminal or debugger; enforce dry-run."),
+    ] = False,
+    timeout: Annotated[
+        float,
+        typer.Option(
+            min=0.1,
+            help="Headless setup/execution deadline in seconds; cleanup gets 15 more seconds.",
+        ),
+    ] = 600,
+    output_dir: Annotated[
+        Path | None,
+        typer.Option(
+            help="Required for headless: new or empty directory for complete logs and result.json."
+        ),
+    ] = None,
 ) -> None:
     """Run a profile."""
-    env = Env(name=env_name)
-    profile = Profile(name=profile_name)
-    profile.settings.app_interface_path = (
-        profile.settings.app_interface_path or env.settings.app_interface_path
-    )
-    if no_dry_run:
-        # if --no-dry-run is set on command line, then it takes prio over all other dry-run settings
-        profile.settings.dry_run = False
-    skip_initial_make_bundle = (
-        skip_initial_make_bundle or profile.settings.skip_initial_make_bundle
-    )
-    # prepare worktrees
-    fetch_pull_requests(profile, config.worktrees_dir)
+    if headless:
+        if output_dir is None:
+            raise typer.BadParameter("--headless requires --output-dir")
+        raise typer.Exit(
+            run_headless(
+                RunOptions(
+                    env_name=env_name,
+                    profile_name=profile_name,
+                    output_dir=output_dir,
+                    timeout=timeout,
+                    no_dry_run=no_dry_run,
+                    force_build=force_build,
+                    force_recreate=force_recreate,
+                    skip_initial_make_bundle=skip_initial_make_bundle,
+                )
+            )
+        )
+    if output_dir is not None:
+        raise typer.BadParameter("--output-dir requires --headless")
+    config = get_config()
+    env, profile = resolve_run(env_name, profile_name)
+    if (
+        source := ctx.get_parameter_source("no_dry_run")
+    ) and source.name == "COMMANDLINE":
+        profile.settings.dry_run = not no_dry_run
+    compose_dir = Path(tempfile.mkdtemp(prefix="qd-"))
+    profile.settings.skip_initial_make_bundle |= skip_initial_make_bundle
+    compose_file = prepare_run(env, profile, compose_dir)
+    app_interface_path = profile.settings.app_interface_path
+    if app_interface_path is None:
+        raise typer.BadParameter("Missing app-interface path")
 
     # settings
     settings = Table("Item", "Path", title="Settings")
-    settings.add_row(
-        "APP Interface", f"[green] {profile.settings.app_interface_path} [/]"
-    )
+    settings.add_row("APP Interface", f"[green] {app_interface_path} [/]")
     settings.add_row("Schemas", f"[green] {profile.settings.qontract_schemas_path} [/]")
     settings.add_row(
         "Reconcile", f"[green] {profile.settings.qontract_reconcile_path} [/]"
     )
     console.print(settings)
-
-    compose_dir = Path(tempfile.mkdtemp(prefix="qd-"))
-    # render compose files
-    compose_template_files = profile.settings.compose_template_files(
-        api=env.settings.run_qontract_api,
-        cache=env.settings.run_cache,
-        opa=env.settings.run_opa,
-        reconcile=env.settings.run_qontract_reconcile,
-        server=env.settings.run_qontract_server,
-        subscriber=env.settings.run_qontract_api_subscriber,
-        vault=env.settings.run_vault,
-        worker=env.settings.run_qontract_api_worker,
-    )
-    for template_file in [
-        "compose.yml.j2",
-        "compose.override.yml.j2",
-        *compose_template_files,
-    ]:
-        f = compose_dir / template_file.removesuffix(".j2")
-        f.write_text(
-            template(
-                template_file,
-                config=config,
-                env=env,
-                profile=profile,
-                compose_files=[f.removesuffix(".j2") for f in compose_template_files],
-            )
-        )
-
-    # main compose file
-    compose_file = compose_dir / "compose.yml"
-
-    if env.settings.run_qontract_server and not skip_initial_make_bundle:
-        make_bundle(
-            profile.settings.app_interface_path, profile.settings.qontract_server_path
-        )
 
     # stop other qontract-development project first
     compose_stop_project(config.docker_compose_project_name)
@@ -326,7 +332,7 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
                 extensions=qontract_schemas_monitor_file_extensions.split(" "),
                 action=make_bundle_and_restart_server,
                 action_args=(
-                    profile.settings.app_interface_path,
+                    app_interface_path,
                     profile.settings.qontract_server_path,
                     compose_file,
                 ),
@@ -336,11 +342,11 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
     if app_interface_monitor_file_changes:
         file_watchers.append(
             watch_files(
-                path=profile.settings.app_interface_path.expanduser().absolute(),
+                path=app_interface_path.expanduser().absolute(),
                 extensions=app_interface_monitor_file_extensions.split(" "),
                 action=make_bundle_and_restart_server,
                 action_args=(
-                    profile.settings.app_interface_path,
+                    app_interface_path,
                     profile.settings.qontract_server_path,
                     compose_file,
                 ),
@@ -349,7 +355,7 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
 
     while True:
         try:
-            key = getkey()
+            key = getkey() or ""
         except KeyboardInterrupt:
             key = "q"
 
@@ -362,7 +368,7 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
                 )
                 continue
             make_bundle_and_restart_server(
-                profile.settings.app_interface_path,
+                app_interface_path,
                 profile.settings.qontract_server_path,
                 compose_file,
             )
