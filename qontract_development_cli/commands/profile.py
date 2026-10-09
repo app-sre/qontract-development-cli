@@ -244,7 +244,7 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
     ] = False,
     headless: Annotated[
         bool,
-        typer.Option(help="Run once without a terminal or debugger; enforce dry-run."),
+        typer.Option(help="Run headlessly with dry-run/run-once defaults."),
     ] = False,
     timeout: Annotated[
         float,
@@ -261,6 +261,12 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
     ] = None,
 ) -> None:
     """Run a profile."""
+    skip_bundle_override = (
+        skip_initial_make_bundle
+        if (source := ctx.get_parameter_source("skip_initial_make_bundle"))
+        and source.name == "COMMANDLINE"
+        else None
+    )
     if headless:
         if output_dir is None:
             raise typer.BadParameter("--headless requires --output-dir")
@@ -274,7 +280,7 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
                     no_dry_run=no_dry_run,
                     force_build=force_build,
                     force_recreate=force_recreate,
-                    skip_initial_make_bundle=skip_initial_make_bundle,
+                    skip_initial_make_bundle=skip_bundle_override,
                 )
             )
         )
@@ -287,7 +293,8 @@ def run(  # ruff: ignore[complex-structure, too-many-branches, too-many-argument
     ) and source.name == "COMMANDLINE":
         profile.settings.dry_run = not no_dry_run
     compose_dir = Path(tempfile.mkdtemp(prefix="qd-"))
-    profile.settings.skip_initial_make_bundle |= skip_initial_make_bundle
+    if skip_bundle_override is not None:
+        profile.settings.skip_initial_make_bundle = skip_bundle_override
     compose_file = prepare_run(env, profile, compose_dir)
     app_interface_path = profile.settings.app_interface_path
     if app_interface_path is None:

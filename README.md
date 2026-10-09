@@ -202,6 +202,9 @@ stops the whole stack. This replaces any running qd stack; volumes are retained.
 Images are reused. Use `--force-rebuild` when dependencies changed or images have
 not been built yet.
 
+Use `--no-skip-initial-make-bundle` to refresh the bundle even when the profile
+normally skips it; the saved profile remains unchanged.
+
 `additional_environment` intentionally allows overriding generated runtime
 settings, including `DRY_RUN`, `MANAGER_DRY_RUN`, `RUN_ONCE`, and `DEBUGGER`, even
 in headless mode. These overrides take precedence over the corresponding profile

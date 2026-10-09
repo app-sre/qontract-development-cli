@@ -269,6 +269,7 @@ def test_dry_run_skill_defines_a_fixed_report_with_evidence_based_fallbacks() ->
     fields = [
         "| Execution |",
         "| Proposed changes |",
+        "| Local edits |",
         "| Coverage |",
         "| Warnings |",
     ]
@@ -323,3 +324,26 @@ def test_dry_run_skill_does_not_bypass_existing_profile_conflicts() -> None:
     assert "ask for explicit approval to edit it" in instructions
     assert "mark that integration `blocked`" in instructions
     assert "not permission to edit or delete existing profiles" in instructions
+
+
+def test_dry_run_skill_repairs_only_reported_local_schema_permissions_and_records_edits() -> (
+    None
+):
+    instructions = (
+        files("qontract_development_cli")
+        .joinpath("skills", "qd-integration-dry-run", "SKILL.md")
+        .read_text(encoding="utf-8")
+    )
+    instructions = " ".join(instructions.split())
+    assert "Forbidden schemas" in instructions
+    assert "selected environment's `app_interface_path`" in instructions
+    assert "full absolute path" in instructions
+    assert "`$schema: /app-sre/integration-1.yml`" in instructions
+    assert "`name` matching the integration" in instructions
+    assert "only the schema paths reported as forbidden" in instructions
+    assert "preserve existing entries" in instructions
+    assert "--no-skip-initial-make-bundle" in instructions
+    assert "Do not commit or push app-interface changes" in instructions
+    assert "remote GraphQL" in instructions
+    assert "Local edits" in instructions
+    assert "added schema paths" in instructions
