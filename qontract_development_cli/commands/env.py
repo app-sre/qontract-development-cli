@@ -6,7 +6,7 @@ import typer
 from rich.prompt import Confirm
 
 from ..completions import complete_env
-from ..config import config
+from ..config import get_config
 from ..models import Env
 from ..utils import console
 
@@ -20,14 +20,15 @@ def edit(
 ) -> None:
     """Create/edit an environment file in your editor."""
     env = Env(name=env_name)
+    env.file.parent.mkdir(parents=True, exist_ok=True)
     console.print(f"Opening [b]{env.name}[/] in your editor ...")
-    subprocess.run([config.editor, env.file], check=True)
+    subprocess.run([get_config().editor, env.file], check=True)
 
 
 @app.command()
 def ls() -> None:
     """List all available environments."""
-    console.print(f"Environments directory: [b]{config.environments_dir}[/]")
+    console.print(f"Environments directory: [b]{get_config().environments_dir}[/]")
     console.print("[b]Environments:[/]")
     for env in Env.list_all():
         console.print(f"* {env.name}")
