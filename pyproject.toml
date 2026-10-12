@@ -1,6 +1,6 @@
 [project]
 name = "qontract-development-cli"
-version = "0.19.1"
+version = "0.20.0"
 description = "Helper tool for qontract-reconcile development"
 authors = [{ name = "Christian Assing", email = "cassing@redhat.com" }]
 license = { text = "MIT" }
@@ -49,6 +49,7 @@ only-include = ["qontract_development_cli"]
 only-include = ["qontract_development_cli"]
 
 [tool.mypy]
+strict = true
 files = ["qontract_development_cli"]
 plugins = "pydantic.mypy"
 enable_error_code = "truthy-bool, redundant-expr"

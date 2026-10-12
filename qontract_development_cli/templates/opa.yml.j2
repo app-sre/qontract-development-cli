@@ -20,7 +20,9 @@ services:
     - --config-file=/config/config.yaml
     - --log-level=info
     - --disable-telemetry
+{% if not headless %}
     - --watch
+{% endif %}
     - /authz
     - /data
 
@@ -35,3 +37,9 @@ services:
     - {{ profile.settings.opa_path.expanduser().absolute() }}/authz:/authz:z
     - {{ profile.settings.opa_path.expanduser().absolute() }}/dev:/data:z
     - {{ profile.settings.opa_path.expanduser().absolute() }}/dev/config.yaml:/config/config.yaml:z
+
+    healthcheck:
+      test: ["CMD", "/opa", "eval", "--fail", "http.send({\"url\": \"http://127.0.0.1:8181/health\", \"method\": \"get\"}).status_code == 200"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

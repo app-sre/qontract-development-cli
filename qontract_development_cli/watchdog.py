@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from multiprocessing import Process
 from typing import TYPE_CHECKING
@@ -27,7 +29,10 @@ class ExtensionFilter(DefaultFilter):
 
 
 def _watcher(
-    path: Path, extensions: Sequence[str], action: Callable, action_args: tuple
+    path: Path,
+    extensions: Sequence[str],
+    action: Callable[..., None],
+    action_args: tuple[object, ...],
 ) -> None:
     # logger must be setup in child process
     logging.basicConfig(
@@ -43,7 +48,10 @@ def _watcher(
 
 
 def watch_files(
-    path: Path, extensions: Sequence[str], action: Callable, action_args: tuple
+    path: Path,
+    extensions: Sequence[str],
+    action: Callable[..., None],
+    action_args: tuple[object, ...],
 ) -> Process:
     p = Process(target=_watcher, args=(path, extensions, action, action_args))
     p.start()

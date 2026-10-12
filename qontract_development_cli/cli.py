@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import atexit
 import logging
 import sys
@@ -9,9 +11,8 @@ import typer
 from rich import print as rich_print
 from rich.logging import RichHandler
 
+from .commands import agentic, env, profile
 from .commands import config as config_cmd
-from .commands import env, profile
-from .config import config
 from .utils import console, screenshot
 
 app = typer.Typer()
@@ -20,6 +21,7 @@ app.add_typer(
     config_cmd.app, name="config", help="Qontract Development config related commands."
 )
 app.add_typer(profile.app, name="profile", help="Profile related commands.")
+app.add_typer(agentic.app, name="agentic", help="Agent-assisted workflows and skills.")
 
 
 def version_callback(value: bool) -> None:  # ruff: ignore[boolean-type-hint-positional-argument]
@@ -38,7 +40,7 @@ def main(
     ] = None,
 ) -> None:
     logging.basicConfig(
-        level="DEBUG" if config.debug or debug else "INFO",
+        level="DEBUG" if debug else "INFO",
         format="%(name)-20s: %(message)s",
         datefmt="[%X]",
         handlers=[RichHandler()],

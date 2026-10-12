@@ -1,5 +1,7 @@
+import logging
 import os
 import platform
+from functools import cache
 from pathlib import Path
 
 from appdirs import AppDirs
@@ -13,13 +15,12 @@ from pydantic_settings import (
 from .utils import yaml
 
 appdirs = AppDirs("qontract-development", "appsre")
+YAML_ENCODING = "utf-8"
 
 user_config_dir = Path(appdirs.user_config_dir)
-user_config_dir.mkdir(parents=True, exist_ok=True)
 user_config_file = user_config_dir / "config.yaml"
 
 user_cache_dir = Path(appdirs.user_cache_dir)
-user_cache_dir.mkdir(parents=True, exist_ok=True)
 
 is_mac = platform.system().lower() == "darwin"
 
@@ -32,11 +33,6 @@ class Config(BaseSettings):
     environments_dir: Path = user_config_dir / "environments"
     profiles_dir: Path = user_config_dir / "profiles"
     worktrees_dir: Path = user_cache_dir / "worktrees"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.environments_dir.mkdir(parents=True, exist_ok=True)
-        self.profiles_dir.mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def settings_customise_sources(
@@ -55,11 +51,15 @@ class Config(BaseSettings):
 
     model_config = SettingsConfigDict(
         yaml_file=user_config_file,
-        yaml_file_encoding="utf-8",
+        yaml_file_encoding=YAML_ENCODING,
         env_prefix="qontract_development_",
     )
 
     def save(self) -> None:
+        user_config_file.parent.mkdir(parents=True, exist_ok=True)
+        self.environments_dir.mkdir(parents=True, exist_ok=True)
+        self.profiles_dir.mkdir(parents=True, exist_ok=True)
+        self.worktrees_dir.mkdir(parents=True, exist_ok=True)
         user_config_file.write_text(
             yaml.dump(
                 self.model_dump(),
@@ -67,8 +67,14 @@ class Config(BaseSettings):
                 indent=4,
                 default_flow_style=False,
             ),
-            encoding=self.model_config["yaml_file_encoding"],
+            encoding=YAML_ENCODING,
         )
 
 
-config = Config()
+@cache
+def get_config() -> Config:
+    """Load settings only when a configuration-dependent command needs them."""
+    settings = Config()
+    if settings.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    return settings
