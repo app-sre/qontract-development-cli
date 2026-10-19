@@ -3,9 +3,8 @@ from __future__ import annotations
 import logging
 import subprocess
 import tempfile
-from multiprocessing import Process
 from pathlib import Path
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import typer
 from getkey import getkey
@@ -34,6 +33,9 @@ from ..shell import (
     make_bundle_and_restart_server,
 )
 from ..utils import console
+
+if TYPE_CHECKING:
+    from multiprocessing import Process
 
 app = typer.Typer()
 log = logging.getLogger(__name__)
