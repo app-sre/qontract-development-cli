@@ -5,6 +5,7 @@ import signal
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 from typing import TYPE_CHECKING
 from unittest.mock import Mock, call
 
@@ -97,7 +98,7 @@ def test_subprocess_termination_escalates_only_its_process_group(
     kill = Mock()
     monkeypatch.setattr(os, "killpg", kill)
     monkeypatch.setattr(subprocess, "Popen", Mock(return_value=child))
-    monkeypatch.setattr(time, "monotonic", lambda: 10)
+    monkeypatch.setattr(process, "time", SimpleNamespace(monotonic=lambda: 10))
     runner = Runner(deadline=20, setup_log=tmp_path / "setup.log")
     with pytest.raises(RunTimeoutError, match="deadline exceeded"):
         runner.run([sys.executable, "-c", "pass"])
