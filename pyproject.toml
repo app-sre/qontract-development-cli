@@ -10,7 +10,7 @@ dependencies = [
     "appdirs==1.4.4",
     "getkey==0.6.5",
     "jinja2==3.1.6",
-    "pydantic==2.14.2",
+    "pydantic==2.14.3",
     "pydantic-settings==2.16.2",
     "pyyaml==6.0.3",
     "rich==15.0.0",
@@ -23,8 +23,8 @@ dev = [
     # dev dependencies
     "mypy==2.4.1",
     "pytest==9.2.0",
-    "ruff==0.17.3",
-    "types-pyyaml==6.0.12.20260906",
+    "ruff==0.17.4",
+    "types-pyyaml==6.0.12.20261103",
 ]
 
 [tool.pytest.ini_options]
